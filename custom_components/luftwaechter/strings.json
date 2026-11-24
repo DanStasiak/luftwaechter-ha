@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Luftwächter",
+        "description": "Rooms are found from your areas. Pick a weather entity for outside hints (optional).",
+        "data": { "weather": "Weather entity" }
+      }
+    },
+    "abort": { "single_instance_allowed": "Luftwächter is already set up." }
+  },
+  "options": {
+    "step": { "init": { "data": { "weather": "Weather entity" } } }
+  },
+  "entity": {
+    "sensor": {
+      "house": {
+        "name": "House",
+        "state": { "good": "Good", "fair": "Fair", "poor": "Poor", "unknown": "Unknown" }
+      }
+    }
+  }
+}

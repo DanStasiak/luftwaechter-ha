@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Luftwächter",
+        "description": "Die Räume werden aus Ihren Bereichen gefunden. Wetter-Entität für Außen-Hinweise wählen (optional).",
+        "data": {
+          "weather": "Wetter-Entität"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Luftwächter ist bereits eingerichtet."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "weather": "Wetter-Entität"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "house": {
+        "name": "Haus",
+        "state": {
+          "good": "Gut",
+          "fair": "Mittel",
+          "poor": "Schlecht",
+          "unknown": "Unbekannt"
+        }
+      }
+    }
+  }
+}
