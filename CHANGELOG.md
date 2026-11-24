@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0
+- Overview starts with a "Do now" list: which rooms need attention, click to open the room.
+- Every tile shows four indicator dots (CO₂, fine dust, temperature, humidity) coloured by level.
+- Text size switch (Aa) for wall tablets, remembered per browser.
+- Warning banner when the data is older than 10 minutes; the "updated" time keeps ticking.
+- History charts: 6 h, 24 h and 7 day ranges; "Copy status" button in the room view.
+- GitHub page: new README with screenshots and "add to HACS" button, issue and pull request templates, CONTRIBUTING, brand logo, and an automatic release workflow.
+- DE: Übersicht mit "Jetzt tun", Indikator-Punkte auf den Kacheln, Textgröße, Warnung bei veralteten Daten, Verlauf 6 h / 24 h / 7 Tage, Status kopieren, neue GitHub-Seite.
+
 ## 0.2.0
 - Room view redesigned: status icon and badge follow the room level (no more green check on a poor room), a "What stands out" list names the problem readings with their limits.
 - Readings show a gauge bar with the good / fair / poor zones and a marker.

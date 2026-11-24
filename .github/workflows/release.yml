@@ -1,0 +1,21 @@
+name: Release
+on:
+  push:
+    branches: [main]
+    paths: [custom_components/luftwaechter/manifest.json]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish release if the version is new
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v=$(python3 -c "import json;print(json.load(open('custom_components/luftwaechter/manifest.json'))['version'])")
+          if gh release view "v$v" >/dev/null 2>&1; then echo "v$v exists"; exit 0; fi
+          awk -v v="$v" '$0=="## " v {f=1; next} /^## / {f=0} f' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "Release v$v" > notes.md
+          gh release create "v$v" --target "$GITHUB_SHA" --title "v$v" --notes-file notes.md

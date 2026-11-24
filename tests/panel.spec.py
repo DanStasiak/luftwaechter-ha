@@ -25,14 +25,15 @@ st = {"sensor.luftwaechter_house": {"entity_id": "sensor.luftwaechter_house", "s
       "cover.big": {"entity_id": "cover.big", "state": "open", "attributes": {"current_position": 40}}}
 hass = {"language": "en", "states": st}
 out = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path("shots")
+docs = pathlib.Path(sys.argv[2]) if len(sys.argv) > 2 else None
 out.mkdir(exist_ok=True)
 now = time.time()
 HIST = {"sensor.co2_o": [{"s": str(600 + 500 * (0.5 + 0.5 * math.sin(i / 8))), "lu": now - 86400 + i * 900} for i in range(96)],
         "sensor.pm_o": [{"s": str(20 + 100 * (i / 96)), "lu": now - 86400 + i * 900} for i in range(96)]}
 with sync_playwright() as p:
     b = p.chromium.launch(); pg = b.new_page(viewport={"width": 1100, "height": 900}, device_scale_factor=1)
-    errs = []; pg.on("pageerror", lambda e: errs.append(str(e)))
-    pg.set_content("<body></body>")
+    errs = []; pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: print("CONSOLE", m.text) if m.type == "error" else None)
+    pg.set_content("<body style='margin:0'><style>:root{--primary-background-color:#111;--card-background-color:#1c1c1e;--secondary-background-color:#2c2c2e;--primary-text-color:#e1e1e1;--primary-color:#03a9f4;--divider-color:#48484a}body{background:#111}</style></body>")
     pg.add_script_tag(content=js)
     pg.evaluate("""([h, hist]) => { window.calls=[]; h.callService=(d,s,x)=>window.calls.push([d,s,x.entity_id]);
       h.callWS=async (m)=>{ window.ws=m; const r={}; m.entity_ids.forEach(i=>r[i]=hist[i]||[]); return r; };
@@ -41,8 +42,14 @@ with sync_playwright() as p:
     clk = lambda sel: pg.evaluate(f"el.shadowRoot.querySelector({sel!r}).click()")
     tiles = pg.evaluate("[...el.shadowRoot.querySelectorAll('.tile b')].map(x=>x.textContent)")
     assert tiles == ["Office", "Bedroom"], tiles            # worst first
+    assert "Do now" in txt() and "1 of 2 rooms need attention" in txt().replace("2 of 2","1 of 2") or "of 2 rooms need attention" in txt()
+    assert pg.evaluate("el.shadowRoot.querySelectorAll('.dots i').length") == 8
     assert "Fine dust: 131" in txt() and "Updated: 2 min ago" in txt() and "–" not in pg.evaluate("el.shadowRoot.querySelector('.out small').textContent")
     pg.screenshot(path=str(out / "overview.png"))
+    clk("#size"); assert "19px" in pg.evaluate("el.shadowRoot.querySelector('style').textContent"); clk("#size"); clk("#size")   # back to 16px
+    pg.evaluate("el._hass.states['sensor.luftwaechter_house'].attributes.updated = Math.floor(Date.now()/1000) - 1500; el._sig=''; el.hass = el._hass")
+    assert "may be outdated" in pg.evaluate("el.shadowRoot.querySelector('#stale').textContent") and not pg.evaluate("el.shadowRoot.querySelector('#stale').hidden")
+    pg.evaluate("el._hass.states['sensor.luftwaechter_house'].attributes.updated = Math.floor(Date.now()/1000) - 120; el._sig=''; el.hass = el._hass")
     clk("#sort"); assert pg.evaluate("[...el.shadowRoot.querySelectorAll('.tile b')].map(x=>x.textContent)") == ["Bedroom", "Office"]
     clk("#sort"); clk(".tile")
     pg.wait_for_function("el.shadowRoot.querySelector('.chartwrap svg path') !== null")
@@ -51,6 +58,11 @@ with sync_playwright() as p:
     assert "Office radiator" in t and "Office floor heating" in t and "heating · 20.5 °C" in t and "open · 40 %" in t
     assert pg.evaluate("el.shadowRoot.querySelectorAll('.gauge').length") == 4
     pg.screenshot(path=str(out / "room_desktop.png"))
+    clk("[data-range=\"7d\"]"); pg.wait_for_function("window.ws && el._range==='7d' && el.shadowRoot.querySelector('.chartwrap svg path') !== null || el.shadowRoot.textContent.includes('No history')")
+    assert "7 days ago" in txt(), pg.evaluate("JSON.stringify(Object.fromEntries(Object.entries(el._hist).map(([k,v])=>[k,{e:v.error,l:v.loading,n:v.data&&v.data.filter(x=>x!=null).length}])))")
+    pg.evaluate("Object.defineProperty(navigator,'clipboard',{value:{writeText:async(t)=>{window.copied=t}},configurable:true})")
+    clk("#copy"); pg.wait_for_function("window.copied"); assert "Office" in pg.evaluate("window.copied")
+    clk("[data-range=\"24h\"]")
     clk("[data-chart=pm25]"); pg.wait_for_function("window.ws.entity_ids[0]==='sensor.pm_o'")
     clk("[data-cov=close_cover]"); clk(".dev[data-dom=light]")
     assert pg.evaluate("window.calls") == [["cover", "close_cover", "cover.big"], ["light", "toggle", "light.office"]], pg.evaluate("window.calls")
@@ -64,5 +76,15 @@ with sync_playwright() as p:
     pg.wait_for_function("el.shadowRoot.querySelector('.chartwrap svg path') !== null")
     pg.screenshot(path=str(out / "room_phone.png"), full_page=True)
     assert not errs, errs
+    if docs:
+        docs.mkdir(exist_ok=True)
+        import shutil
+        for src, dst in (("overview", "overview"), ("room_desktop", "room"), ("help", "help"), ("room_phone", "phone")):
+            from PIL import Image, ImageChops
+            im = Image.open(out / f"{src}.png").convert("RGB")
+            bgc = Image.new("RGB", im.size, (17, 17, 17))
+            bbox = ImageChops.difference(im, bgc).getbbox()
+            h = min(im.height, (bbox[3] if bbox else im.height) + 24)
+            im.crop((0, 0, im.width, h)).save(docs / f"{dst}.png", optimize=True)
     b.close()
 print("panel ok")

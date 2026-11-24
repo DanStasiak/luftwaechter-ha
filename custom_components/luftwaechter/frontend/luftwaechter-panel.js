@@ -10,6 +10,8 @@ const UI = {
     on: "an", off: "aus", open: "offen", closed: "zu", opening: "öffnet", closing: "schließt", heating: "heizt", idle: "ruht",
     cover_open: "Auf", cover_stop: "Stopp", cover_close: "Zu", allgood: "Alle Werte im grünen Bereich.",
     isPoor: "ist schlecht", isFair: "ist mittel", tooHigh: "zu hoch", tooLow: "zu niedrig", limit: "Grenze",
+    attention: "Jetzt tun", nothing: "Nichts zu tun, alles in Ordnung.", rooms_n: "{a} von {n} Räumen brauchen Aufmerksamkeit", stale: "Die Daten sind möglicherweise veraltet (letztes Update vor {n} min).",
+    size: "Textgröße", copy: "Status kopieren", copied: "Kopiert", r6h: "6 h", r24h: "24 h", r7d: "7 Tage", a6h: "vor 6 h", a24h: "vor 24 h", a7d: "vor 7 Tagen", dayU: "Tg", hourU: "h",
     helpTitle: "Was bedeuten die Messwerte?", causes: "Mögliche Ursachen", todo: "Was hilft",
     hCo2: "CO₂ (Kohlendioxid) zeigt, wie verbraucht die Raumluft ist. Wir atmen es aus.",
     cCo2: "Viele Personen im Raum, Schlafen bei geschlossenem Fenster, kleine Räume, geschlossene Türen, Kerzen oder Gasflammen.",
@@ -33,6 +35,8 @@ const UI = {
     on: "on", off: "off", open: "open", closed: "closed", opening: "opening", closing: "closing", heating: "heating", idle: "idle",
     cover_open: "Open", cover_stop: "Stop", cover_close: "Close", allgood: "All readings are in the green.",
     isPoor: "is poor", isFair: "is fair", tooHigh: "too high", tooLow: "too low", limit: "Limit",
+    attention: "Do now", nothing: "Nothing to do, all good.", rooms_n: "{a} of {n} rooms need attention", stale: "Data may be outdated (last update {n} min ago).",
+    size: "Text size", copy: "Copy status", copied: "Copied", r6h: "6 h", r24h: "24 h", r7d: "7 days", a6h: "6 h ago", a24h: "24 h ago", a7d: "7 days ago", dayU: "d", hourU: "h",
     helpTitle: "What do the readings mean?", causes: "Possible causes", todo: "What helps",
     hCo2: "CO₂ (carbon dioxide) shows how stale the room air is. We breathe it out.",
     cCo2: "Many people in the room, sleeping with the window closed, small rooms, closed doors, candles or gas flames.",
@@ -75,12 +79,19 @@ class LuftwaechterPanel extends HTMLElement {
     this._sel = store.get("lw_room");
     this._sort = store.get("lw_sort") || "worst";
     this._chartKey = "co2";
+    this._range = store.get("lw_range") || "24h";
+    this._size = parseInt(store.get("lw_size") || "1", 10);
     this._help = false;
     this._hist = {};
     this._onKey = (ev) => this._key(ev);
   }
-  connectedCallback() { window.addEventListener("keydown", this._onKey); }
-  disconnectedCallback() { window.removeEventListener("keydown", this._onKey); }
+  connectedCallback() {
+    window.addEventListener("keydown", this._onKey);
+    this._tick = setInterval(() => { const e = this._house(), el = this.shadowRoot.querySelector(".upd"); if (e && el) { el.textContent = this._age(e, this._t()); this._staleCheck(); } }, 30000);
+  }
+  disconnectedCallback() { window.removeEventListener("keydown", this._onKey); clearInterval(this._tick); }
+  _staleMin() { const e = this._house(); const u = e && e.attributes.updated; return u ? Math.round((Date.now() / 1000 - u) / 60) : 0; }
+  _staleCheck() { const b = this.shadowRoot.querySelector("#stale"); const m = this._staleMin(); if (b) { b.hidden = m < 10; b.textContent = this._t().stale.replace("{n}", m); } }
   set hass(h) {
     this._hass = h;
     const e = this._house();
@@ -141,7 +152,8 @@ class LuftwaechterPanel extends HTMLElement {
     return { text: on ? t.on : t.off, on };
   }
   /* ---- history ---- */
-  _histKey(room, key) { return room.key + "|" + key; }
+  _histKey(room, key) { return room.key + "|" + key + "|" + this._range; }
+  _hours() { return { "6h": 6, "24h": 24, "7d": 168 }[this._range] || 24; }
   async _loadHist(room, key) {
     const hk = this._histKey(room, key); const c = this._hist[hk];
     if (c && (c.loading || Date.now() - c.at < 300000)) return;
@@ -149,9 +161,9 @@ class LuftwaechterPanel extends HTMLElement {
     this._hist[hk] = { loading: true, at: Date.now() };
     if (!ids.length || !this._hass.callWS) { this._hist[hk] = { error: true, at: Date.now() }; return this._render(); }
     try {
-      const end = new Date(), start = new Date(end.getTime() - 24 * 3600 * 1000);
+      const hrs = this._hours(); const end = new Date(), start = new Date(end.getTime() - hrs * 3600 * 1000);
       const res = await this._hass.callWS({ type: "history/history_during_period", start_time: start.toISOString(), end_time: end.toISOString(), entity_ids: ids, minimal_response: true, no_attributes: true, significant_changes_only: false });
-      const N = 96, t0 = start.getTime() / 1000, step = 900;
+      const N = 96, t0 = start.getTime() / 1000, step = (hrs * 3600) / N;
       const series = ids.map((id) => {
         const pts = (res[id] || []).map((p) => {
           const v = parseFloat(p.s ?? p.state); let tm = p.lu ?? p.lc;
@@ -169,13 +181,14 @@ class LuftwaechterPanel extends HTMLElement {
       });
       const avg = [];
       for (let i = 0; i < N; i++) { const vs = series.map((s) => s[i]).filter((v) => v != null); avg.push(vs.length ? vs.reduce((a, b) => a + b, 0) / vs.length : null); }
-      this._hist[hk] = { data: avg, at: Date.now() };
-    } catch (e) { this._hist[hk] = { error: true, at: Date.now() }; }
+      this._hist[hk] = { data: avg, at: Date.now(), step };
+    } catch (e) { console.error("lw history", e); this._hist[hk] = { error: true, at: Date.now() }; }
     this._render();
   }
   _chart(room, t) {
     const key = this._chartKey, hk = this._histKey(room, key), h = this._hist[hk];
-    const tabs = KEYS.map((k) => `<button class="chip ${k === key ? "sel" : ""}" data-chart="${k}" aria-pressed="${k === key}">${esc(t[k])}</button>`).join("");
+    const tabs = KEYS.map((k) => `<button class="chip ${k === key ? "sel" : ""}" data-chart="${k}" aria-pressed="${k === key}">${esc(t[k])}</button>`).join("") +
+      `<span class="rsp"></span>` + ["6h", "24h", "7d"].map((r) => `<button class="chip ${r === this._range ? "sel" : ""}" data-range="${r}" aria-pressed="${r === this._range}">${esc(t["r" + r])}</button>`).join("");
     let body;
     if (!h || h.loading) body = `<div class="muted">${esc(t.loading)}</div>`;
     else if (h.error || !h.data || !h.data.some((v) => v != null)) body = `<div class="muted">${esc(t.nohist)}</div>`;
@@ -189,10 +202,10 @@ class LuftwaechterPanel extends HTMLElement {
       d.forEach((v, i) => { if (v == null) { pen = false; return; } path += `${pen ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)} `; pen = true; });
       const unit = room.values.find((v) => v.key === key)?.unit || "";
       body = `<div class="chartwrap"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="${esc(t[key])} ${esc(t.history)}">${bands}<path d="${path}" fill="none" stroke="var(--primary-text-color,#222)" stroke-width="2" vector-effect="non-scaling-stroke"/><line id="cur" x1="0" x2="0" y1="0" y2="${H}" stroke="var(--primary-color,#03a9f4)" stroke-width="1.5" vector-effect="non-scaling-stroke" visibility="hidden"/></svg>
-        <div class="axis"><span>${esc(t.h24)}</span><span id="readout" aria-live="off">${esc(t.min)} ${mn.toFixed(key === "temperature" ? 1 : 0)} · ${esc(t.max)} ${mx.toFixed(key === "temperature" ? 1 : 0)} ${esc(unit)}</span><span>${esc(t.now_)}</span></div></div>`;
-      this._chartMeta = { d, unit, key, mn, mx, t };
+        <div class="axis"><span>${esc(t["a" + this._range])}</span><span id="readout" aria-live="off">${esc(t.min)} ${mn.toFixed(key === "temperature" ? 1 : 0)} · ${esc(t.max)} ${mx.toFixed(key === "temperature" ? 1 : 0)} ${esc(unit)}</span><span>${esc(t.now_)}</span></div></div>`;
+      this._chartMeta = { d, unit, key, mn, mx, t, step: h.step || 900 };
     }
-    return `<div class="card"><h3>${esc(t.history)}</h3><div class="chips">${tabs}</div>${body}</div>`;
+    return `<div class="card"><h3>${esc(t.history.replace("(24 h)", "").replace(/\s*$/, ""))}</h3><div class="chips">${tabs}</div>${body}</div>`;
   }
   _gauge(v) {
     const sc = SCALE[v.key]; if (!sc || v.raw == null) return "";
@@ -239,7 +252,7 @@ class LuftwaechterPanel extends HTMLElement {
   _render() {
     const t = this._t(), e = this._house(), root = this.shadowRoot;
     const css = `:host{display:block;min-height:100%;background:var(--primary-background-color,#fff);color:var(--primary-text-color,#222);font-family:var(--paper-font-body1_-_font-family,system-ui,sans-serif)}
-*{box-sizing:border-box}.wrap{max-width:1000px;margin:0 auto;padding:16px}
+*{box-sizing:border-box}.wrap{max-width:1000px;margin:0 auto;padding:16px;font-size:${[14, 16, 19][this._size] || 16}px}
 header{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}header h1{font-size:20px;margin:0;flex:1;min-width:150px}
 .dot{width:14px;height:14px;border-radius:50%;display:inline-block}.upd{font-size:12px;opacity:.65}
 button{font:inherit;color:inherit}.tool{border:1px solid var(--divider-color,#8884);background:none;border-radius:18px;padding:6px 12px;cursor:pointer}
@@ -266,6 +279,9 @@ h3{margin:0 0 8px;font-size:14px;opacity:.85}h3 small{font-weight:400;opacity:.7
 .dev{border:0;border-radius:20px;padding:8px 14px;background:var(--secondary-background-color,#e8ebee);cursor:pointer;display:inline-flex;flex-direction:column;align-items:flex-start;line-height:1.2}
 .dev small{opacity:.8;font-size:11px}.dev.on{background:var(--primary-color,#03a9f4);color:#fff}
 .cov{display:flex;align-items:center;gap:10px;flex-wrap:wrap;width:100%}.covname small{opacity:.7;margin-left:4px}.covbtns{display:flex;gap:6px;margin-left:auto}.covbtns .dev{flex-direction:row;padding:6px 12px}
+.dots{display:flex;gap:5px;margin-top:10px}.dots i{width:18px;height:6px;border-radius:3px;display:block}
+.sum{margin-top:0;margin-bottom:12px}.todo{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:4px}.link{border:0;background:none;cursor:pointer;text-align:left;padding:4px 0}.link:hover{text-decoration:underline}
+.rsp{flex:1}.stale{background:#b36b0022;border:1px solid #b36b00;border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:13px}
 .warn{margin-top:10px;font-size:13px;color:#b36b00}.out{display:flex;gap:12px;align-items:center}
 .ovl{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}.dlg{background:var(--card-background-color,#fff);border-radius:16px;max-width:620px;max-height:90vh;overflow:auto;padding:18px;width:100%}
 .dh{display:flex;justify-content:space-between;align-items:center}.dh h2{margin:0;font-size:18px}.x{border:0;background:none;font-size:20px;cursor:pointer}.dlg section{margin-top:14px}.dlg p{margin:4px 0;font-size:14px}
@@ -276,16 +292,19 @@ h3{margin:0 0 8px;font-size:14px;opacity:.85}h3 small{font-weight:400;opacity:.7
     let body = "";
     if (!rooms.length) body = `<div class="card">${esc(t.none)}</div>`;
     else if (!sel) {
-      body = `<div class="tiles">${rooms.map((r) => {
+      const todo = rooms.filter((r) => ["open", "close", "wait", "keep_open"].includes(r.action) || r.level === "poor" || r.level === "fair");
+      const attn = rooms.filter((r) => r.level === "poor" || r.level === "fair").length;
+      const sum = `<div class="card sum"><h3>${esc(t.attention)}</h3>${todo.length ? `<ul class="todo">${todo.map((r) => `<li><button class="link" data-room="${esc(r.key)}"><span>${ICON[r.action] && r.action !== "keep_closed" ? ICON[r.action] : LVLICON[["good", "fair", "poor"].indexOf(r.level)] || "❔"}</span> <b>${esc(r.name)}</b>: ${esc(r.headline)}</button></li>`).join("")}</ul><p class="muted">${esc(t.rooms_n.replace("{a}", attn).replace("{n}", rooms.length))}</p>` : `<p class="muted">✅ ${esc(t.nothing)}</p>`}</div>`;
+      body = sum + `<div class="tiles">${rooms.map((r) => {
         const bad = r.values.filter((v) => v.level >= 1 && v.raw != null).sort((x, y) => y.level - x.level)[0];
         const co2 = r.values.find((v) => v.key === "co2");
         return `<button class="tile" data-room="${esc(r.key)}" style="border-color:${this._col(r.level)}" aria-label="${esc(r.name)}: ${esc(t[r.level] || t.unknown)}">
           <b>${esc(r.name)}</b><small>${LVLICON[["good", "fair", "poor"].indexOf(r.level)] || "❔"} ${esc(r.headline)}</small>
-          ${bad ? `<small style="color:${COL[bad.level]}">${esc(t[bad.key])}: ${esc(bad.value)} ${esc(bad.unit)}</small>` : co2 && co2.raw != null ? `<small>${esc(co2.value)} ppm</small>` : ""}<div class="bar" style="background:${this._col(r.level)}"></div></button>`;
+          ${bad ? `<small style="color:${COL[bad.level]}">${esc(t[bad.key])}: ${esc(bad.value)} ${esc(bad.unit)}</small>` : co2 && co2.raw != null ? `<small>${esc(co2.value)} ppm</small>` : ""}<div class="dots" aria-hidden="true">${r.values.map((v) => `<i title="${esc(t[v.key])}: ${esc(v.value)} ${esc(v.unit)}" style="background:${this._lcol(v.level)}"></i>`).join("")}</div></button>`;
       }).join("")}</div>`;
     } else {
       const li = rooms.findIndex((r) => r.key === sel.key);
-      body = `<div class="nav"><button class="back" id="back">← ${esc(t.back)}</button><span class="sp"></span><button class="tool" id="prev" aria-label="${esc(t.prev)}">‹</button><button class="tool" id="next" aria-label="${esc(t.next)}">›</button></div>
+      body = `<div class="nav"><button class="back" id="back">← ${esc(t.back)}</button><span class="sp"></span><button class="tool" id="copy">${esc(t.copy)}</button><button class="tool" id="prev" aria-label="${esc(t.prev)}">‹</button><button class="tool" id="next" aria-label="${esc(t.next)}">›</button></div>
       <div class="card"><div class="head"><span class="big">${["keep_closed", "unknown"].includes(sel.action) && LVLICON[["good", "fair", "poor"].indexOf(sel.level)] ? LVLICON[["good", "fair", "poor"].indexOf(sel.level)] : ICON[sel.action] || ""}</span><div><h2>${esc(sel.name)} · ${esc(sel.headline)}<span class="badge" style="background:${this._col(sel.level)}">${esc(t[sel.level] || t.unknown)}</span></h2><p>${esc(sel.detail)}</p></div></div>${sel.warn ? `<div class="warn">${esc(sel.warn)}</div>` : ""}</div>
       <div class="cols"><div><div class="card"><h3>${esc(t.problems)}</h3>${this._problems(sel, t)}</div>
         <div class="card"><h3>${esc(t.values)}</h3><div class="vals">${sel.values.map((v) => `<div class="val" style="border-color:${this._lcol(v.level)}" title="${esc(t.limits)}: ${esc(LIM[v.key])}"><small>${esc(t[v.key])}</small><b>${esc(v.value)}</b> <i>${esc(v.unit)}</i>${this._gauge(v)}</div>`).join("")}</div></div></div>
@@ -295,17 +314,21 @@ h3{margin:0 0 8px;font-size:14px;opacity:.85}h3 small{font-weight:400;opacity:.7
     const o = a.outside;
     const out = o ? `<div class="card out"><span class="big">${esc(o.icon)}</span><div><b>${esc(t.outside)}: ${esc(o.temp)} °C, ${esc(o.cond)}</b><br><small>${esc(t.wind)} ${esc(o.wind)} km/h ${esc(o.windDir)}${o.hum && o.hum !== "–" ? " · " + esc(o.hum) + " %" : ""}</small><br><small>${esc(o.tip)}</small></div></div>` : "";
     root.innerHTML = `<style>${css}</style><div class="wrap"><header><span class="dot" style="background:${this._col(e.state)}"></span><h1>${esc(t.title)} · ${esc(t[e.state] || t.unknown)}</h1><span class="upd">${esc(this._age(e, t))}</span>
-      ${!sel && rooms.length > 1 ? `<button class="tool" id="sort">${esc(this._sort === "worst" ? t.sortWorst : t.sortName)}</button>` : ""}<button class="tool" id="help" aria-label="${esc(t.help)}">? ${esc(t.help)}</button></header>${body}${out}${this._helpDlg(t)}</div>`;
+      ${!sel && rooms.length > 1 ? `<button class="tool" id="sort">${esc(this._sort === "worst" ? t.sortWorst : t.sortName)}</button>` : ""}<button class="tool" id="size" aria-label="${esc(t.size)}" title="${esc(t.size)}">Aa</button><button class="tool" id="help" aria-label="${esc(t.help)}">? ${esc(t.help)}</button></header><div class="stale" id="stale" role="status" ${this._staleMin() < 10 ? "hidden" : ""}>${esc(t.stale.replace("{n}", this._staleMin()))}</div>${body}${out}${this._helpDlg(t)}</div>`;
     const q = (s) => root.querySelector(s), qa = (s) => root.querySelectorAll(s);
     qa(".tile").forEach((b) => b.addEventListener("click", () => this._select(b.dataset.room)));
     q("#back")?.addEventListener("click", () => this._select(null));
     const step = (d) => { const rs = this._rooms(); const i = rs.findIndex((r) => r.key === this._sel); this._select(rs[(i + d + rs.length) % rs.length].key); };
     q("#prev")?.addEventListener("click", () => step(-1)); q("#next")?.addEventListener("click", () => step(1));
     q("#sort")?.addEventListener("click", () => { this._sort = this._sort === "worst" ? "name" : "worst"; store.set("lw_sort", this._sort); this._render(); });
+    q("#size")?.addEventListener("click", () => { this._size = (this._size + 1) % 3; store.set("lw_size", String(this._size)); this._render(); });
+    q("#copy")?.addEventListener("click", async (ev) => { const r = sel; const txt = `${r.name}: ${r.headline}. ${r.detail}\n` + r.values.map((v) => `${t[v.key]} ${v.value} ${v.unit}`).join(", "); try { await navigator.clipboard.writeText(txt); ev.target.textContent = t.copied + " ✓"; } catch (e) { ev.target.textContent = "✗"; } });
+    qa("[data-range]").forEach((b) => b.addEventListener("click", () => { this._range = b.dataset.range; store.set("lw_range", this._range); this._render(); }));
+    qa(".link[data-room]").forEach((b) => b.addEventListener("click", () => this._select(b.dataset.room)));
     q("#help")?.addEventListener("click", () => { this._help = true; this._render(); q("#hclose")?.focus(); });
     q("#hclose")?.addEventListener("click", () => { this._help = false; this._render(); });
     q("#ovl")?.addEventListener("click", (ev) => { if (ev.target.id === "ovl") { this._help = false; this._render(); } });
-    qa(".chip").forEach((b) => b.addEventListener("click", () => { this._chartKey = b.dataset.chart; this._render(); }));
+    qa(".chip[data-chart]").forEach((b) => b.addEventListener("click", () => { this._chartKey = b.dataset.chart; this._render(); }));
     qa(".dev[data-dom]").forEach((b) => b.addEventListener("click", () => this._toggle(b.dataset.ent, b.dataset.dom)));
     qa("[data-cov]").forEach((b) => b.addEventListener("click", () => this._call("cover", b.dataset.cov, b.dataset.ent)));
     const svg = q(".chartwrap svg");
@@ -315,8 +338,9 @@ h3{margin:0 0 8px;font-size:14px;opacity:.85}h3 small{font-weight:400;opacity:.7
         const r = svg.getBoundingClientRect(); const f = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width));
         const i = Math.round(f * (m.d.length - 1)); const v = m.d[i];
         cur.setAttribute("x1", f * 600); cur.setAttribute("x2", f * 600); cur.setAttribute("visibility", "visible");
-        const hrs = Math.round((m.d.length - 1 - i) * 0.25 * 10) / 10;
-        if (v != null) ro.textContent = `${v.toFixed(m.key === "temperature" ? 1 : 0)} ${m.unit} · -${hrs} h`;
+        const hb = ((m.d.length - 1 - i) * m.step) / 3600;
+        const when = hb >= 48 ? `${(hb / 24).toFixed(1)} ${m.t.dayU}` : `${hb.toFixed(1)} ${m.t.hourU}`;
+        if (v != null) ro.textContent = `${v.toFixed(m.key === "temperature" ? 1 : 0)} ${m.unit} · -${when}`;
       };
       svg.addEventListener("pointermove", mv);
       svg.addEventListener("pointerleave", () => { cur.setAttribute("visibility", "hidden"); ro.textContent = `${m.t.min} ${m.mn.toFixed(m.key === "temperature" ? 1 : 0)} · ${m.t.max} ${m.mx.toFixed(m.key === "temperature" ? 1 : 0)} ${m.unit}`; });

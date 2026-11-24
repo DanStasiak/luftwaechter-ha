@@ -1,0 +1,24 @@
+name: Bug report
+description: Something does not work or looks wrong
+labels: [bug]
+body:
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Luftwächter version, Home Assistant version, browser or app
+    validations: { required: true }
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations: { required: true }
+  - type: textarea
+    id: attrs
+    attributes:
+      label: Room sensor attributes (optional)
+      description: Developer tools → States → your room sensor, copy the attributes. Remove anything private.
+  - type: textarea
+    id: shot
+    attributes:
+      label: Screenshot (optional)
