@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1
+- Fix: the panel now follows each user's own language (profile setting) instead of the Home Assistant system language. The sensor carries every text in English and German, so one household can use both.
+- DE: Korrektur: Das Panel folgt jetzt der Sprache des jeweiligen Benutzers (Profil) statt der Systemsprache von Home Assistant. Alle Texte gibt es auf Englisch und Deutsch.
+
 ## 0.3.0
 - Overview starts with a "Do now" list: which rooms need attention, click to open the room.
 - Every tile shows four indicator dots (CO₂, fine dust, temperature, humidity) coloured by level.

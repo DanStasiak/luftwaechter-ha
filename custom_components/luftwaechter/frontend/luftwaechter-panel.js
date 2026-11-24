@@ -95,7 +95,7 @@ class LuftwaechterPanel extends HTMLElement {
   set hass(h) {
     this._hass = h;
     const e = this._house();
-    const sig = e ? e.last_updated + "|" + Object.values(h.states).filter((s) => /^(light|switch|climate|cover)\./.test(s.entity_id)).map((s) => s.state + (s.attributes && s.attributes.current_position)).join(",") : "none";
+    const sig = e ? h.language + "|" + e.last_updated + "|" + Object.values(h.states).filter((s) => /^(light|switch|climate|cover)\./.test(s.entity_id)).map((s) => s.state + (s.attributes && s.attributes.current_position)).join(",") : "none";
     if (sig !== this._sig) { this._sig = sig; this._render(); }
   }
   set narrow(v) { this._narrow = v; }
@@ -105,12 +105,14 @@ class LuftwaechterPanel extends HTMLElement {
     if (!st) return null;
     return Object.values(st).find((s) => s.entity_id.startsWith("sensor.") && s.attributes && Array.isArray(s.attributes.rooms) && s.attributes.summary) || null;
   }
-  _t() { const e = this._house(); const l = ((e && e.attributes.lang) || (this._hass && this._hass.language) || "en").slice(0, 2); return UI[l] || UI.en; }
+  _lang() { const e = this._house(), srv = ((e && e.attributes.lang) || "en").slice(0, 2), mine = ((this._hass && this._hass.language) || "").slice(0, 2); return UI[mine] ? mine : (UI[srv] ? srv : "en"); }
+  _attrs() { const e = this._house(); if (!e) return {}; const a = e.attributes, l = this._lang(); return l !== a.lang && a.alt && a.alt[l] ? Object.assign({}, a, a.alt[l], { lang: l }) : a; }
+  _t() { return UI[this._lang()] || UI.en; }
   _col(level) { const i = ["good", "fair", "poor"].indexOf(level); return i < 0 ? GREY : COL[i]; }
   _lcol(i) { return i == null ? GREY : COL[i] || GREY; }
   _rooms() {
     const e = this._house(); if (!e) return [];
-    const rooms = e.attributes.rooms.slice();
+    const rooms = this._attrs().rooms.slice();
     if (this._sort === "worst") {
       const rank = (r) => ({ poor: 0, fair: 1, good: 2 }[r.level] ?? 3);
       rooms.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
@@ -287,7 +289,7 @@ h3{margin:0 0 8px;font-size:14px;opacity:.85}h3 small{font-weight:400;opacity:.7
 .dh{display:flex;justify-content:space-between;align-items:center}.dh h2{margin:0;font-size:18px}.x{border:0;background:none;font-size:20px;cursor:pointer}.dlg section{margin-top:14px}.dlg p{margin:4px 0;font-size:14px}
 @media (prefers-reduced-motion:no-preference){.tile,.dev,.chip{transition:filter .15s}}`;
     if (!e) { root.innerHTML = `<style>${css}</style><div class="wrap"><p>…</p></div>`; return; }
-    const a = e.attributes, rooms = this._rooms();
+    const a = this._attrs(), rooms = this._rooms();
     const sel = rooms.find((r) => r.key === this._sel);
     let body = "";
     if (!rooms.length) body = `<div class="card">${esc(t.none)}</div>`;

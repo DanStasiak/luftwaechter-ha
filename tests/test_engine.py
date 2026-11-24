@@ -93,3 +93,10 @@ def test_switches_hidden_without_label():
     a["entities"] += [ent("switch.s", None, "on", dom="switch", name="Office Relay"), ent("light.l", None, "on", dom="light", name="Office Lamp")]
     m = engine.build_model([a], set(), None, "", "en", NOW)
     assert [d["entity"] for d in m["rooms"][0]["devices"]] == ["light.l"]
+
+
+def test_texts_in_every_language():
+    m = engine.build_model([area(co2=1300, win="off")], set(), None, "", "de", NOW)
+    assert m["lang"] == "de" and set(m["alt"]) == {"en"}
+    assert m["rooms"][0]["headline"] != m["alt"]["en"]["rooms"][0]["headline"]
+    assert m["alt"]["en"]["rooms"][0]["key"] == m["rooms"][0]["key"]

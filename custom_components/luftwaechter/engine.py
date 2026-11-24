@@ -444,20 +444,31 @@ def room_view(room: RoomEval, weather: dict | None, rain_at: str, labelled: set[
     }
 
 
-def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rain_at: str, lang: str, now: float) -> dict:
-    lang = lang if lang in TEXTS else "en"
+def _model_for(areas: list[dict], labelled: set[str], weather: dict | None, rain_at: str, lang: str, now: float) -> tuple[list[dict], dict | None]:
     evals = [eval_room(a, labelled, lang, now) for a in areas]
     evals = sorted([e for e in evals if e.has_air], key=lambda e: e.name.lower())
     rooms = [room_view(e, weather, rain_at, labelled, lang) for e in evals]
+    return rooms, outside_view(weather, rain_at, lang)
+
+
+def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rain_at: str, lang: str, now: float) -> dict:
+    lang = lang if lang in TEXTS else "en"
+    rooms, outside = _model_for(areas, labelled, weather, rain_at, lang, now)
     summary = [
         {"key": r["key"], "name": r["name"], "level": r["level"], "color": r["color"],
          "co2": "" if r["values"][0]["raw"] is None else str(round(r["values"][0]["raw"]))}
         for r in rooms
     ]
     worst = max((LEVELS.index(r["level"]) for r in rooms if r["level"] in LEVELS), default=None)
+    # The same texts in every other language, so the panel can follow each user's own profile language.
+    alt = {}
+    for other in TEXTS:
+        if other != lang:
+            o_rooms, o_outside = _model_for(areas, labelled, weather, rain_at, other, now)
+            alt[other] = {"rooms": o_rooms, "outside": o_outside}
     return {
         "rooms": rooms, "summary": summary,
         "level": LEVELS[worst] if worst is not None else "unknown",
-        "outside": outside_view(weather, rain_at, lang), "lang": lang, "colors": list(COLORS),
+        "outside": outside, "lang": lang, "alt": alt, "colors": list(COLORS),
         "updated": int(now),
     }

@@ -72,6 +72,15 @@ with sync_playwright() as p:
     pg.keyboard.press("ArrowRight"); assert "Bedroom" in txt() and "Keep the window closed" not in txt()
     pg.keyboard.press("Escape"); assert pg.evaluate("el.shadowRoot.querySelectorAll('.tile').length") == 2
     assert pg.evaluate("el._sort") == "worst"
+    # language follows the viewer's profile, not the server: server says "de", this user is "en" (and the reverse)
+    pg.evaluate("""() => { const h = el._hass, e = h.states['sensor.luftwaechter_house'], a = e.attributes; window.orig = a;
+      const en = JSON.parse(JSON.stringify(a.rooms)), de = JSON.parse(JSON.stringify(a.rooms)); de.forEach((r) => r.headline = 'DE ' + r.headline);
+      e.attributes = Object.assign({}, a, { lang: 'de', rooms: de, alt: { en: { rooms: en, outside: a.outside } } }); e.last_updated = 't2'; el.hass = Object.assign({}, h); }""")
+    assert "Do now" in txt() and "DE " not in txt(), txt()[:200]
+    pg.evaluate("() => { const h = el._hass; h.language = 'de'; h.states['sensor.luftwaechter_house'].last_updated = 't3'; el.hass = Object.assign({}, h); }")
+    assert "Jetzt tun" in txt() and "DE " in txt(), txt()[:200]
+    pg.evaluate("() => { const h = el._hass; h.language = 'en'; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't4'; el.hass = Object.assign({}, h); }")
+    assert "Do now" in txt()
     pg.set_viewport_size({"width": 420, "height": 900}); pg.evaluate("el.shadowRoot.querySelector('.tile').click()")
     pg.wait_for_function("el.shadowRoot.querySelector('.chartwrap svg path') !== null")
     pg.screenshot(path=str(out / "room_phone.png"), full_page=True)
