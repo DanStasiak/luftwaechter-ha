@@ -6,13 +6,18 @@ body:
     id: versions
     attributes:
       label: Versions
-      description: Luftwächter version, Home Assistant version, browser or app
+      description: Luftwächter version, Home Assistant version, browser or app, and how you installed it (Marketplace, HACS or manual)
     validations: { required: true }
   - type: textarea
     id: what
     attributes:
       label: What happened, and what did you expect?
     validations: { required: true }
+  - type: textarea
+    id: diag
+    attributes:
+      label: Diagnostics (optional)
+      description: Settings → Devices & services → Luftwächter → ⋮ → Download diagnostics, then paste the relevant part.
   - type: textarea
     id: attrs
     attributes:

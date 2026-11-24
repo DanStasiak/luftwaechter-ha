@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0
+- Docs: install and update now use the Home Assistant **Marketplace** (it replaced HACS in 2026.11), with the new "Add from link" steps and the risk notice; HACS steps still work on older versions.
+- Settings: adjustable CO₂ and fine dust limits (Configure on the integration); panel gauges, help and advice follow them.
+- Trend arrows (rising / falling) on tiles and in the room view; `trend` attribute per room.
+- Event `luftwaechter_level_changed` whenever a room changes level, for automations.
+- Panel: "Only problems" filter and keyboard shortcuts (S, O, F, H, arrows, Esc).
+- README: German and timer screenshots, Update, Settings, Events and Roadmap sections. Bug report form asks how you installed and for diagnostics.
+- DE: Installation und Update über den Marketplace, einstellbare Grenzwerte für CO₂ und Feinstaub, Trendpfeile, Ereignis `luftwaechter_level_changed`, Filter "Nur Probleme", Tastaturkürzel.
+
 ## 0.4.0
 - Ventilation timer: start a countdown for the advised time; a header pill follows you between views and a clear alert appears when time is up.
 - Overview: house averages (CO₂, fine dust, temperature, humidity), a level label on every tile, a legend for the dots, and "copy house status".

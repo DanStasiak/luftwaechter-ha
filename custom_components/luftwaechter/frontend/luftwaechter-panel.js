@@ -11,7 +11,7 @@ const UI = {
     cover_open: "Auf", cover_stop: "Stopp", cover_close: "Zu", allgood: "Alle Werte im grünen Bereich.",
     isPoor: "ist schlecht", isFair: "ist mittel", tooHigh: "zu hoch", tooLow: "zu niedrig", limit: "Grenze",
     attention: "Jetzt tun", nothing: "Nichts zu tun, alles in Ordnung.", rooms_n: "{a} von {n} Räumen brauchen Aufmerksamkeit", stale: "Die Daten sind möglicherweise veraltet (letztes Update vor {n} min).",
-    size: "Textgröße", onbTitle: "So kommen Räume ins Panel", onb1: "Weise CO₂-, Feinstaub-, Temperatur- oder Luftfeuchte-Sensoren einem Bereich zu (Einstellungen → Bereiche).", onb2: "Der Raum erscheint automatisch, sobald ein Sensor Werte liefert.", onb3: "Optional: Gib einem Fenstersensor die Geräteklasse „Fenster“, dann bekommst du Lüftungsempfehlungen.", noHouse: "Die Integration Luftwächter wurde nicht gefunden. Einstellungen → Geräte & Dienste → Integration hinzufügen → Luftwächter.", legend: "Punkte: CO₂ · Feinstaub · Temperatur · Luftfeuchte", avgT: "Ø im Haus", ventStart: "Lüftungs-Timer starten ({n} min)", ventRun: "Lüften läuft", ventDone: "Zeit ist um: Fenster jetzt schließen", ventStop: "Abbrechen", fs: "Vollbild", fsExit: "Vollbild beenden", copyAll: "Hausstatus kopieren", copy: "Status kopieren", copied: "Kopiert", r6h: "6 h", r24h: "24 h", r7d: "7 Tage", a6h: "vor 6 h", a24h: "vor 24 h", a7d: "vor 7 Tagen", dayU: "Tg", hourU: "h",
+    size: "Textgröße", onbTitle: "So kommen Räume ins Panel", onb1: "Weise CO₂-, Feinstaub-, Temperatur- oder Luftfeuchte-Sensoren einem Bereich zu (Einstellungen → Bereiche).", onb2: "Der Raum erscheint automatisch, sobald ein Sensor Werte liefert.", onb3: "Optional: Gib einem Fenstersensor die Geräteklasse „Fenster“, dann bekommst du Lüftungsempfehlungen.", noHouse: "Die Integration Luftwächter wurde nicht gefunden. Einstellungen → Geräte & Dienste → Integration hinzufügen → Luftwächter.", legend: "Punkte: CO₂ · Feinstaub · Temperatur · Luftfeuchte", avgT: "Ø im Haus", ventStart: "Lüftungs-Timer starten ({n} min)", ventRun: "Lüften läuft", ventDone: "Zeit ist um: Fenster jetzt schließen", ventStop: "Abbrechen", fs: "Vollbild", fsExit: "Vollbild beenden", copyAll: "Hausstatus kopieren", trendUp: "Steigend", trendDown: "Fallend", onlyProblems: "Nur Probleme", shortcuts: "Tastatur: ← → Raum wechseln · Esc zurück · S sortieren · O nur Probleme · F Vollbild · H Hilfe", copy: "Status kopieren", copied: "Kopiert", r6h: "6 h", r24h: "24 h", r7d: "7 Tage", a6h: "vor 6 h", a24h: "vor 24 h", a7d: "vor 7 Tagen", dayU: "Tg", hourU: "h",
     helpTitle: "Was bedeuten die Messwerte?", causes: "Mögliche Ursachen", todo: "Was hilft",
     hCo2: "CO₂ (Kohlendioxid) zeigt, wie verbraucht die Raumluft ist. Wir atmen es aus.",
     cCo2: "Viele Personen im Raum, Schlafen bei geschlossenem Fenster, kleine Räume, geschlossene Türen, Kerzen oder Gasflammen.",
@@ -36,7 +36,7 @@ const UI = {
     cover_open: "Open", cover_stop: "Stop", cover_close: "Close", allgood: "All readings are in the green.",
     isPoor: "is poor", isFair: "is fair", tooHigh: "too high", tooLow: "too low", limit: "Limit",
     attention: "Do now", nothing: "Nothing to do, all good.", rooms_n: "{a} of {n} rooms need attention", stale: "Data may be outdated (last update {n} min ago).",
-    size: "Text size", onbTitle: "How rooms get into the panel", onb1: "Assign CO₂, fine dust, temperature or humidity sensors to an area (Settings → Areas).", onb2: "The room appears automatically as soon as a sensor reports values.", onb3: "Optional: give a window sensor the device class \"window\" to get ventilation advice.", noHouse: "The Luftwächter integration was not found. Settings → Devices & services → Add integration → Luftwächter.", legend: "Dots: CO₂ · fine dust · temperature · humidity", avgT: "House average", ventStart: "Start ventilation timer ({n} min)", ventRun: "Ventilating", ventDone: "Time is up: close the window now", ventStop: "Cancel", fs: "Full screen", fsExit: "Exit full screen", copyAll: "Copy house status", copy: "Copy status", copied: "Copied", r6h: "6 h", r24h: "24 h", r7d: "7 days", a6h: "6 h ago", a24h: "24 h ago", a7d: "7 days ago", dayU: "d", hourU: "h",
+    size: "Text size", onbTitle: "How rooms get into the panel", onb1: "Assign CO₂, fine dust, temperature or humidity sensors to an area (Settings → Areas).", onb2: "The room appears automatically as soon as a sensor reports values.", onb3: "Optional: give a window sensor the device class \"window\" to get ventilation advice.", noHouse: "The Luftwächter integration was not found. Settings → Devices & services → Add integration → Luftwächter.", legend: "Dots: CO₂ · fine dust · temperature · humidity", avgT: "House average", ventStart: "Start ventilation timer ({n} min)", ventRun: "Ventilating", ventDone: "Time is up: close the window now", ventStop: "Cancel", fs: "Full screen", fsExit: "Exit full screen", copyAll: "Copy house status", trendUp: "Rising", trendDown: "Falling", onlyProblems: "Only problems", shortcuts: "Keyboard: ← → switch room · Esc back · S sort · O only problems · F full screen · H help", copy: "Copy status", copied: "Copied", r6h: "6 h", r24h: "24 h", r7d: "7 days", a6h: "6 h ago", a24h: "24 h ago", a7d: "7 days ago", dayU: "d", hourU: "h",
     helpTitle: "What do the readings mean?", causes: "Possible causes", todo: "What helps",
     hCo2: "CO₂ (carbon dioxide) shows how stale the room air is. We breathe it out.",
     cCo2: "Many people in the room, sleeping with the window closed, small rooms, closed doors, candles or gas flames.",
@@ -81,6 +81,7 @@ class LuftwaechterPanel extends HTMLElement {
     this._chartKey = "co2";
     this._range = store.get("lw_range") || "24h";
     this._size = parseInt(store.get("lw_size") || "1", 10);
+    this._only = store.get("lw_only") === "1";
     this._help = false;
     this._hist = {};
     try { const m = /[#&]room=([^&]+)/.exec(location.hash); if (m) this._sel = decodeURIComponent(m[1]); } catch (e) { /* ignore */ }
@@ -134,6 +135,13 @@ class LuftwaechterPanel extends HTMLElement {
   _lang() { const e = this._house(), srv = ((e && e.attributes.lang) || "en").slice(0, 2), mine = ((this._hass && this._hass.language) || "").slice(0, 2); return UI[mine] ? mine : (UI[srv] ? srv : "en"); }
   _attrs() { const e = this._house(); if (!e) return {}; const a = e.attributes, l = this._lang(); return l !== a.lang && a.alt && a.alt[l] ? Object.assign({}, a, a.alt[l], { lang: l }) : a; }
   _t() { return UI[this._lang()] || UI.en; }
+  _lim(k) { const l = this._attrs().limits || {}; if (k === "co2" && l.co2) return `< ${l.co2[0]} / < ${l.co2[1]} ppm`; if (k === "pm25" && l.pm25) return `< ${l.pm25[0]} / < ${l.pm25[1]} µg/m³`; return LIM[k]; }
+  _scale(k) {
+    const l = this._attrs().limits || {};
+    if (k === "co2" && l.co2) { const [g, f] = l.co2, mx = Math.max(2000, Math.round(f * 1.35)); return [400, mx, [[400, g, 0], [g, f, 1], [f, mx, 2]]]; }
+    if (k === "pm25" && l.pm25) { const [g, f] = l.pm25, mx = Math.max(80, Math.round(f * 1.6)); return [0, mx, [[0, g, 0], [g, f, 1], [f, mx, 2]]]; }
+    return SCALE[k];
+  }
   _col(level) { const i = ["good", "fair", "poor"].indexOf(level); return i < 0 ? GREY : COL[i]; }
   _lcol(i) { return i == null ? GREY : COL[i] || GREY; }
   _rooms() {
@@ -149,6 +157,16 @@ class LuftwaechterPanel extends HTMLElement {
   _key(ev) {
     if (this.offsetParent === null && !this.isConnected) return;
     if (ev.key === "Escape") { if (this._help) { this._help = false; this._render(); } else if (this._sel) this._select(null); return; }
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    const tg = ev.composedPath && ev.composedPath()[0];
+    if (tg && (/^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName) || tg.isContentEditable)) return;
+    const k = (ev.key || "").toLowerCase();
+    if (k === "h") { this._help = !this._help; this._render(); return; }
+    if (!this._help) {
+      if (k === "s" && !this._sel) { this._sort = this._sort === "worst" ? "name" : "worst"; store.set("lw_sort", this._sort); this._render(); return; }
+      if (k === "o" && !this._sel) { this._only = !this._only; store.set("lw_only", this._only ? "1" : "0"); this._render(); return; }
+      if (k === "f") { try { document.fullscreenElement ? document.exitFullscreen() : this.requestFullscreen(); } catch (e) { /* ignore */ } return; }
+    }
     if (!this._sel || this._help) return;
     if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") {
       const rooms = this._rooms(); const i = rooms.findIndex((r) => r.key === this._sel);
@@ -221,7 +239,7 @@ class LuftwaechterPanel extends HTMLElement {
     if (!h || h.loading) body = `<div class="muted">${esc(t.loading)}</div>`;
     else if (h.error || !h.data || !h.data.some((v) => v != null)) body = `<div class="muted">${esc(t.nohist)}</div>`;
     else {
-      const d = h.data, sc = SCALE[key]; const vals = d.filter((v) => v != null);
+      const d = h.data, sc = this._scale(key); const vals = d.filter((v) => v != null);
       const mn = Math.min(...vals), mx = Math.max(...vals);
       const lo = Math.min(sc[0], mn), hi = Math.max(sc[1] * (key === "co2" || key === "pm25" ? 0.6 : 1), mx);
       const W = 600, H = 150, X = (i) => (i / (d.length - 1)) * W, Y = (v) => H - ((v - lo) / (hi - lo)) * H;
@@ -236,16 +254,16 @@ class LuftwaechterPanel extends HTMLElement {
     return `<div class="card"><h3>${esc(t.history.replace("(24 h)", "").replace(/\s*$/, ""))}</h3><div class="chips">${tabs}</div>${body}</div>`;
   }
   _gauge(v) {
-    const sc = SCALE[v.key]; if (!sc || v.raw == null) return "";
+    const sc = this._scale(v.key); if (!sc || v.raw == null) return "";
     const [a, b, segs] = sc; const pos = Math.max(0, Math.min(100, ((v.raw - a) / (b - a)) * 100));
     const parts = segs.map(([f, to, l]) => `<i style="left:${((f - a) / (b - a)) * 100}%;width:${((to - f) / (b - a)) * 100}%;background:${COL[l]}"></i>`).join("");
     return `<div class="gauge" aria-hidden="true">${parts}<b style="left:${pos}%"></b></div>`;
   }
   _problems(room, t) {
     const rows = room.values.filter((v) => v.level >= 1 && v.raw != null).sort((a, b) => b.level - a.level).map((v) => {
-      const sc = SCALE[v.key]; let dir = "";
+      const sc = this._scale(v.key); let dir = "";
       if (v.key === "temperature" || v.key === "humidity") dir = v.raw < (v.key === "temperature" ? 17 : 30) ? t.tooLow : t.tooHigh;
-      return `<li><span style="color:${COL[v.level]}">${LVLICON[v.level]}</span> <b>${esc(t[v.key])}</b> ${esc(v.value)} ${esc(v.unit)} ${v.level === 2 ? esc(t.isPoor) : esc(t.isFair)}${dir ? " (" + esc(dir) + ")" : ""} <small>${esc(t.limit)} ${esc(LIM[v.key])}</small></li>`;
+      return `<li><span style="color:${COL[v.level]}">${LVLICON[v.level]}</span> <b>${esc(t[v.key])}</b> ${esc(v.value)} ${esc(v.unit)} ${v.level === 2 ? esc(t.isPoor) : esc(t.isFair)}${dir ? " (" + esc(dir) + ")" : ""} <small>${esc(t.limit)} ${esc(this._lim(v.key))}</small></li>`;
     });
     return rows.length ? `<ul class="probs">${rows.join("")}</ul>` : `<p class="muted">${esc(t.allgood)}</p>`;
   }
@@ -270,7 +288,7 @@ class LuftwaechterPanel extends HTMLElement {
   _helpDlg(t) {
     if (!this._help) return "";
     return `<div class="ovl" id="ovl"><div class="dlg" role="dialog" aria-modal="true" aria-label="${esc(t.helpTitle)}"><div class="dh"><h2>${esc(t.helpTitle)}</h2><button class="x" id="hclose" aria-label="${esc(t.close)}">✕</button></div>
-      ${KEYS.map((k) => `<section><h3>${esc(t[k])} <small>${esc(LIM[k])}</small></h3><p>${esc(t[HELPKEY[k][0]])}</p><p><b>${esc(t.causes)}:</b> ${esc(t[HELPKEY[k][1]])}</p><p><b>${esc(t.todo)}:</b> ${esc(t[HELPKEY[k][2]])}</p></section>`).join("")}</div></div>`;
+      ${KEYS.map((k) => `<section><h3>${esc(t[k])} <small>${esc(this._lim(k))}</small></h3><p>${esc(t[HELPKEY[k][0]])}</p><p><b>${esc(t.causes)}:</b> ${esc(t[HELPKEY[k][1]])}</p><p><b>${esc(t.todo)}:</b> ${esc(t[HELPKEY[k][2]])}</p></section>`).join("")}<p class="muted" style="margin-top:14px">${esc(t.shortcuts)}</p></div></div>`;
   }
   _age(e, t) {
     const u = e.attributes.updated; if (!u) return "";
@@ -316,6 +334,7 @@ h3{margin:0 0 8px;font-size:14px;opacity:.85}h3 small{font-weight:400;opacity:.7
 .tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start}.tile>*{max-width:100%}.pill{position:absolute;top:10px;right:10px;border-radius:10px;padding:1px 8px;font-size:11px;color:#fff}.tile b{padding-right:62px}
 .stats{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.stats span{background:var(--card-background-color,#f4f6f8);border-radius:14px;padding:4px 12px;font-size:13px}.stats em{font-style:normal;opacity:.7;margin-right:4px}
 .legend{font-size:12px;margin:10px 2px 0}.vent{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.venttime{font-size:22px;font-variant-numeric:tabular-nums}.vent.done{border:2px solid #d9472b}
+.tool[aria-pressed=true]{background:var(--primary-color,#03a9f4);color:#fff;border-color:transparent}
 .onb ol{margin:8px 0 0;padding-left:20px;display:grid;gap:6px}
 @media print{.tool,.back,#ovl,.chips{display:none!important}.wrap{max-width:none}}
 @media (prefers-reduced-motion:no-preference){.tile,.dev,.chip{transition:filter .15s}}`;
@@ -329,32 +348,34 @@ h3{margin:0 0 8px;font-size:14px;opacity:.85}h3 small{font-weight:400;opacity:.7
       const attn = rooms.filter((r) => r.level === "poor" || r.level === "fair").length;
       const sum = `<div class="card sum"><h3>${esc(t.attention)}</h3>${todo.length ? `<ul class="todo">${todo.map((r) => `<li><button class="link" data-room="${esc(r.key)}"><span>${ICON[r.action] && r.action !== "keep_closed" ? ICON[r.action] : LVLICON[["good", "fair", "poor"].indexOf(r.level)] || "❔"}</span> <b>${esc(r.name)}</b>: ${esc(r.headline)}</button></li>`).join("")}</ul><p class="muted">${esc(t.rooms_n.replace("{a}", attn).replace("{n}", rooms.length))}</p>` : `<p class="muted">✅ ${esc(t.nothing)}</p>`}</div>`;
       const stats = this._stats(rooms, a.lang);
-      body = sum + `<div class="stats" aria-label="${esc(t.avgT)}">${stats.map(([k, v, u]) => `<span><em>${esc(t[k])} Ø</em>${esc(v)} ${esc(u)}</span>`).join("")}</div><div class="tiles">${rooms.map((r) => {
+      const shown = this._only ? rooms.filter((r) => r.level !== "good") : rooms;
+      body = sum + `<div class="stats" aria-label="${esc(t.avgT)}">${stats.map(([k, v, u]) => `<span><em>${esc(t[k])} Ø</em>${esc(v)} ${esc(u)}</span>`).join("")}</div>${shown.length ? "" : `<p class="muted">✅ ${esc(t.nothing)}</p>`}<div class="tiles">${shown.map((r) => {
         const bad = r.values.filter((v) => v.level >= 1 && v.raw != null).sort((x, y) => y.level - x.level)[0];
         const co2 = r.values.find((v) => v.key === "co2");
         return `<button class="tile" data-room="${esc(r.key)}" style="border-color:${this._col(r.level)}" aria-label="${esc(r.name)}: ${esc(t[r.level] || t.unknown)}">
           <b>${esc(r.name)}</b><span class="pill" style="background:${this._col(r.level)}">${esc(t[r.level] || t.unknown)}</span><small>${LVLICON[["good", "fair", "poor"].indexOf(r.level)] || "❔"} ${esc(r.headline)}</small>
-          ${bad ? `<small style="color:${COL[bad.level]}">${esc(t[bad.key])}: ${esc(bad.value)} ${esc(bad.unit)}</small>` : co2 && co2.raw != null ? `<small>${esc(co2.value)} ppm</small>` : ""}<div class="dots" aria-hidden="true">${r.values.map((v) => `<i title="${esc(t[v.key])}: ${esc(v.value)} ${esc(v.unit)}" style="background:${this._lcol(v.level)}"></i>`).join("")}</div></button>`;
+          ${bad ? `<small style="color:${COL[bad.level]}">${esc(t[bad.key])}: ${esc(bad.value)} ${esc(bad.unit)}</small>` : co2 && co2.raw != null ? `<small>${esc(co2.value)} ppm</small>` : ""}${r.trend === "up" || r.trend === "down" ? `<small>${r.trend === "up" ? "↗" : "↘"} ${esc(t[r.trend === "up" ? "trendUp" : "trendDown"])}</small>` : ""}<div class="dots" aria-hidden="true">${r.values.map((v) => `<i title="${esc(t[v.key])}: ${esc(v.value)} ${esc(v.unit)}" style="background:${this._lcol(v.level)}"></i>`).join("")}</div></button>`;
       }).join("")}</div><p class="muted legend">${esc(t.legend)}</p>`;
     } else {
       const li = rooms.findIndex((r) => r.key === sel.key);
       body = `<div class="nav"><button class="back" id="back">← ${esc(t.back)}</button><span class="sp"></span><button class="tool" id="copy">${esc(t.copy)}</button><button class="tool" id="prev" aria-label="${esc(t.prev)}">‹</button><button class="tool" id="next" aria-label="${esc(t.next)}">›</button></div>
-      <div class="card"><div class="head"><span class="big">${["keep_closed", "unknown"].includes(sel.action) && LVLICON[["good", "fair", "poor"].indexOf(sel.level)] ? LVLICON[["good", "fair", "poor"].indexOf(sel.level)] : ICON[sel.action] || ""}</span><div><h2>${esc(sel.name)} · ${esc(sel.headline)}<span class="badge" style="background:${this._col(sel.level)}">${esc(t[sel.level] || t.unknown)}</span></h2><p>${esc(sel.detail)}</p></div></div>${sel.warn ? `<div class="warn">${esc(sel.warn)}</div>` : ""}</div>${this._ventCard(sel, t)}
+      <div class="card"><div class="head"><span class="big">${["keep_closed", "unknown"].includes(sel.action) && LVLICON[["good", "fair", "poor"].indexOf(sel.level)] ? LVLICON[["good", "fair", "poor"].indexOf(sel.level)] : ICON[sel.action] || ""}</span><div><h2>${esc(sel.name)} · ${esc(sel.headline)}<span class="badge" style="background:${this._col(sel.level)}">${esc(t[sel.level] || t.unknown)}</span></h2><p>${esc(sel.detail)}</p>${sel.trend === "up" || sel.trend === "down" ? `<p class="muted">${sel.trend === "up" ? "↗" : "↘"} ${esc(t[sel.trend === "up" ? "trendUp" : "trendDown"])}</p>` : ""}</div></div>${sel.warn ? `<div class="warn">${esc(sel.warn)}</div>` : ""}</div>${this._ventCard(sel, t)}
       <div class="cols"><div><div class="card"><h3>${esc(t.problems)}</h3>${this._problems(sel, t)}</div>
-        <div class="card"><h3>${esc(t.values)}</h3><div class="vals">${sel.values.map((v) => `<div class="val" style="border-color:${this._lcol(v.level)}" title="${esc(t.limits)}: ${esc(LIM[v.key])}"><small>${esc(t[v.key])}</small><b>${esc(v.value)}</b> <i>${esc(v.unit)}</i>${this._gauge(v)}</div>`).join("")}</div></div></div>
+        <div class="card"><h3>${esc(t.values)}</h3><div class="vals">${sel.values.map((v) => `<div class="val" style="border-color:${this._lcol(v.level)}" title="${esc(t.limits)}: ${esc(this._lim(v.key))}"><small>${esc(t[v.key])}</small><b>${esc(v.value)}</b> <i>${esc(v.unit)}</i>${this._gauge(v)}</div>`).join("")}</div></div></div>
         <div>${this._chart(sel, t)}${this._devices(sel, t)}</div></div>`;
       this._pendingHist = sel;
     }
     const o = a.outside;
     const out = o ? `<div class="card out"><span class="big">${esc(o.icon)}</span><div><b>${esc(t.outside)}: ${esc(o.temp)} °C, ${esc(o.cond)}</b><br><small>${esc(t.wind)} ${esc(o.wind)} km/h ${esc(o.windDir)}${o.hum && o.hum !== "–" ? " · " + esc(o.hum) + " %" : ""}</small><br><small>${esc(o.tip)}</small></div></div>` : "";
     root.innerHTML = `<style>${css}</style><div class="wrap" role="main"><header><span class="dot" style="background:${this._col(e.state)}"></span><h1 aria-live="polite">${esc(t.title)} · ${esc(t[e.state] || t.unknown)}</h1><span class="upd">${esc(this._age(e, t))}</span>
-      ${!sel && rooms.length > 1 ? `<button class="tool" id="sort">${esc(this._sort === "worst" ? t.sortWorst : t.sortName)}</button>` : ""}${this._vent && (!sel || sel.key !== this._vent.key) ? `<button class="tool" id="ventpill" data-room="${esc(this._vent.key)}">⏱ <span class="venttime">${esc(this._fmtT(this._ventLeft()))}</span></button>` : ""}${!sel && rooms.length ? `<button class="tool" id="copyall" title="${esc(t.copyAll)}" aria-label="${esc(t.copyAll)}">⧉</button>` : ""}${document.fullscreenEnabled ? `<button class="tool" id="fs" title="${esc(document.fullscreenElement ? t.fsExit : t.fs)}" aria-label="${esc(document.fullscreenElement ? t.fsExit : t.fs)}">${document.fullscreenElement ? "🗗" : "⛶"}</button>` : ""}<button class="tool" id="size" aria-label="${esc(t.size)}" title="${esc(t.size)}">Aa</button><button class="tool" id="help" aria-label="${esc(t.help)}">? ${esc(t.help)}</button></header><div class="stale" id="stale" role="status" ${this._staleMin() < 10 ? "hidden" : ""}>${esc(t.stale.replace("{n}", this._staleMin()))}</div>${body}${out}${this._helpDlg(t)}</div>`;
+      ${!sel && rooms.length > 1 ? `<button class="tool" id="only" aria-pressed="${this._only}">${esc(t.onlyProblems)}</button>` : ""}${!sel && rooms.length > 1 ? `<button class="tool" id="sort">${esc(this._sort === "worst" ? t.sortWorst : t.sortName)}</button>` : ""}${this._vent && (!sel || sel.key !== this._vent.key) ? `<button class="tool" id="ventpill" data-room="${esc(this._vent.key)}">⏱ <span class="venttime">${esc(this._fmtT(this._ventLeft()))}</span></button>` : ""}${!sel && rooms.length ? `<button class="tool" id="copyall" title="${esc(t.copyAll)}" aria-label="${esc(t.copyAll)}">⧉</button>` : ""}${document.fullscreenEnabled ? `<button class="tool" id="fs" title="${esc(document.fullscreenElement ? t.fsExit : t.fs)}" aria-label="${esc(document.fullscreenElement ? t.fsExit : t.fs)}">${document.fullscreenElement ? "🗗" : "⛶"}</button>` : ""}<button class="tool" id="size" aria-label="${esc(t.size)}" title="${esc(t.size)}">Aa</button><button class="tool" id="help" aria-label="${esc(t.help)}">? ${esc(t.help)}</button></header><div class="stale" id="stale" role="status" ${this._staleMin() < 10 ? "hidden" : ""}>${esc(t.stale.replace("{n}", this._staleMin()))}</div>${body}${out}${this._helpDlg(t)}</div>`;
     const q = (s) => root.querySelector(s), qa = (s) => root.querySelectorAll(s);
     qa(".tile").forEach((b) => b.addEventListener("click", () => this._select(b.dataset.room)));
     q("#back")?.addEventListener("click", () => this._select(null));
     const step = (d) => { const rs = this._rooms(); const i = rs.findIndex((r) => r.key === this._sel); this._select(rs[(i + d + rs.length) % rs.length].key); };
     q("#prev")?.addEventListener("click", () => step(-1)); q("#next")?.addEventListener("click", () => step(1));
     q("#sort")?.addEventListener("click", () => { this._sort = this._sort === "worst" ? "name" : "worst"; store.set("lw_sort", this._sort); this._render(); });
+    q("#only")?.addEventListener("click", () => { this._only = !this._only; store.set("lw_only", this._only ? "1" : "0"); this._render(); });
     q("#size")?.addEventListener("click", () => { this._size = (this._size + 1) % 3; store.set("lw_size", String(this._size)); this._render(); });
     q("#copy")?.addEventListener("click", async (ev) => { const r = sel; const txt = `${r.name}: ${r.headline}. ${r.detail}\n` + r.values.map((v) => `${t[v.key]} ${v.value} ${v.unit}`).join(", "); try { await navigator.clipboard.writeText(txt); ev.target.textContent = t.copied + " ✓"; } catch (e) { ev.target.textContent = "✗"; } });
     qa("[data-range]").forEach((b) => b.addEventListener("click", () => { this._range = b.dataset.range; store.set("lw_range", this._range); this._render(); }));

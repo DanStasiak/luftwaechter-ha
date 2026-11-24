@@ -86,14 +86,33 @@ with sync_playwright() as p:
     clk("#copyall"); pg.wait_for_function("window.copied && window.copied.includes('Office: Poor')")
     # ventilation timer: starts, shows a countdown, survives going back (header pill), can be cancelled
     pg.evaluate("""() => { const h = el._hass, e = h.states['sensor.luftwaechter_house']; const a = JSON.parse(JSON.stringify(e.attributes));
-      a.rooms[0].action = 'open'; a.rooms[0].ventMin = 5; e.attributes = a; e.last_updated = 't5'; el.hass = Object.assign({}, h); el._select(a.rooms[0].key); }""")
+      a.rooms[0].action = 'open'; a.rooms[0].level = 'fair'; a.rooms[0].color = '#e8a317'; a.rooms[0].ventMin = 5; a.rooms[0].headline = 'Please open the window'; a.rooms[0].detail = 'Open the window, ventilate for about 5 minutes.'; e.attributes = a; e.last_updated = 't5'; el.hass = Object.assign({}, h); el._select(a.rooms[0].key); }""")
     assert "Start ventilation timer (5 min)" in txt()
     clk("#ventstart")
     import re
     assert re.fullmatch(r"[45]:\d\d", pg.evaluate("el.shadowRoot.querySelector('.venttime').textContent")), txt()[:200]
+    pg.screenshot(path=str(out / "timer.png"))
     clk("#back"); assert pg.evaluate("!!el.shadowRoot.querySelector('#ventpill')")
     clk("#ventpill"); clk("#ventstop"); assert pg.evaluate("el._vent") is None
     pg.evaluate("() => { const h = el._hass; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't6'; el.hass = Object.assign({}, h); el._select(null); }")
+    # limits from the sensor, trend arrows, only-problems filter, keyboard shortcuts
+    pg.evaluate("""() => { const h = el._hass, e = h.states['sensor.luftwaechter_house']; const a = JSON.parse(JSON.stringify(window.orig));
+      a.limits = { co2: [1500, 2000], pm25: [20, 50] }; a.rooms[1].trend = 'up'; e.attributes = a; e.last_updated = 't7'; el.hass = Object.assign({}, h); }""")
+    assert "Rising" in txt()
+    pg.keyboard.press("o"); assert pg.evaluate("[...el.shadowRoot.querySelectorAll('.tile b')].map(x=>x.textContent)") == ["Office"]
+    pg.keyboard.press("o"); assert pg.evaluate("el.shadowRoot.querySelectorAll('.tile').length") == 2
+    pg.keyboard.press("h"); assert "Possible causes" in txt() and "Keyboard:" in txt() and "< 1500 / < 2000 ppm" in txt(); pg.keyboard.press("h"); assert "Possible causes" not in txt()
+    pg.keyboard.press("s"); assert pg.evaluate("el._sort") == "name"; pg.keyboard.press("s"); assert pg.evaluate("el._sort") == "worst"
+    pg.evaluate("() => { const h = el._hass; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't8'; el.hass = Object.assign({}, h); }")
+    # German UI screenshot for the README: server text in English, this viewer is German
+    pg.evaluate("""() => { const h = el._hass, e = h.states['sensor.luftwaechter_house']; const a = JSON.parse(JSON.stringify(window.orig));
+      const m = { 'Keep the window closed': 'Fenster zu lassen', 'All good': 'Alles in Ordnung', 'High fine dust in the room. Do not ventilate continuously.': 'Hoher Feinstaub im Raum. Nicht dauerhaft lüften.', 'The window can stay closed.': 'Das Fenster kann geschlossen bleiben.' };
+      const de = JSON.parse(JSON.stringify(a.rooms)); de.forEach((r) => { r.headline = m[r.headline] || r.headline; r.detail = m[r.detail] || r.detail; });
+      const out = Object.assign({}, a.outside, { cond: 'sonnig', windDir: 'SO', tip: 'Es ist kalt: lieber kurz und ganz öffnen (Stoßlüften 5 Min), das spart Heizenergie.' });
+      a.alt = { de: { rooms: de, outside: out } }; e.attributes = a; e.last_updated = 't9'; h.language = 'de'; el.hass = Object.assign({}, h); }""")
+    assert "Jetzt tun" in txt() and "Fenster zu lassen" in txt()
+    pg.screenshot(path=str(out / "overview_de.png"))
+    pg.evaluate("() => { const h = el._hass; h.language = 'en'; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't10'; el.hass = Object.assign({}, h); }")
     # onboarding for a house without rooms, and deep link via URL hash
     pg.evaluate("""() => { const h2 = { language: 'en', states: { 'sensor.luftwaechter_house': { entity_id: 'sensor.luftwaechter_house', state: 'unknown', last_updated: 'x', attributes: { rooms: [], summary: [], lang: 'en', updated: Math.floor(Date.now() / 1000) } } } };
       const e2 = document.createElement('luftwaechter-panel'); document.body.appendChild(e2); e2.hass = h2; window.e2 = e2; }""")
@@ -108,12 +127,12 @@ with sync_playwright() as p:
     if docs:
         docs.mkdir(exist_ok=True)
         import shutil
-        for src, dst in (("overview", "overview"), ("room_desktop", "room"), ("help", "help"), ("room_phone", "phone")):
+        for src, dst, maxh in (("overview", "overview", 9999), ("room_desktop", "room", 9999), ("help", "help", 9999), ("room_phone", "phone", 9999), ("overview_de", "overview_de", 9999), ("timer", "timer", 300)):
             from PIL import Image, ImageChops
             im = Image.open(out / f"{src}.png").convert("RGB")
             bgc = Image.new("RGB", im.size, (17, 17, 17))
             bbox = ImageChops.difference(im, bgc).getbbox()
-            h = min(im.height, (bbox[3] if bbox else im.height) + 24)
+            h = min(im.height, maxh, (bbox[3] if bbox else im.height) + 24)
             im.crop((0, 0, im.width, h)).save(docs / f"{dst}.png", optimize=True)
     b.close()
 print("panel ok")

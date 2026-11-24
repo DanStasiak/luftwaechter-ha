@@ -16,10 +16,19 @@
   "options": {
     "step": {
       "init": {
+        "title": "Luftwächter-Optionen",
+        "description": "Die Räume werden nach diesen Grenzen bewertet. CO₂ und Feinstaub sind einstellbar; Temperatur und Luftfeuchte nutzen feste Komfortbereiche.",
         "data": {
-          "weather": "Wetter-Entität"
+          "weather": "Wetter-Entität",
+          "co2_good": "CO₂ gut unter",
+          "co2_fair": "CO₂ mittel unter",
+          "pm_good": "Feinstaub gut unter",
+          "pm_fair": "Feinstaub mittel unter"
         }
       }
+    },
+    "error": {
+      "limits_order": "Die Grenze für „gut“ muss kleiner sein als die für „mittel“."
     }
   },
   "entity": {

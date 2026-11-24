@@ -9,7 +9,7 @@ from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.helpers import selector
 
-from .const import CONF_WEATHER, DOMAIN
+from .const import CONF_CO2_FAIR, CONF_CO2_GOOD, CONF_PM_FAIR, CONF_PM_GOOD, CONF_WEATHER, DOMAIN
 
 SCHEMA = vol.Schema(
     {
@@ -38,16 +38,31 @@ class LuftwaechterConfigFlow(ConfigFlow, domain=DOMAIN):
         return LuftwaechterOptionsFlow()
 
 
+def _num(lo: float, hi: float, unit: str) -> selector.NumberSelector:
+    return selector.NumberSelector(
+        selector.NumberSelectorConfig(min=lo, max=hi, step=1, mode=selector.NumberSelectorMode.BOX, unit_of_measurement=unit)
+    )
+
+
 class LuftwaechterOptionsFlow(OptionsFlow):
     async def async_step_init(self, user_input: dict[str, Any] | None = None):
+        errors: dict[str, str] = {}
         if user_input is not None:
-            return self.async_create_entry(data=user_input)
-        cur = self.config_entry.options.get(CONF_WEATHER, self.config_entry.data.get(CONF_WEATHER))
+            if user_input[CONF_CO2_GOOD] >= user_input[CONF_CO2_FAIR] or user_input[CONF_PM_GOOD] >= user_input[CONF_PM_FAIR]:
+                errors["base"] = "limits_order"
+            else:
+                return self.async_create_entry(data=user_input)
+        o, d = self.config_entry.options, self.config_entry.data
+        cur = (user_input or {}).get(CONF_WEATHER, o.get(CONF_WEATHER, d.get(CONF_WEATHER)))
         schema = vol.Schema(
             {
                 vol.Optional(CONF_WEATHER, description={"suggested_value": cur}): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="weather")
-                )
+                ),
+                vol.Required(CONF_CO2_GOOD, default=o.get(CONF_CO2_GOOD, 1000)): _num(400, 5000, "ppm"),
+                vol.Required(CONF_CO2_FAIR, default=o.get(CONF_CO2_FAIR, 1500)): _num(400, 5000, "ppm"),
+                vol.Required(CONF_PM_GOOD, default=o.get(CONF_PM_GOOD, 20)): _num(1, 500, "µg/m³"),
+                vol.Required(CONF_PM_FAIR, default=o.get(CONF_PM_FAIR, 50)): _num(1, 500, "µg/m³"),
             }
         )
-        return self.async_show_form(step_id="init", data_schema=schema)
+        return self.async_show_form(step_id="init", data_schema=schema, errors=errors)

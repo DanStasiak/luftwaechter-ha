@@ -16,10 +16,19 @@
   "options": {
     "step": {
       "init": {
+        "title": "Luftwächter options",
+        "description": "Rooms are rated against these limits. CO₂ and fine dust are adjustable; temperature and humidity use fixed comfort ranges.",
         "data": {
-          "weather": "Weather entity"
+          "weather": "Weather entity",
+          "co2_good": "CO₂ good below",
+          "co2_fair": "CO₂ fair below",
+          "pm_good": "Fine dust good below",
+          "pm_fair": "Fine dust fair below"
         }
       }
+    },
+    "error": {
+      "limits_order": "The \"good\" limit must be lower than the \"fair\" limit."
     }
   },
   "entity": {

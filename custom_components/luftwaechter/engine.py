@@ -16,6 +16,16 @@ COLORS = ("#2e9e5b", "#e8a317", "#d9472b")
 GREY = "#7a8594"
 
 AIR_CLASSES = ("carbon_dioxide", "pm25", "temperature", "humidity")
+DEFAULT_LIMITS = {"co2": (1000, 1500), "pm25": (20, 50)}
+
+
+def norm_limits(limits: dict | None) -> dict:
+    """Good/fair limits for CO2 and PM2.5; falls back to the defaults for anything missing or invalid."""
+    out = dict(DEFAULT_LIMITS)
+    for k, (g0, f0) in DEFAULT_LIMITS.items():
+        g, f = (limits or {}).get(k, (g0, f0))
+        out[k] = (g, f) if 0 < g < f else (g0, f0)
+    return out
 DEVICE_DOMAINS = ("light", "switch", "climate", "cover", "button")
 
 _BAD_TEMP_NAME = re.compile(
@@ -246,7 +256,8 @@ class RoomEval:
     entities: list[dict]
 
 
-def eval_room(area: dict, labelled: set[str], lang: str, now: float) -> RoomEval:
+def eval_room(area: dict, labelled: set[str], lang: str, now: float, limits: dict | None = None) -> RoomEval:
+    lim_ = norm_limits(limits)
     ents = area["entities"]
     name = area["name"]
     picks = {dc: pick_val(ents, dc, labelled, name, now) for dc in AIR_CLASSES}
@@ -262,8 +273,8 @@ def eval_room(area: dict, labelled: set[str], lang: str, now: float) -> RoomEval
             warn = tx(lang, "ignored", n=pv.skipped[0])
     has_air = any(e["domain"] == "sensor" and e.get("device_class") in ("carbon_dioxide", "pm25") for e in ents)
     levels = [
-        level_above(co2, 1000, 1500),
-        level_above(pm, 20, 50),
+        level_above(co2, *lim_["co2"]),
+        level_above(pm, *lim_["pm25"]),
         level_range(tt, 17, 23, 13, 25),
         level_range(hh, 30, 60, 25, 70),
     ]
@@ -367,7 +378,10 @@ def devices_view(room: RoomEval, labelled: set[str], lang: str) -> list[dict]:
     return out
 
 
-def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str) -> dict:
+def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits: dict | None = None) -> dict:
+    lim_ = norm_limits(limits)
+    co2_good, co2_fair = lim_["co2"]
+    pm_dust = sum(lim_["pm25"]) / 2
     co2, pm, tt, hh = room.co2, room.pm, room.t, room.h
     wins = [e for e in room.entities if e["domain"] == "binary_sensor" and e.get("device_class") == "window"]
     has_window = bool(wins)
@@ -381,7 +395,7 @@ def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str) -> dic
     cond = str(weather.get("condition") or "") if weather else ""
     bad_out = cond in BAD_OUTSIDE
     need_vent = (
-        (co2 is not None and co2 >= 1000)
+        (co2 is not None and co2 >= co2_good)
         or (hh is not None and hh > 60)
         or (tt is not None and tt >= 25 and ot is not None and ot < tt - 2)
     )
@@ -411,9 +425,9 @@ def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str) -> dic
             detail = how
             if rain_at:
                 detail += tx(lang, "rain_soon", t=rain_at)
-            if co2 is not None and co2 >= 1500:
+            if co2 is not None and co2 >= co2_fair:
                 detail += tx(lang, "stale")
-    elif pm is not None and pm >= 35:
+    elif pm is not None and pm >= pm_dust:
         action = "keep_closed"
         head = tx(lang, "keep_closed_w") if has_window else tx(lang, "no_cont")
         detail = tx(lang, "dust_d")
@@ -423,9 +437,9 @@ def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str) -> dic
     return {"action": action, "headline": head, "detail": detail, "window": wst, "hasWindow": has_window, "ventMin": vent_min}
 
 
-def room_view(room: RoomEval, weather: dict | None, rain_at: str, labelled: set[str], lang: str) -> dict:
+def room_view(room: RoomEval, weather: dict | None, rain_at: str, labelled: set[str], lang: str, limits: dict | None = None) -> dict:
     worst = room.worst
-    adv = advice(room, weather, rain_at, lang)
+    adv = advice(room, weather, rain_at, lang, limits)
     keys = ("co2", "pm25", "temperature", "humidity")
     units = ("ppm", "µg/m³", "°C", "%")
     vals = (room.co2, room.pm, room.t, room.h)
@@ -440,20 +454,20 @@ def room_view(room: RoomEval, weather: dict | None, rain_at: str, labelled: set[
         "color": COLORS[worst] if worst is not None else GREY,
         **adv,
         "values": values, "warn": room.warn, "nsrc": room.nsrc, "sources": room.sources,
-        "devices": devices_view(room, labelled, lang),
+        "devices": devices_view(room, labelled, lang), "trend": "",
     }
 
 
-def _model_for(areas: list[dict], labelled: set[str], weather: dict | None, rain_at: str, lang: str, now: float) -> tuple[list[dict], dict | None]:
-    evals = [eval_room(a, labelled, lang, now) for a in areas]
+def _model_for(areas: list[dict], labelled: set[str], weather: dict | None, rain_at: str, lang: str, now: float, limits: dict | None = None) -> tuple[list[dict], dict | None]:
+    evals = [eval_room(a, labelled, lang, now, limits) for a in areas]
     evals = sorted([e for e in evals if e.has_air], key=lambda e: e.name.lower())
-    rooms = [room_view(e, weather, rain_at, labelled, lang) for e in evals]
+    rooms = [room_view(e, weather, rain_at, labelled, lang, limits) for e in evals]
     return rooms, outside_view(weather, rain_at, lang)
 
 
-def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rain_at: str, lang: str, now: float) -> dict:
+def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rain_at: str, lang: str, now: float, limits: dict | None = None) -> dict:
     lang = lang if lang in TEXTS else "en"
-    rooms, outside = _model_for(areas, labelled, weather, rain_at, lang, now)
+    rooms, outside = _model_for(areas, labelled, weather, rain_at, lang, now, limits)
     summary = [
         {"key": r["key"], "name": r["name"], "level": r["level"], "color": r["color"],
          "co2": "" if r["values"][0]["raw"] is None else str(round(r["values"][0]["raw"]))}
@@ -464,11 +478,12 @@ def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rai
     alt = {}
     for other in TEXTS:
         if other != lang:
-            o_rooms, o_outside = _model_for(areas, labelled, weather, rain_at, other, now)
+            o_rooms, o_outside = _model_for(areas, labelled, weather, rain_at, other, now, limits)
             alt[other] = {"rooms": o_rooms, "outside": o_outside}
     return {
         "rooms": rooms, "summary": summary,
         "level": LEVELS[worst] if worst is not None else "unknown",
-        "outside": outside, "lang": lang, "alt": alt, "colors": list(COLORS),
+        "outside": outside, "lang": lang, "alt": alt,
+        "limits": {k: list(v) for k, v in norm_limits(limits).items()}, "colors": list(COLORS),
         "updated": int(now),
     }

@@ -100,3 +100,14 @@ def test_texts_in_every_language():
     assert m["lang"] == "de" and set(m["alt"]) == {"en"}
     assert m["rooms"][0]["headline"] != m["alt"]["en"]["rooms"][0]["headline"]
     assert m["alt"]["en"]["rooms"][0]["key"] == m["rooms"][0]["key"]
+
+
+def test_custom_limits_change_the_rating():
+    m = engine.build_model([area(co2=1300)], set(), None, "", "en", NOW, {"co2": (1500, 2000)})
+    assert m["rooms"][0]["level"] == "good" and m["limits"]["co2"] == [1500, 2000]
+    assert engine.build_model([area(co2=1300)], set(), None, "", "en", NOW)["rooms"][0]["level"] == "fair"
+
+
+def test_invalid_limits_fall_back_to_defaults():
+    m = engine.build_model([area(co2=1300)], set(), None, "", "en", NOW, {"co2": (2000, 1000), "pm25": (0, 5)})
+    assert m["limits"] == {"co2": [1000, 1500], "pm25": [20, 50]}

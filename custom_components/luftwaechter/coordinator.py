@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from collections import deque
 from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
@@ -14,7 +15,10 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
 from . import engine
-from .const import CONF_WEATHER, DOMAIN, LABEL, SCAN_SECONDS
+from .const import (
+    CONF_CO2_FAIR, CONF_CO2_GOOD, CONF_PM_FAIR, CONF_PM_GOOD, CONF_WEATHER, DOMAIN,
+    EVENT_LEVEL_CHANGED, LABEL, SCAN_SECONDS,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,6 +31,8 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         )
         self.entry = entry
         self.lang = "en"
+        self._samples: dict[str, deque] = {}
+        self._levels: dict[str, str] | None = None
 
     @property
     def weather_entity(self) -> str | None:
@@ -99,8 +105,49 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
             _LOGGER.debug("No hourly forecast for %s", eid)
         return weather, rain_at
 
+    def _limits(self) -> dict:
+        o = self.entry.options
+        return {
+            "co2": (o.get(CONF_CO2_GOOD, 1000), o.get(CONF_CO2_FAIR, 1500)),
+            "pm25": (o.get(CONF_PM_GOOD, 20), o.get(CONF_PM_FAIR, 50)),
+        }
+
+    def _annotate(self, model: dict) -> None:
+        """Add a rising/falling trend per room and fire an event when a room's level changes."""
+        now = model["updated"]
+        trends: dict[str, str] = {}
+        for r in model["rooms"]:
+            co2 = next((v["raw"] for v in r["values"] if v["key"] == "co2"), None)
+            pm = next((v["raw"] for v in r["values"] if v["key"] == "pm25"), None)
+            kind, val, step = ("co2", co2, 40) if co2 is not None else ("pm25", pm, 4)
+            q = self._samples.setdefault(r["key"], deque(maxlen=60))
+            trend = ""
+            if val is not None:
+                old = [s for s in q if s[1] == kind and 480 <= now - s[0] <= 1800]
+                if old:
+                    ref = min(old, key=lambda s: abs((now - s[0]) - 900))
+                    diff = val - ref[2]
+                    trend = "up" if diff > step else "down" if diff < -step else "flat"
+                q.append((now, kind, val))
+            trends[r["key"]] = trend
+        for rooms in [model["rooms"]] + [a["rooms"] for a in model.get("alt", {}).values()]:
+            for r in rooms:
+                r["trend"] = trends.get(r["key"], "")
+        levels = {r["key"]: r["level"] for r in model["rooms"]}
+        if self._levels is not None:
+            for r in model["rooms"]:
+                old = self._levels.get(r["key"])
+                if old is not None and old != r["level"]:
+                    self.hass.bus.async_fire(
+                        EVENT_LEVEL_CHANGED,
+                        {"room": r["name"], "room_key": r["key"], "from": old, "to": r["level"], "headline": r["headline"]},
+                    )
+        self._levels = levels
+
     async def _async_update_data(self) -> dict:
         self.lang = (self.hass.config.language or "en").split("-")[0]
         areas, labelled = self._collect_areas()
         weather, rain_at = await self._weather()
-        return engine.build_model(areas, labelled, weather, rain_at, self.lang, dt_util.utcnow().timestamp())
+        model = engine.build_model(areas, labelled, weather, rain_at, self.lang, dt_util.utcnow().timestamp(), self._limits())
+        self._annotate(model)
+        return model
