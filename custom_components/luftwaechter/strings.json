@@ -23,7 +23,11 @@
           "co2_good": "CO₂ good below",
           "co2_fair": "CO₂ fair below",
           "pm_good": "Fine dust good below",
-          "pm_fair": "Fine dust fair below"
+          "pm_fair": "Fine dust fair below",
+          "excluded_areas": "Hide these areas"
+        },
+        "data_description": {
+          "excluded_areas": "Areas that should not appear in the panel (for example a garage or a cellar)."
         }
       }
     },

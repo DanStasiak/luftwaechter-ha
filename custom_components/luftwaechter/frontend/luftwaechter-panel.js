@@ -11,7 +11,7 @@ const UI = {
     cover_open: "Auf", cover_stop: "Stopp", cover_close: "Zu", allgood: "Alle Werte im grünen Bereich.",
     isPoor: "ist schlecht", isFair: "ist mittel", tooHigh: "zu hoch", tooLow: "zu niedrig", limit: "Grenze",
     attention: "Jetzt tun", nothing: "Nichts zu tun, alles in Ordnung.", rooms_n: "{a} von {n} Räumen brauchen Aufmerksamkeit", stale: "Die Daten sind möglicherweise veraltet (letztes Update vor {n} min).",
-    size: "Textgröße", onbTitle: "So kommen Räume ins Panel", onb1: "Weise CO₂-, Feinstaub-, Temperatur- oder Luftfeuchte-Sensoren einem Bereich zu (Einstellungen → Bereiche).", onb2: "Der Raum erscheint automatisch, sobald ein Sensor Werte liefert.", onb3: "Optional: Gib einem Fenstersensor die Geräteklasse „Fenster“, dann bekommst du Lüftungsempfehlungen.", noHouse: "Die Integration Luftwächter wurde nicht gefunden. Einstellungen → Geräte & Dienste → Integration hinzufügen → Luftwächter.", legend: "Punkte: CO₂ · Feinstaub · Temperatur · Luftfeuchte", avgT: "Ø im Haus", ventStart: "Lüftungs-Timer starten ({n} min)", ventRun: "Lüften läuft", ventDone: "Zeit ist um: Fenster jetzt schließen", ventStop: "Abbrechen", fs: "Vollbild", fsExit: "Vollbild beenden", copyAll: "Hausstatus kopieren", trendUp: "Steigend", trendDown: "Fallend", onlyProblems: "Nur Probleme", shortcuts: "Tastatur: ← → Raum wechseln · Esc zurück · S sortieren · O nur Probleme · F Vollbild · H Hilfe", copy: "Status kopieren", copied: "Kopiert", r6h: "6 h", r24h: "24 h", r7d: "7 Tage", a6h: "vor 6 h", a24h: "vor 24 h", a7d: "vor 7 Tagen", dayU: "Tg", hourU: "h",
+    size: "Textgröße", onbTitle: "So kommen Räume ins Panel", onb1: "Weise CO₂-, Feinstaub-, Temperatur- oder Luftfeuchte-Sensoren einem Bereich zu (Einstellungen → Bereiche).", onb2: "Der Raum erscheint automatisch, sobald ein Sensor Werte liefert.", onb3: "Optional: Gib einem Fenstersensor die Geräteklasse „Fenster“, dann bekommst du Lüftungsempfehlungen.", noHouse: "Die Integration Luftwächter wurde nicht gefunden. Einstellungen → Geräte & Dienste → Integration hinzufügen → Luftwächter.", legend: "Punkte: CO₂ · Feinstaub · Temperatur · Luftfeuchte", avgT: "Ø im Haus", ventStart: "Lüftungs-Timer starten ({n} min)", ventRun: "Lüften läuft", ventDone: "Zeit ist um: Fenster jetzt schließen", ventStop: "Abbrechen", fs: "Vollbild", fsExit: "Vollbild beenden", copyAll: "Hausstatus kopieren", trendUp: "Steigend", trendDown: "Fallend", onlyProblems: "Nur Probleme", rank: "CO₂ im Vergleich", rotate: "Räume automatisch durchschalten", csv: "CSV", shortcuts: "Tastatur: ← → Raum wechseln · Esc zurück · S sortieren · O nur Probleme · R durchschalten · F Vollbild · H Hilfe", copy: "Status kopieren", copied: "Kopiert", r6h: "6 h", r24h: "24 h", r7d: "7 Tage", a6h: "vor 6 h", a24h: "vor 24 h", a7d: "vor 7 Tagen", dayU: "Tg", hourU: "h",
     helpTitle: "Was bedeuten die Messwerte?", causes: "Mögliche Ursachen", todo: "Was hilft",
     hCo2: "CO₂ (Kohlendioxid) zeigt, wie verbraucht die Raumluft ist. Wir atmen es aus.",
     cCo2: "Viele Personen im Raum, Schlafen bei geschlossenem Fenster, kleine Räume, geschlossene Türen, Kerzen oder Gasflammen.",
@@ -36,7 +36,7 @@ const UI = {
     cover_open: "Open", cover_stop: "Stop", cover_close: "Close", allgood: "All readings are in the green.",
     isPoor: "is poor", isFair: "is fair", tooHigh: "too high", tooLow: "too low", limit: "Limit",
     attention: "Do now", nothing: "Nothing to do, all good.", rooms_n: "{a} of {n} rooms need attention", stale: "Data may be outdated (last update {n} min ago).",
-    size: "Text size", onbTitle: "How rooms get into the panel", onb1: "Assign CO₂, fine dust, temperature or humidity sensors to an area (Settings → Areas).", onb2: "The room appears automatically as soon as a sensor reports values.", onb3: "Optional: give a window sensor the device class \"window\" to get ventilation advice.", noHouse: "The Luftwächter integration was not found. Settings → Devices & services → Add integration → Luftwächter.", legend: "Dots: CO₂ · fine dust · temperature · humidity", avgT: "House average", ventStart: "Start ventilation timer ({n} min)", ventRun: "Ventilating", ventDone: "Time is up: close the window now", ventStop: "Cancel", fs: "Full screen", fsExit: "Exit full screen", copyAll: "Copy house status", trendUp: "Rising", trendDown: "Falling", onlyProblems: "Only problems", shortcuts: "Keyboard: ← → switch room · Esc back · S sort · O only problems · F full screen · H help", copy: "Copy status", copied: "Copied", r6h: "6 h", r24h: "24 h", r7d: "7 days", a6h: "6 h ago", a24h: "24 h ago", a7d: "7 days ago", dayU: "d", hourU: "h",
+    size: "Text size", onbTitle: "How rooms get into the panel", onb1: "Assign CO₂, fine dust, temperature or humidity sensors to an area (Settings → Areas).", onb2: "The room appears automatically as soon as a sensor reports values.", onb3: "Optional: give a window sensor the device class \"window\" to get ventilation advice.", noHouse: "The Luftwächter integration was not found. Settings → Devices & services → Add integration → Luftwächter.", legend: "Dots: CO₂ · fine dust · temperature · humidity", avgT: "House average", ventStart: "Start ventilation timer ({n} min)", ventRun: "Ventilating", ventDone: "Time is up: close the window now", ventStop: "Cancel", fs: "Full screen", fsExit: "Exit full screen", copyAll: "Copy house status", trendUp: "Rising", trendDown: "Falling", onlyProblems: "Only problems", rank: "CO₂ compared", rotate: "Rotate through rooms automatically", csv: "CSV", shortcuts: "Keyboard: ← → switch room · Esc back · S sort · O only problems · R rotate · F full screen · H help", copy: "Copy status", copied: "Copied", r6h: "6 h", r24h: "24 h", r7d: "7 days", a6h: "6 h ago", a24h: "24 h ago", a7d: "7 days ago", dayU: "d", hourU: "h",
     helpTitle: "What do the readings mean?", causes: "Possible causes", todo: "What helps",
     hCo2: "CO₂ (carbon dioxide) shows how stale the room air is. We breathe it out.",
     cCo2: "Many people in the room, sleeping with the window closed, small rooms, closed doors, candles or gas flames.",
@@ -64,6 +64,7 @@ const SCALE = {
   temperature: [5, 35, [[5, 13, 2], [13, 17, 1], [17, 23, 0], [23, 25, 1], [25, 35, 2]]],
   humidity: [0, 100, [[0, 25, 2], [25, 30, 1], [30, 60, 0], [60, 70, 1], [70, 100, 2]]],
 };
+const rooms_ok = (el) => el._rooms().length > 1;
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -86,7 +87,9 @@ class LuftwaechterPanel extends HTMLElement {
     this._hist = {};
     try { const m = /[#&]room=([^&]+)/.exec(location.hash); if (m) this._sel = decodeURIComponent(m[1]); } catch (e) { /* ignore */ }
     try { const v = JSON.parse(store.get("lw_vent") || "null"); this._vent = v && v.end > Date.now() - 600000 ? v : null; } catch (e) { this._vent = null; }
-    this._onFs = () => this._render();
+    this._rot = false; this._rotTimer = null; this._wl = null;
+    this._onFs = () => { this._wakelock(); this._render(); };
+    this.shadowRoot.addEventListener("pointerdown", (ev) => { if (this._rot && !ev.composedPath().some((n) => n.id === "rot")) this._rotStop(false); }, true);
     this._onKey = (ev) => this._key(ev);
   }
   connectedCallback() {
@@ -95,7 +98,12 @@ class LuftwaechterPanel extends HTMLElement {
     this._vtick = setInterval(() => this._ventTick(), 1000);
     this._tick = setInterval(() => { const e = this._house(), el = this.shadowRoot.querySelector(".upd"); if (e && el) { el.textContent = this._age(e, this._t()); this._staleCheck(); } }, 30000);
   }
-  disconnectedCallback() { window.removeEventListener("keydown", this._onKey); document.removeEventListener("fullscreenchange", this._onFs); clearInterval(this._tick); clearInterval(this._vtick); }
+  disconnectedCallback() { window.removeEventListener("keydown", this._onKey); document.removeEventListener("fullscreenchange", this._onFs); clearInterval(this._tick); clearInterval(this._vtick); clearInterval(this._rotTimer); try { this._wl && this._wl.release(); } catch (e) { /* ignore */ } }
+  async _wakelock() { try { if (document.fullscreenElement && navigator.wakeLock) this._wl = await navigator.wakeLock.request("screen"); else if (this._wl) { await this._wl.release(); this._wl = null; } } catch (e) { /* ignore */ } }
+  _rotStep() { const rs = this._rooms(); if (!rs.length) return; const i = rs.findIndex((r) => r.key === this._sel); this._select(rs[(i + 1) % rs.length].key); }
+  _rotToggle() { if (this._rot) { this._rotStop(); return; } this._rot = true; this._rotTimer = setInterval(() => this._rotStep(), 12000); this._render(); }
+  _rotStop(render = true) { if (!this._rot) return; this._rot = false; clearInterval(this._rotTimer); if (render) this._render(); }
+  _closeHelp() { this._help = false; this._refocus = true; this._render(); }
   _ventLeft() { return this._vent ? Math.round((this._vent.end - Date.now()) / 1000) : null; }
   _fmtT(sec) { const m = Math.floor(Math.max(0, sec) / 60), r = Math.max(0, sec) % 60; return `${m}:${String(r).padStart(2, "0")}`; }
   _ventTick() {
@@ -156,15 +164,17 @@ class LuftwaechterPanel extends HTMLElement {
   _select(key) { this._sel = key; store.set("lw_room", key || ""); try { history.replaceState(null, "", key ? "#room=" + encodeURIComponent(key) : location.pathname + location.search); } catch (e) { /* ignore */ } this._render(); }
   _key(ev) {
     if (this.offsetParent === null && !this.isConnected) return;
-    if (ev.key === "Escape") { if (this._help) { this._help = false; this._render(); } else if (this._sel) this._select(null); return; }
+    if (ev.key === "Escape") { if (this._help) { this._closeHelp(); } else if (this._sel) this._select(null); return; }
     if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
     const tg = ev.composedPath && ev.composedPath()[0];
     if (tg && (/^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName) || tg.isContentEditable)) return;
     const k = (ev.key || "").toLowerCase();
-    if (k === "h") { this._help = !this._help; this._render(); return; }
+    if (k === "h") { if (this._help) this._closeHelp(); else { this._help = true; this._render(); this.shadowRoot.querySelector("#hclose")?.focus(); } return; }
+    if (this._help && ev.key === "Tab") { ev.preventDefault(); this.shadowRoot.querySelector("#hclose")?.focus(); return; }
     if (!this._help) {
       if (k === "s" && !this._sel) { this._sort = this._sort === "worst" ? "name" : "worst"; store.set("lw_sort", this._sort); this._render(); return; }
       if (k === "o" && !this._sel) { this._only = !this._only; store.set("lw_only", this._only ? "1" : "0"); this._render(); return; }
+      if (k === "r" && rooms_ok(this)) { this._rotToggle(); return; }
       if (k === "f") { try { document.fullscreenElement ? document.exitFullscreen() : this.requestFullscreen(); } catch (e) { /* ignore */ } return; }
     }
     if (!this._sel || this._help) return;
@@ -232,9 +242,10 @@ class LuftwaechterPanel extends HTMLElement {
     this._render();
   }
   _chart(room, t) {
+    this._chartMeta = null;
     const key = this._chartKey, hk = this._histKey(room, key), h = this._hist[hk];
     const tabs = KEYS.map((k) => `<button class="chip ${k === key ? "sel" : ""}" data-chart="${k}" aria-pressed="${k === key}">${esc(t[k])}</button>`).join("") +
-      `<span class="rsp"></span>` + ["6h", "24h", "7d"].map((r) => `<button class="chip ${r === this._range ? "sel" : ""}" data-range="${r}" aria-pressed="${r === this._range}">${esc(t["r" + r])}</button>`).join("");
+      `<span class="rsp"></span>` + ["6h", "24h", "7d"].map((r) => `<button class="chip ${r === this._range ? "sel" : ""}" data-range="${r}" aria-pressed="${r === this._range}">${esc(t["r" + r])}</button>`).join("") + `<button class="chip" id="csv" title="CSV" aria-label="CSV">⭳ ${esc(t.csv)}</button>`;
     let body;
     if (!h || h.loading) body = `<div class="muted">${esc(t.loading)}</div>`;
     else if (h.error || !h.data || !h.data.some((v) => v != null)) body = `<div class="muted">${esc(t.nohist)}</div>`;
@@ -247,11 +258,18 @@ class LuftwaechterPanel extends HTMLElement {
       let path = "", pen = false;
       d.forEach((v, i) => { if (v == null) { pen = false; return; } path += `${pen ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)} `; pen = true; });
       const unit = room.values.find((v) => v.key === key)?.unit || "";
-      body = `<div class="chartwrap"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="${esc(t[key])} ${esc(t.history)}">${bands}<path d="${path}" fill="none" stroke="var(--primary-text-color,#222)" stroke-width="2" vector-effect="non-scaling-stroke"/><line id="cur" x1="0" x2="0" y1="0" y2="${H}" stroke="var(--primary-color,#03a9f4)" stroke-width="1.5" vector-effect="non-scaling-stroke" visibility="hidden"/></svg>
+      const fv = (v) => (key === "temperature" ? v.toFixed(1) : String(Math.round(v)));
+      body = `<div class="chartwrap"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="${esc(t[key])} ${esc(t.history)}">${bands}<path d="${path}" fill="none" stroke="var(--primary-text-color,#222)" stroke-width="2" vector-effect="non-scaling-stroke"/><line id="cur" x1="0" x2="0" y1="0" y2="${H}" stroke="var(--primary-color,#03a9f4)" stroke-width="1.5" vector-effect="non-scaling-stroke" visibility="hidden"/></svg><span class="ylab" style="top:2px">${esc(fv(hi))}</span><span class="ylab" style="top:${H - 18}px">${esc(fv(lo))}</span><i class="nowdot" style="top:${(Y(d[d.length - 1] ?? lo) - 4).toFixed(0)}px" aria-hidden="true"></i>
         <div class="axis"><span>${esc(t["a" + this._range])}</span><span id="readout" aria-live="off">${esc(t.min)} ${mn.toFixed(key === "temperature" ? 1 : 0)} · ${esc(t.max)} ${mx.toFixed(key === "temperature" ? 1 : 0)} ${esc(unit)}</span><span>${esc(t.now_)}</span></div></div>`;
-      this._chartMeta = { d, unit, key, mn, mx, t, step: h.step || 900 };
+      this._chartMeta = { d, unit, key, mn, mx, t, step: h.step || 900, end: h.at, room: room.key };
     }
     return `<div class="card"><h3>${esc(t.history.replace("(24 h)", "").replace(/\s*$/, ""))}</h3><div class="chips">${tabs}</div>${body}</div>`;
+  }
+  _rank(rooms, t) {
+    const rows = rooms.map((r) => [r, r.values.find((v) => v.key === "co2")]).filter(([, v]) => v && v.raw != null).sort((a, b) => b[1].raw - a[1].raw);
+    if (rows.length < 2) return "";
+    const sc = this._scale("co2"), span = sc[1] - sc[0];
+    return `<div class="card rank"><h3>${esc(t.rank)}</h3>${rows.map(([r, v]) => `<button class="link rrow" data-room="${esc(r.key)}"><span>${esc(r.name)}</span><span class="rbar"><i style="width:${Math.max(3, Math.min(100, ((v.raw - sc[0]) / span) * 100)).toFixed(0)}%;background:${this._lcol(v.level)}"></i></span><b>${esc(v.value)} ppm</b></button>`).join("")}</div>`;
   }
   _gauge(v) {
     const sc = this._scale(v.key); if (!sc || v.raw == null) return "";
@@ -335,6 +353,9 @@ h3{margin:0 0 8px;font-size:14px;opacity:.85}h3 small{font-weight:400;opacity:.7
 .stats{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.stats span{background:var(--card-background-color,#f4f6f8);border-radius:14px;padding:4px 12px;font-size:13px}.stats em{font-style:normal;opacity:.7;margin-right:4px}
 .legend{font-size:12px;margin:10px 2px 0}.vent{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.venttime{font-size:22px;font-variant-numeric:tabular-nums}.vent.done{border:2px solid #d9472b}
 .tool[aria-pressed=true]{background:var(--primary-color,#03a9f4);color:#fff;border-color:transparent}
+header{position:sticky;top:0;z-index:5;background:var(--primary-background-color,#fff);padding:8px 0;margin-bottom:6px}
+.chartwrap{position:relative}.ylab{position:absolute;left:4px;font-size:11px;opacity:.7;pointer-events:none;background:var(--card-background-color,#f4f6f8);border-radius:4px;padding:0 3px}.nowdot{position:absolute;right:-4px;width:9px;height:9px;border-radius:50%;background:var(--primary-color,#03a9f4);border:2px solid var(--card-background-color,#fff);pointer-events:none}
+.mini{opacity:.8;font-size:12px;margin-top:4px}.rank{margin-top:12px}.rrow{display:grid;grid-template-columns:minmax(70px,26%) 1fr auto;gap:10px;align-items:center;width:100%;padding:5px 0}.rbar{display:block;height:10px;border-radius:5px;background:#8882;overflow:hidden}.rbar i{display:block;height:100%;border-radius:5px}
 .onb ol{margin:8px 0 0;padding-left:20px;display:grid;gap:6px}
 @media print{.tool,.back,#ovl,.chips{display:none!important}.wrap{max-width:none}}
 @media (prefers-reduced-motion:no-preference){.tile,.dev,.chip{transition:filter .15s}}`;
@@ -354,8 +375,8 @@ h3{margin:0 0 8px;font-size:14px;opacity:.85}h3 small{font-weight:400;opacity:.7
         const co2 = r.values.find((v) => v.key === "co2");
         return `<button class="tile" data-room="${esc(r.key)}" style="border-color:${this._col(r.level)}" aria-label="${esc(r.name)}: ${esc(t[r.level] || t.unknown)}">
           <b>${esc(r.name)}</b><span class="pill" style="background:${this._col(r.level)}">${esc(t[r.level] || t.unknown)}</span><small>${LVLICON[["good", "fair", "poor"].indexOf(r.level)] || "❔"} ${esc(r.headline)}</small>
-          ${bad ? `<small style="color:${COL[bad.level]}">${esc(t[bad.key])}: ${esc(bad.value)} ${esc(bad.unit)}</small>` : co2 && co2.raw != null ? `<small>${esc(co2.value)} ppm</small>` : ""}${r.trend === "up" || r.trend === "down" ? `<small>${r.trend === "up" ? "↗" : "↘"} ${esc(t[r.trend === "up" ? "trendUp" : "trendDown"])}</small>` : ""}<div class="dots" aria-hidden="true">${r.values.map((v) => `<i title="${esc(t[v.key])}: ${esc(v.value)} ${esc(v.unit)}" style="background:${this._lcol(v.level)}"></i>`).join("")}</div></button>`;
-      }).join("")}</div><p class="muted legend">${esc(t.legend)}</p>`;
+          ${bad ? `<small style="color:${COL[bad.level]}">${esc(t[bad.key])}: ${esc(bad.value)} ${esc(bad.unit)}</small>` : ""}<small class="mini">${r.values.filter((v) => v.raw != null).map((v) => esc(v.value) + "\u00a0" + esc(v.unit)).join(" · ")}</small>${r.trend === "up" || r.trend === "down" ? `<small>${r.trend === "up" ? "↗" : "↘"} ${esc(t[r.trend === "up" ? "trendUp" : "trendDown"])}</small>` : ""}<div class="dots" aria-hidden="true">${r.values.map((v) => `<i title="${esc(t[v.key])}: ${esc(v.value)} ${esc(v.unit)}" style="background:${this._lcol(v.level)}"></i>`).join("")}</div></button>`;
+      }).join("")}</div><p class="muted legend">${esc(t.legend)}</p>${this._rank(rooms, t)}`;
     } else {
       const li = rooms.findIndex((r) => r.key === sel.key);
       body = `<div class="nav"><button class="back" id="back">← ${esc(t.back)}</button><span class="sp"></span><button class="tool" id="copy">${esc(t.copy)}</button><button class="tool" id="prev" aria-label="${esc(t.prev)}">‹</button><button class="tool" id="next" aria-label="${esc(t.next)}">›</button></div>
@@ -368,8 +389,9 @@ h3{margin:0 0 8px;font-size:14px;opacity:.85}h3 small{font-weight:400;opacity:.7
     const o = a.outside;
     const out = o ? `<div class="card out"><span class="big">${esc(o.icon)}</span><div><b>${esc(t.outside)}: ${esc(o.temp)} °C, ${esc(o.cond)}</b><br><small>${esc(t.wind)} ${esc(o.wind)} km/h ${esc(o.windDir)}${o.hum && o.hum !== "–" ? " · " + esc(o.hum) + " %" : ""}</small><br><small>${esc(o.tip)}</small></div></div>` : "";
     root.innerHTML = `<style>${css}</style><div class="wrap" role="main"><header><span class="dot" style="background:${this._col(e.state)}"></span><h1 aria-live="polite">${esc(t.title)} · ${esc(t[e.state] || t.unknown)}</h1><span class="upd">${esc(this._age(e, t))}</span>
-      ${!sel && rooms.length > 1 ? `<button class="tool" id="only" aria-pressed="${this._only}">${esc(t.onlyProblems)}</button>` : ""}${!sel && rooms.length > 1 ? `<button class="tool" id="sort">${esc(this._sort === "worst" ? t.sortWorst : t.sortName)}</button>` : ""}${this._vent && (!sel || sel.key !== this._vent.key) ? `<button class="tool" id="ventpill" data-room="${esc(this._vent.key)}">⏱ <span class="venttime">${esc(this._fmtT(this._ventLeft()))}</span></button>` : ""}${!sel && rooms.length ? `<button class="tool" id="copyall" title="${esc(t.copyAll)}" aria-label="${esc(t.copyAll)}">⧉</button>` : ""}${document.fullscreenEnabled ? `<button class="tool" id="fs" title="${esc(document.fullscreenElement ? t.fsExit : t.fs)}" aria-label="${esc(document.fullscreenElement ? t.fsExit : t.fs)}">${document.fullscreenElement ? "🗗" : "⛶"}</button>` : ""}<button class="tool" id="size" aria-label="${esc(t.size)}" title="${esc(t.size)}">Aa</button><button class="tool" id="help" aria-label="${esc(t.help)}">? ${esc(t.help)}</button></header><div class="stale" id="stale" role="status" ${this._staleMin() < 10 ? "hidden" : ""}>${esc(t.stale.replace("{n}", this._staleMin()))}</div>${body}${out}${this._helpDlg(t)}</div>`;
+      ${!sel && rooms.length > 1 ? `<button class="tool" id="only" aria-pressed="${this._only}">${esc(t.onlyProblems)}</button>` : ""}${!sel && rooms.length > 1 ? `<button class="tool" id="sort">${esc(this._sort === "worst" ? t.sortWorst : t.sortName)}</button>` : ""}${this._vent && (!sel || sel.key !== this._vent.key) ? `<button class="tool" id="ventpill" data-room="${esc(this._vent.key)}">⏱ <span class="venttime">${esc(this._fmtT(this._ventLeft()))}</span></button>` : ""}${!sel && rooms.length ? `<button class="tool" id="copyall" title="${esc(t.copyAll)}" aria-label="${esc(t.copyAll)}">⧉</button>` : ""}${rooms.length > 1 ? `<button class="tool" id="rot" aria-pressed="${this._rot}" title="${esc(t.rotate)}" aria-label="${esc(t.rotate)}">⟳</button>` : ""}${document.fullscreenEnabled ? `<button class="tool" id="fs" title="${esc(document.fullscreenElement ? t.fsExit : t.fs)}" aria-label="${esc(document.fullscreenElement ? t.fsExit : t.fs)}">${document.fullscreenElement ? "🗗" : "⛶"}</button>` : ""}<button class="tool" id="size" aria-label="${esc(t.size)}" title="${esc(t.size)}">Aa</button><button class="tool" id="help" aria-label="${esc(t.help)}">? ${esc(t.help)}</button></header><div class="stale" id="stale" role="status" ${this._staleMin() < 10 ? "hidden" : ""}>${esc(t.stale.replace("{n}", this._staleMin()))}</div>${body}${out}${this._helpDlg(t)}</div>`;
     const q = (s) => root.querySelector(s), qa = (s) => root.querySelectorAll(s);
+    if (this._refocus) { this._refocus = false; q("#help")?.focus(); }
     qa(".tile").forEach((b) => b.addEventListener("click", () => this._select(b.dataset.room)));
     q("#back")?.addEventListener("click", () => this._select(null));
     const step = (d) => { const rs = this._rooms(); const i = rs.findIndex((r) => r.key === this._sel); this._select(rs[(i + d + rs.length) % rs.length].key); };
@@ -383,11 +405,17 @@ h3{margin:0 0 8px;font-size:14px;opacity:.85}h3 small{font-weight:400;opacity:.7
     q("#ventstart")?.addEventListener("click", (ev) => this._ventStart(sel.key, parseInt(ev.currentTarget.dataset.min, 10) || 5));
     q("#ventstop")?.addEventListener("click", () => this._ventStop());
     q("#ventpill")?.addEventListener("click", (ev) => this._select(ev.currentTarget.dataset.room));
+    q("#rot")?.addEventListener("click", () => this._rotToggle());
+    q("#csv")?.addEventListener("click", () => {
+      const m = this._chartMeta; if (!m || !sel || m.room !== sel.key) return;
+      const rows = ["time,value"].concat(m.d.map((v, i) => `${new Date(m.end - (m.d.length - 1 - i) * m.step * 1000).toISOString()},${v == null ? "" : v}`));
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([rows.join("\n")], { type: "text/csv" })); a.download = `luftwaechter-${sel.key}-${m.key}-${this._range}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    });
     q("#fs")?.addEventListener("click", () => { try { document.fullscreenElement ? document.exitFullscreen() : this.requestFullscreen(); } catch (e) { /* ignore */ } });
     q("#copyall")?.addEventListener("click", async (ev) => { const b = ev.currentTarget; try { await navigator.clipboard.writeText(this._houseText(rooms, a, t)); b.textContent = "✓"; } catch (er) { b.textContent = "✗"; } });
     q("#help")?.addEventListener("click", () => { this._help = true; this._render(); q("#hclose")?.focus(); });
-    q("#hclose")?.addEventListener("click", () => { this._help = false; this._render(); });
-    q("#ovl")?.addEventListener("click", (ev) => { if (ev.target.id === "ovl") { this._help = false; this._render(); } });
+    q("#hclose")?.addEventListener("click", () => { this._closeHelp(); });
+    q("#ovl")?.addEventListener("click", (ev) => { if (ev.target.id === "ovl") { this._closeHelp(); } });
     qa(".chip[data-chart]").forEach((b) => b.addEventListener("click", () => { this._chartKey = b.dataset.chart; this._render(); }));
     qa(".dev[data-dom]").forEach((b) => b.addEventListener("click", () => this._toggle(b.dataset.ent, b.dataset.dom)));
     qa("[data-cov]").forEach((b) => b.addEventListener("click", () => this._call("cover", b.dataset.cov, b.dataset.ent)));

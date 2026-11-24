@@ -23,7 +23,11 @@
           "co2_good": "CO₂ gut unter",
           "co2_fair": "CO₂ mittel unter",
           "pm_good": "Feinstaub gut unter",
-          "pm_fair": "Feinstaub mittel unter"
+          "pm_fair": "Feinstaub mittel unter",
+          "excluded_areas": "Diese Bereiche ausblenden"
+        },
+        "data_description": {
+          "excluded_areas": "Bereiche, die nicht im Panel erscheinen sollen (zum Beispiel Garage oder Keller)."
         }
       }
     },

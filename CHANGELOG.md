@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.0
+- Tiles list all four readings, and a new CO₂ ranking card compares the rooms.
+- History chart: axis labels, a marker for the latest value, and a CSV download.
+- Rotate mode (⟳ or R) steps through the rooms for wall displays; full screen asks the device to keep the screen on.
+- Header stays visible while scrolling; the help dialog keeps keyboard focus and returns it when closed.
+- Verified in light and dark themes.
+- New option: hide areas you do not want in the panel.
+- README: animated demo, light theme and phone screenshots, more badges, updated settings and tablet tips.
+- DE: Messwerte auf allen Kacheln, CO₂-Vergleich, Achsenbeschriftung und CSV-Export, Durchschalt-Modus, Bereiche ausblenden, Hell/Dunkel geprüft, neue Demo in der README.
+
 ## 0.5.0
 - Docs: install and update now use the Home Assistant **Marketplace** (it replaced HACS in 2026.11), with the new "Add from link" steps and the risk notice; HACS steps still work on older versions.
 - Settings: adjustable CO₂ and fine dust limits (Configure on the integration); panel gauges, help and advice follow them.

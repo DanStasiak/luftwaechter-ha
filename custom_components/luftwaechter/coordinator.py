@@ -16,7 +16,7 @@ from homeassistant.util import dt as dt_util
 
 from . import engine
 from .const import (
-    CONF_CO2_FAIR, CONF_CO2_GOOD, CONF_PM_FAIR, CONF_PM_GOOD, CONF_WEATHER, DOMAIN,
+    CONF_CO2_FAIR, CONF_CO2_GOOD, CONF_EXCLUDE, CONF_PM_FAIR, CONF_PM_GOOD, CONF_WEATHER, DOMAIN,
     EVENT_LEVEL_CHANGED, LABEL, SCAN_SECONDS,
 )
 
@@ -147,6 +147,8 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
     async def _async_update_data(self) -> dict:
         self.lang = (self.hass.config.language or "en").split("-")[0]
         areas, labelled = self._collect_areas()
+        excluded = set(self.entry.options.get(CONF_EXCLUDE) or [])
+        areas = [a for a in areas if a["id"] not in excluded]
         weather, rain_at = await self._weather()
         model = engine.build_model(areas, labelled, weather, rain_at, self.lang, dt_util.utcnow().timestamp(), self._limits())
         self._annotate(model)

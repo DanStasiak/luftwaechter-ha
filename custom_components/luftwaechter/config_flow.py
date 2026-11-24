@@ -9,7 +9,7 @@ from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.helpers import selector
 
-from .const import CONF_CO2_FAIR, CONF_CO2_GOOD, CONF_PM_FAIR, CONF_PM_GOOD, CONF_WEATHER, DOMAIN
+from .const import CONF_CO2_FAIR, CONF_CO2_GOOD, CONF_EXCLUDE, CONF_PM_FAIR, CONF_PM_GOOD, CONF_WEATHER, DOMAIN
 
 SCHEMA = vol.Schema(
     {
@@ -58,6 +58,9 @@ class LuftwaechterOptionsFlow(OptionsFlow):
             {
                 vol.Optional(CONF_WEATHER, description={"suggested_value": cur}): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="weather")
+                ),
+                vol.Optional(CONF_EXCLUDE, description={"suggested_value": o.get(CONF_EXCLUDE, [])}): selector.AreaSelector(
+                    selector.AreaSelectorConfig(multiple=True)
                 ),
                 vol.Required(CONF_CO2_GOOD, default=o.get(CONF_CO2_GOOD, 1000)): _num(400, 5000, "ppm"),
                 vol.Required(CONF_CO2_FAIR, default=o.get(CONF_CO2_FAIR, 1500)): _num(400, 5000, "ppm"),

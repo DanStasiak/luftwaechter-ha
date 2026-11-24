@@ -44,6 +44,9 @@ with sync_playwright() as p:
     assert tiles == ["Office", "Bedroom"], tiles            # worst first
     assert "Do now" in txt() and "1 of 2 rooms need attention" in txt().replace("2 of 2","1 of 2") or "of 2 rooms need attention" in txt()
     assert pg.evaluate("el.shadowRoot.querySelectorAll('.dots i').length") == 8
+    assert pg.evaluate("el.shadowRoot.querySelectorAll('.mini').length") == 2 and "640 ppm" in txt()
+    assert "CO₂ compared" in txt() and pg.evaluate("el.shadowRoot.querySelectorAll('.rrow').length") == 2
+    assert pg.evaluate("getComputedStyle(el.shadowRoot.querySelector('header')).position") == "sticky"
     assert "Fine dust: 131" in txt() and "Updated: 2 min ago" in txt() and "–" not in pg.evaluate("el.shadowRoot.querySelector('.out small').textContent")
     pg.screenshot(path=str(out / "overview.png"))
     clk("#size"); assert "19px" in pg.evaluate("el.shadowRoot.querySelector('style').textContent"); clk("#size"); clk("#size")   # back to 16px
@@ -60,6 +63,9 @@ with sync_playwright() as p:
     pg.screenshot(path=str(out / "room_desktop.png"))
     clk("[data-range=\"7d\"]"); pg.wait_for_function("window.ws && el._range==='7d' && el.shadowRoot.querySelector('.chartwrap svg path') !== null || el.shadowRoot.textContent.includes('No history')")
     assert "7 days ago" in txt(), pg.evaluate("JSON.stringify(Object.fromEntries(Object.entries(el._hist).map(([k,v])=>[k,{e:v.error,l:v.loading,n:v.data&&v.data.filter(x=>x!=null).length}])))")
+    assert pg.evaluate("el.shadowRoot.querySelectorAll('.ylab').length") == 2 and pg.evaluate("!!el.shadowRoot.querySelector('.nowdot')")
+    pg.evaluate("window.dl = []; HTMLAnchorElement.prototype.click = function () { window.dl.push(this.download); }; URL.createObjectURL = () => 'blob:x';")
+    clk("#csv"); assert pg.evaluate("window.dl[0]").startswith("luftwaechter-o-co2-"), pg.evaluate("window.dl")
     pg.evaluate("Object.defineProperty(navigator,'clipboard',{value:{writeText:async(t)=>{window.copied=t}},configurable:true})")
     clk("#copy"); pg.wait_for_function("window.copied"); assert "Office" in pg.evaluate("window.copied")
     clk("[data-range=\"24h\"]")
@@ -113,6 +119,17 @@ with sync_playwright() as p:
     assert "Jetzt tun" in txt() and "Fenster zu lassen" in txt()
     pg.screenshot(path=str(out / "overview_de.png"))
     pg.evaluate("() => { const h = el._hass; h.language = 'en'; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't10'; el.hass = Object.assign({}, h); }")
+    # help dialog focus handling, room rotation, light theme
+    pg.keyboard.press("h"); assert pg.evaluate("el.shadowRoot.activeElement && el.shadowRoot.activeElement.id") == "hclose"
+    pg.keyboard.press("Tab"); assert pg.evaluate("el.shadowRoot.activeElement.id") == "hclose"
+    pg.keyboard.press("Escape"); assert pg.evaluate("el.shadowRoot.activeElement && el.shadowRoot.activeElement.id") == "help"
+    pg.keyboard.press("r"); assert pg.evaluate("el._rot") is True
+    pg.evaluate("el._rotStop()"); assert pg.evaluate("el._rot") is False
+    pg.evaluate("el._rotStep()"); first = pg.evaluate("el._sel"); pg.evaluate("el._rotStep()"); assert pg.evaluate("el._sel") != first
+    pg.evaluate("el._select(null)")
+    pg.evaluate("() => { document.documentElement.style.cssText = '--primary-background-color:#fafafa;--card-background-color:#ffffff;--secondary-background-color:#eceff1;--primary-text-color:#212121;--primary-color:#03a9f4;--divider-color:#0002'; document.body.style.background = '#fafafa'; el._render(); }")
+    pg.screenshot(path=str(out / "overview_light.png"))
+    pg.evaluate("() => { document.documentElement.style.cssText = ''; document.body.style.background = ''; el._render(); }")
     # onboarding for a house without rooms, and deep link via URL hash
     pg.evaluate("""() => { const h2 = { language: 'en', states: { 'sensor.luftwaechter_house': { entity_id: 'sensor.luftwaechter_house', state: 'unknown', last_updated: 'x', attributes: { rooms: [], summary: [], lang: 'en', updated: Math.floor(Date.now() / 1000) } } } };
       const e2 = document.createElement('luftwaechter-panel'); document.body.appendChild(e2); e2.hass = h2; window.e2 = e2; }""")
@@ -127,12 +144,22 @@ with sync_playwright() as p:
     if docs:
         docs.mkdir(exist_ok=True)
         import shutil
-        for src, dst, maxh in (("overview", "overview", 9999), ("room_desktop", "room", 9999), ("help", "help", 9999), ("room_phone", "phone", 9999), ("overview_de", "overview_de", 9999), ("timer", "timer", 300)):
+        for src, dst, maxh in (("overview", "overview", 9999), ("room_desktop", "room", 9999), ("help", "help", 9999), ("room_phone", "phone", 9999), ("overview_de", "overview_de", 9999), ("overview_light", "overview_light", 9999), ("timer", "timer", 300)):
             from PIL import Image, ImageChops
             im = Image.open(out / f"{src}.png").convert("RGB")
             bgc = Image.new("RGB", im.size, (17, 17, 17))
             bbox = ImageChops.difference(im, bgc).getbbox()
             h = min(im.height, maxh, (bbox[3] if bbox else im.height) + 24)
             im.crop((0, 0, im.width, h)).save(docs / f"{dst}.png", optimize=True)
+        # animated demo for the README: overview, room, timer, German
+        frames = []
+        for name in ("overview", "room", "timer", "overview_de"):
+            im = Image.open(docs / f"{name}.png").convert("RGB"); im = im.resize((820, round(im.height * 820 / im.width)))
+            frames.append(im)
+        hmax = max(f.height for f in frames)
+        canvas = []
+        for f in frames:
+            c = Image.new("RGB", (820, hmax), (17, 17, 17)); c.paste(f, (0, 0)); canvas.append(c.quantize(colors=96, method=Image.Quantize.MEDIANCUT))
+        canvas[0].save(docs / "demo.gif", save_all=True, append_images=canvas[1:], duration=2200, loop=0, optimize=True)
     b.close()
 print("panel ok")

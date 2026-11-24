@@ -6,13 +6,16 @@
 [![Release](https://img.shields.io/github/v/release/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/releases)
 ![Home Assistant Marketplace](https://img.shields.io/badge/Home%20Assistant-Marketplace%20%7C%20HACS-41BDF5.svg)
 [![License: MIT](https://img.shields.io/github/license/DanStasiak/luftwaechter-ha)](LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/commits/main)
+[![Stars](https://img.shields.io/github/stars/DanStasiak/luftwaechter-ha?style=flat)](https://github.com/DanStasiak/luftwaechter-ha/stargazers)
+[![Issues](https://img.shields.io/github/issues/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/issues)
 
 Room air quality, ventilation advice and window hints for Home Assistant, with a sidebar panel for the whole household.
 Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/airguard-widget). German and English, no cloud, no extra requests.
 
 [![Open your Home Assistant instance and add this repository to the Marketplace.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=DanStasiak&repository=luftwaechter-ha&category=integration)
 
-<p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/overview.png" width="640" alt="Overview: what to do now, room tiles with indicator dots"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/demo.gif" width="640" alt="Demo: overview, room view, ventilation timer, German interface"></p>
 
 **Contents:** [Features](#features) · [Install](#install-marketplace) · [Update](#update) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Settings](#settings) · [Events](#events-for-automations) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Roadmap](#roadmap) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
 
@@ -23,6 +26,10 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 - **Help built in**: what each reading means, typical causes of bad values, what helps.
 - **Devices per room**: lights, heating, blinds (open / stop / close) with live state.
 - **Made for shared screens**: text size switch for wall tablets, remembers your last room, arrow keys, stale-data warning.
+- **Readings at a glance**: every tile lists all four readings, and a CO₂ ranking compares the rooms.
+- **Better charts**: axis labels, a marker for the latest value, and a CSV download of the shown history.
+- **Light and dark**: follows your Home Assistant theme.
+- **Hide areas** you do not want in the panel (garage, cellar).
 - **Your limits**: adjust the CO₂ and fine dust limits in the integration options.
 - **Trends and events**: rising/falling arrows, and an event whenever a room changes level, for your own automations.
 - **Keyboard shortcuts** for wall tablets and desktops.
@@ -31,6 +38,10 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 - **Your language, per person**: each user sees the panel in their own profile language (English or German).
 - **Easy to start**: a built-in guide when no rooms are found yet, deep links (`#room=<name>`) and a full-screen button.
 - **Entities for automations**: one sensor per room and a house sensor.
+
+| Light theme | Phone |
+|---|---|
+| <img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/overview_light.png" width="420" alt="Light theme"> | <img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/phone.png" width="200" alt="Phone layout"> |
 
 | German | Ventilation timer |
 |---|---|
@@ -55,7 +66,7 @@ Requires Home Assistant 2025.10 or newer.
 3. Hard-refresh the browser (Ctrl+Shift+R) or reopen the app, so the panel loads the new JavaScript.
 
 ## Settings
-**Settings → Devices & services → Luftwächter → Configure**: choose the weather entity and the CO₂ and fine dust limits (defaults 1000 / 1500 ppm and 20 / 50 µg/m³). Temperature and humidity use fixed comfort ranges. The panel, gauges and advice follow your limits.
+**Settings → Devices & services → Luftwächter → Configure**: choose the weather entity, the areas to hide, and the CO₂ and fine dust limits (defaults 1000 / 1500 ppm and 20 / 50 µg/m³). Temperature and humidity use fixed comfort ranges. The panel, gauges and advice follow your limits.
 
 ## How it works
 ```mermaid
@@ -119,7 +130,9 @@ The room attribute `trend` is `up`, `down` or `flat` (CO₂ or fine dust compare
 - **Download diagnostics** (device page, three dots) gives a compact, anonymous report for bug reports: levels, readings, sources and device ids, no names of people or accounts.
 
 ## Wall tablet tips
-- Keyboard: ← → switch room, Esc back, **S** sort, **O** only problems, **F** full screen, **H** help.
+- Keyboard: ← → switch room, Esc back, **S** sort, **O** only problems, **R** rotate rooms, **F** full screen, **H** help.
+- **Rotate** (⟳ button or **R**) steps through the rooms every 12 seconds; a tap stops it. In full screen the panel asks the tablet to keep the screen on.
+- The header stays visible while you scroll.
 - Open the panel once, choose the **Aa** size, press the full-screen button.
 - Link straight to a room: `https://<your-ha>/luftwaechter#room=<room-key>` (the key is shown in the sensor attributes).
 - The panel warns when its data is older than 10 minutes, so a frozen tablet is visible.

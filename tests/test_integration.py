@@ -92,3 +92,17 @@ async def test_options_flow_validates_and_applies_limits(hass, enable_custom_int
     assert ok["type"] == "create_entry"
     await hass.async_block_till_done()
     assert hass.states.get("sensor.luftwachter_house").state == "good"
+
+
+async def test_excluded_areas_are_hidden(hass, enable_custom_integrations):
+    entry, _ = await _setup(hass, "700")
+    assert hass.states.get("sensor.luftwachter_office") is not None
+    area_id = hass.data[DOMAIN][entry.entry_id].data["rooms"][0]["key"]
+    flow = await hass.config_entries.options.async_init(entry.entry_id)
+    res = await hass.config_entries.options.async_configure(
+        flow["flow_id"],
+        {"co2_good": 1000, "co2_fair": 1500, "pm_good": 20, "pm_fair": 50, "excluded_areas": [area_id]},
+    )
+    assert res["type"] == "create_entry"
+    await hass.async_block_till_done()
+    assert hass.data[DOMAIN][entry.entry_id].data["rooms"] == []
