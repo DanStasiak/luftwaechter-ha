@@ -37,7 +37,7 @@ class LuftwaechterPanel extends HTMLElement {
     if (!st) return null;
     return Object.values(st).find((s) => s.entity_id.startsWith("sensor.") && s.attributes && Array.isArray(s.attributes.rooms) && s.attributes.summary) || null;
   }
-  _t() { const l = (this._hass && (this._hass.language || "en").slice(0, 2)) || "en"; return UI[l] || UI.en; }
+  _t() { const e = this._house(); const l = ((e && e.attributes.lang) || (this._hass && this._hass.language) || "en").slice(0, 2); return UI[l] || UI.en; }
   _col(level) { const i = ["good", "fair", "poor"].indexOf(level); return i < 0 ? GREY : COL[i]; }
   _toggle(eid, type, domain) {
     const h = this._hass, s = h.states[eid];
@@ -75,10 +75,11 @@ header{display:flex;align-items:center;gap:10px;margin-bottom:14px}header h1{fon
     if (!rooms.length) body = `<div class="card">${esc(t.none)}</div>`;
     else if (!sel) {
       body = `<div class="tiles">${rooms.map((r) => {
+        const bad = r.values.filter((v) => v.level >= 1 && v.raw != null).sort((a, b) => b.level - a.level)[0];
         const co2 = r.values.find((v) => v.key === "co2");
         return `<button class="tile" data-room="${esc(r.key)}" style="border-color:${this._col(r.level)}" aria-label="${esc(r.name)}: ${esc(t[r.level])}">
           <b>${esc(r.name)}</b><small>${ICON[r.action] || ""} ${esc(r.headline)}</small>
-          ${co2 && co2.raw != null ? `<small><br>${esc(co2.value)} ppm</small>` : ""}<div class="bar" style="background:${this._col(r.level)}"></div></button>`;
+          ${bad ? `<small style="color:${this._col(["good", "fair", "poor"][bad.level])}"><br>${esc(t[bad.key])}: ${esc(bad.value)} ${esc(bad.unit)}</small>` : co2 && co2.raw != null ? `<small><br>${esc(co2.value)} ppm</small>` : ""}<div class="bar" style="background:${this._col(r.level)}"></div></button>`;
       }).join("")}</div>`;
     } else {
       body = `<button class="back" id="back">← ${esc(t.back)}</button><div class="card">
@@ -91,7 +92,7 @@ header{display:flex;align-items:center;gap:10px;margin-bottom:14px}header h1{fon
         }).join("")}</div>` : ""}</div>`;
     }
     const o = a.outside;
-    const out = o ? `<div class="card out"><span class="big">${esc(o.icon)}</span><div><b>${esc(t.outside)}: ${esc(o.temp)} °C, ${esc(o.cond)}</b><br><small>${esc(t.wind)} ${esc(o.wind)} km/h ${esc(o.windDir)} · ${esc(o.hum)} %</small><br><small>${esc(o.tip)}</small></div></div>` : "";
+    const out = o ? `<div class="card out"><span class="big">${esc(o.icon)}</span><div><b>${esc(t.outside)}: ${esc(o.temp)} °C, ${esc(o.cond)}</b><br><small>${esc(t.wind)} ${esc(o.wind)} km/h ${esc(o.windDir)}${o.hum && o.hum !== "–" ? " · " + esc(o.hum) + " %" : ""}</small><br><small>${esc(o.tip)}</small></div></div>` : "";
     root.innerHTML = `<style>${css}</style><div class="wrap"><header><span class="dot" style="background:${this._col(e.state)}"></span><h1>${esc(t.title)} · ${esc(t[e.state] || t.unknown)}</h1></header>${body}${out}</div>`;
     root.querySelectorAll(".tile").forEach((b) => b.addEventListener("click", () => { this._sel = b.dataset.room; this._render(); }));
     const back = root.getElementById ? root.getElementById("back") : root.querySelector("#back");

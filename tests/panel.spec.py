@@ -33,7 +33,7 @@ with sync_playwright() as p:
     pg.screenshot(path=str(out / "room.png"))
     pg.evaluate("el.shadowRoot.querySelector('.dev').click()")
     assert pg.evaluate("window.calls") == [["light", "toggle", "light.office"]]
-    pg.evaluate("el.hass={...el._hass, language:'de'}")
+    pg.evaluate("(() => { const h = JSON.parse(JSON.stringify(el._hass)); h.states['sensor.luftwaechter_house'].attributes.lang = 'de'; h.states['sensor.luftwaechter_house'].last_updated = 't2'; h.callService = el._hass.callService; el.hass = h; })()")
     pg.evaluate("el.shadowRoot.getElementById('back').click()")
     assert "Gut" in pg.evaluate("el.shadowRoot.textContent") or "Mittel" in pg.evaluate("el.shadowRoot.textContent")
     assert not errs, errs

@@ -281,6 +281,8 @@ def fmt(v: float | None, digits: int, lang: str) -> str:
     if v is None:
         return "–"
     s = f"{v:.{digits}f}"
+    if float(s) == 0:
+        s = s.lstrip("-")
     return s.replace(".", ",") if lang == "de" else s
 
 
@@ -349,7 +351,7 @@ def devices_view(room: RoomEval, labelled: set[str], lang: str) -> list[dict]:
         dom = e["domain"]
         if dom not in groups:
             continue
-        if dom == "button" and not use_lab:
+        if dom in ("button", "switch") and not use_lab:
             continue
         if use_lab and e["entity_id"] not in labelled:
             continue

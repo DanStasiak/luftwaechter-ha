@@ -7,7 +7,6 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.util import slugify
 
 from .const import DOMAIN
 from .coordinator import LuftwaechterCoordinator
@@ -29,7 +28,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         for room in (coord.data or {}).get("rooms", []):
             if room["key"] not in known:
                 known.add(room["key"])
-                new.append(RoomSensor(coord, entry, room["key"], slugify(room["name"])))
+                new.append(RoomSensor(coord, entry, room["key"]))
         if new:
             async_add_entities(new)
 
@@ -53,10 +52,6 @@ class HouseSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
         self._attr_device_info = _device(entry)
 
     @property
-    def suggested_object_id(self) -> str:
-        return "luftwaechter_house"
-
-    @property
     def native_value(self) -> str:
         return (self.coordinator.data or {}).get("level", "unknown")
 
@@ -72,16 +67,11 @@ class RoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     _attr_options = LEVEL_OPTIONS
     _unrecorded_attributes = frozenset({"devices", "sources", "values"})
 
-    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry, key: str, room_name: str) -> None:
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry, key: str) -> None:
         super().__init__(coord)
         self._key = key
         self._attr_unique_id = f"{entry.entry_id}_room_{key}"
-        self._slug = f"luftwaechter_{room_name}"
         self._attr_device_info = _device(entry)
-
-    @property
-    def suggested_object_id(self) -> str:
-        return self._slug
 
     def _room(self) -> dict | None:
         for r in (self.coordinator.data or {}).get("rooms", []):

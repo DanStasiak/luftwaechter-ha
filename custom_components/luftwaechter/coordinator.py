@@ -43,6 +43,8 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         for ent in ent_reg.entities.values():
             if ent.disabled_by or ent.hidden_by:
                 continue
+            if ent.entity_category is not None:  # config / diagnostic entities are not controls
+                continue
             area_id = ent.area_id
             if not area_id and ent.device_id:
                 dev = dev_reg.async_get(ent.device_id)

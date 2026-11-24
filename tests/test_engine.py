@@ -84,3 +84,12 @@ def test_devices_label_filter():
     a["entities"] += [ent("light.x", None, "on", dom="light", name="Office Lamp"), ent("light.y", None, "on", dom="light", name="Office Spot")]
     m = engine.build_model([a], {"light.x"}, None, "", "en", NOW)
     assert [d["entity"] for d in m["rooms"][0]["devices"]] == ["light.x"]
+
+def test_no_negative_zero():
+    assert engine.fmt(-0.3, 0, "en") == "0"
+
+def test_switches_hidden_without_label():
+    a = area(co2=500)
+    a["entities"] += [ent("switch.s", None, "on", dom="switch", name="Office Relay"), ent("light.l", None, "on", dom="light", name="Office Lamp")]
+    m = engine.build_model([a], set(), None, "", "en", NOW)
+    assert [d["entity"] for d in m["rooms"][0]["devices"]] == ["light.l"]
