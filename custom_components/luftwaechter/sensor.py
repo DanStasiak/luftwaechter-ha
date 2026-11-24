@@ -44,7 +44,7 @@ class HouseSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     _attr_name = "Luftwächter House"
     _attr_device_class = SensorDeviceClass.ENUM
     _attr_options = LEVEL_OPTIONS
-    _unrecorded_attributes = frozenset({"rooms", "summary", "outside", "colors", "alt"})
+    _unrecorded_attributes = frozenset({"rooms", "summary", "outside", "colors", "alt", "attention_rooms"})
 
     def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
         super().__init__(coord)
@@ -58,7 +58,7 @@ class HouseSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     @property
     def extra_state_attributes(self) -> dict:
         d = self.coordinator.data or {}
-        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated")}
+        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated", "attention", "attention_rooms", "worst_room", "stale_min")}
 
 
 class RoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
@@ -96,4 +96,4 @@ class RoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     @property
     def extra_state_attributes(self) -> dict:
         r = self._room() or {}
-        return {k: r.get(k) for k in ("action", "headline", "detail", "window", "ventMin", "trend", "warn", "values", "devices", "sources")}
+        return {k: r.get(k) for k in ("action", "headline", "detail", "window", "ventMin", "trend", "warn", "mold", "dew", "values", "devices", "sources")}

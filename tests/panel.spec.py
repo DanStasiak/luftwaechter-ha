@@ -110,6 +110,29 @@ with sync_playwright() as p:
     pg.keyboard.press("h"); assert "Possible causes" in txt() and "Keyboard:" in txt() and "< 1500 / < 2000 ppm" in txt(); pg.keyboard.press("h"); assert "Possible causes" not in txt()
     pg.keyboard.press("s"); assert pg.evaluate("el._sort") == "name"; pg.keyboard.press("s"); assert pg.evaluate("el._sort") == "worst"
     pg.evaluate("() => { const h = el._hass; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't8'; el.hass = Object.assign({}, h); }")
+    # 0.7.0: mold hint, search with many rooms, list view, copy link, sound toggle, configurable stale limit
+    pg.evaluate("""() => { const h = el._hass, e = h.states['sensor.luftwaechter_house']; const a = JSON.parse(JSON.stringify(window.orig));
+      a.rooms[1].mold = true; a.rooms[1].dew = '12.3'; a.stale_min = 1;
+      for (const [k, n] of [['c', 'Kitchen'], ['d', 'Cellar'], ['e', 'Hallway'], ['f', 'Studio']]) { const r = JSON.parse(JSON.stringify(a.rooms[0])); r.key = k; r.name = n; a.rooms.push(r); }
+      e.attributes = a; e.last_updated = 't11'; el.hass = Object.assign({}, h); }""")
+    assert "Mold risk" in txt() and not pg.evaluate("el.shadowRoot.querySelector('#stale').hidden")      # 2 min old, limit 1 min
+    pg.evaluate("() => { const i = el.shadowRoot.querySelector('#q'); i.value = 'kit'; i.dispatchEvent(new Event('input')); }")
+    assert pg.evaluate("[...el.shadowRoot.querySelectorAll('.tile')].filter((b) => !b.hidden).map((b) => b.dataset.name)") == ["kitchen"]
+    pg.evaluate("() => { const i = el.shadowRoot.querySelector('#q'); i.value = 'zzz'; i.dispatchEvent(new Event('input')); }")
+    assert not pg.evaluate("el.shadowRoot.querySelector('#nomatch').hidden")
+    pg.evaluate("() => { const i = el.shadowRoot.querySelector('#q'); i.value = ''; i.dispatchEvent(new Event('input')); el._q = ''; }")
+    pg.keyboard.press("/"); assert pg.evaluate("el.shadowRoot.activeElement && el.shadowRoot.activeElement.id") == "q"
+    pg.evaluate("el.shadowRoot.querySelector('#q').blur()")
+    pg.keyboard.press("v"); assert pg.evaluate("el._list") is True and pg.evaluate("!!el.shadowRoot.querySelector('.tiles.list')")
+    pg.screenshot(path=str(out / "list.png"))
+    pg.keyboard.press("v"); assert pg.evaluate("el._list") is False
+    pg.evaluate("""() => { const h = el._hass, e = h.states['sensor.luftwaechter_house']; e.attributes.rooms[1].action = 'open'; e.attributes.rooms[1].ventMin = 5; e.last_updated = 't12'; el.hass = Object.assign({}, h); el._select('o'); }""")
+    assert "Dew point: 12.3 °C" in txt() and "Mold risk" in txt()
+    clk("#link"); pg.wait_for_function("window.copied && window.copied.includes('#room=o')")
+    assert pg.evaluate("el._snd") is False; clk("#snd"); assert pg.evaluate("el._snd") is True and pg.evaluate("el.shadowRoot.querySelector('#snd').getAttribute('aria-pressed')") == "true"
+    clk("#snd"); assert pg.evaluate("el._snd") is False
+    pg.evaluate("() => { const h = el._hass; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't13'; el.hass = Object.assign({}, h); el._select(null); }")
+    assert pg.evaluate("el.shadowRoot.querySelectorAll('.tile').length") == 2 and pg.evaluate("!el.shadowRoot.querySelector('#q')")
     # German UI screenshot for the README: server text in English, this viewer is German
     pg.evaluate("""() => { const h = el._hass, e = h.states['sensor.luftwaechter_house']; const a = JSON.parse(JSON.stringify(window.orig));
       const m = { 'Keep the window closed': 'Fenster zu lassen', 'All good': 'Alles in Ordnung', 'High fine dust in the room. Do not ventilate continuously.': 'Hoher Feinstaub im Raum. Nicht dauerhaft lüften.', 'The window can stay closed.': 'Das Fenster kann geschlossen bleiben.' };

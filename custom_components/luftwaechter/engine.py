@@ -7,6 +7,7 @@ fair 25-70 %.
 """
 from __future__ import annotations
 
+import math
 import re
 from dataclasses import dataclass, field
 from typing import Any
@@ -92,6 +93,7 @@ TEXTS: dict[str, dict[str, str]] = {
         "tip_cold": "Es ist kalt: lieber kurz und ganz öffnen (Stoßlüften 5 Min), das spart Heizenergie.",
         "tip_warm": "Es ist warm draußen: morgens oder abends lüften, tagsüber Fenster zu lassen.",
         "tip_humid": "Draußen ist es feucht: kurz lüften, nicht dauerhaft kippen.",
+        "mold_d": " Hohe Luftfeuchtigkeit: Schimmelgefahr. Möbel nicht dicht an kalte Außenwände stellen.",
         "heating": "Heizung",
         "now": "Ist {t} °C",
         "heating_on": " · heizt",
@@ -132,6 +134,7 @@ TEXTS: dict[str, dict[str, str]] = {
         "tip_cold": "It is cold: better open fully for a short time (5 min burst), it saves heating energy.",
         "tip_warm": "It is warm outside: ventilate in the morning or evening, keep windows closed during the day.",
         "tip_humid": "It is humid outside: ventilate briefly, do not leave the window tilted.",
+        "mold_d": " High humidity: mold risk. Keep furniture off cold outer walls.",
         "heating": "Heating",
         "now": "Now {t} °C",
         "heating_on": " · heating",
@@ -378,6 +381,18 @@ def devices_view(room: RoomEval, labelled: set[str], lang: str) -> list[dict]:
     return out
 
 
+MOLD_RH = 70  # sustained relative humidity above this invites mold on cold surfaces
+
+
+def dew_point(t: float | None, h: float | None) -> float | None:
+    """Dew point in °C (Magnus formula); None when temperature or humidity is missing."""
+    if t is None or h is None or h <= 0:
+        return None
+    a, b = 17.62, 243.12
+    g = math.log(h / 100.0) + a * t / (b + t)
+    return b * g / (a - g)
+
+
 def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits: dict | None = None) -> dict:
     lim_ = norm_limits(limits)
     co2_good, co2_fair = lim_["co2"]
@@ -434,7 +449,13 @@ def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits
     else:
         action, head = "keep_closed", tx(lang, "all_good")
         detail = tx(lang, "win_stay") if has_window else tx(lang, "air_fine")
-    return {"action": action, "headline": head, "detail": detail, "window": wst, "hasWindow": has_window, "ventMin": vent_min}
+    mold = hh is not None and hh >= MOLD_RH and action != "unknown"
+    if mold:
+        detail += tx(lang, "mold_d")
+    return {
+        "action": action, "headline": head, "detail": detail, "window": wst, "hasWindow": has_window,
+        "ventMin": vent_min, "mold": mold, "dew": fmt(dew_point(tt, hh), 1, lang) if dew_point(tt, hh) is not None else "",
+    }
 
 
 def room_view(room: RoomEval, weather: dict | None, rain_at: str, labelled: set[str], lang: str, limits: dict | None = None) -> dict:
@@ -446,7 +467,7 @@ def room_view(room: RoomEval, weather: dict | None, rain_at: str, labelled: set[
     digits = (0, 0, 1, 0)
     values = [
         {"key": k, "value": fmt(v, d, lang), "raw": v, "unit": u, "level": lv}
-        for k, v, d, u, lv in zip(keys, vals, digits, units, room.levels)
+        for k, v, d, u, lv in zip(keys, vals, digits, units, room.levels, strict=True)
     ]
     return {
         "key": room.key, "name": room.name,
@@ -480,8 +501,13 @@ def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rai
         if other != lang:
             o_rooms, o_outside = _model_for(areas, labelled, weather, rain_at, other, now, limits)
             alt[other] = {"rooms": o_rooms, "outside": o_outside}
+    attn = [r for r in rooms if r["level"] == "poor" or r["action"] in ("open", "wait", "keep_open")]
+    worst_room = ""
+    if worst is not None:
+        worst_room = next((r["name"] for r in rooms if r["level"] == LEVELS[worst]), "")
     return {
         "rooms": rooms, "summary": summary,
+        "attention": len(attn), "attention_rooms": [r["name"] for r in attn], "worst_room": worst_room,
         "level": LEVELS[worst] if worst is not None else "unknown",
         "outside": outside, "lang": lang, "alt": alt,
         "limits": {k: list(v) for k, v in norm_limits(limits).items()}, "colors": list(COLORS),

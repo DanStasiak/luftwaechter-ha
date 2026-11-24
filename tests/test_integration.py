@@ -46,14 +46,14 @@ async def test_refresh_service_and_diagnostics(hass, enable_custom_integrations)
     assert diag["rooms"][0]["values"]["co2"] == 1600 and diag["level"] == "poor"
 
 
-async def _setup(hass, co2="700"):
+async def _setup(hass, co2="700", options=None):
     areas = ar.async_get(hass)
     ents = er.async_get(hass)
     office = areas.async_create("Office")
     e = ents.async_get_or_create("sensor", "test", "co2", original_device_class="carbon_dioxide")
     ents.async_update_entity(e.entity_id, area_id=office.id)
     hass.states.async_set(e.entity_id, co2, {"device_class": "carbon_dioxide"})
-    entry = MockConfigEntry(domain=DOMAIN, data={})
+    entry = MockConfigEntry(domain=DOMAIN, data={}, options=options or {})
     entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
@@ -106,3 +106,21 @@ async def test_excluded_areas_are_hidden(hass, enable_custom_integrations):
     assert res["type"] == "create_entry"
     await hass.async_block_till_done()
     assert hass.data[DOMAIN][entry.entry_id].data["rooms"] == []
+
+
+async def test_attention_binary_sensor(hass, enable_custom_integrations):
+    entry, eid = await _setup(hass, co2="1600")
+    b = hass.states.get("binary_sensor.luftwachter_attention")
+    assert b is not None and b.state == "on"
+    assert b.attributes["rooms"] == ["Office"] and b.attributes["count"] == 1
+    hass.states.async_set(eid, "600", {"device_class": "carbon_dioxide"})
+    await hass.services.async_call(DOMAIN, "refresh", blocking=True)
+    await hass.async_block_till_done()
+    assert hass.states.get("binary_sensor.luftwachter_attention").state == "off"
+    house = hass.states.get("sensor.luftwachter_house")
+    assert house.attributes["attention"] == 0 and house.attributes["stale_min"] == 10
+
+
+async def test_stale_minutes_option(hass, enable_custom_integrations):
+    await _setup(hass, options={"stale_minutes": 30})
+    assert hass.states.get("sensor.luftwachter_house").attributes["stale_min"] == 30

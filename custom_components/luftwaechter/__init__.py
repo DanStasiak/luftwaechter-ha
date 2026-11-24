@@ -13,9 +13,9 @@ from homeassistant.helpers.typing import ConfigType
 from .const import DOMAIN, PANEL_URL, STATIC_URL
 from .coordinator import LuftwaechterCoordinator
 
-PLATFORMS = ["sensor"]
+PLATFORMS = ["sensor", "binary_sensor"]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
-_VERSION = "0.6.0"
+_VERSION = "0.7.0"
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:

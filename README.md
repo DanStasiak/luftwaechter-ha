@@ -37,11 +37,18 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 - **House at a glance**: average CO₂, fine dust, temperature and humidity, a level label on every tile, and "copy house status" to share it.
 - **Your language, per person**: each user sees the panel in their own profile language (English or German).
 - **Easy to start**: a built-in guide when no rooms are found yet, deep links (`#room=<name>`) and a full-screen button.
-- **Entities for automations**: one sensor per room and a house sensor.
+- **Mold warning**: at 70 % humidity or more a room gets a tip, and the room view shows the dew point.
+- **Search and list view**: find a room by name (press `/`) and switch the overview to a compact list (press `V`).
+- **Timer sound** (optional) and a **copy link** button for the deep link to a room.
+- **Entities for automations**: one sensor per room, a house sensor and an "Attention" binary sensor.
 
 | Light theme | Phone |
 |---|---|
 | <img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/overview_light.png" width="420" alt="Light theme"> | <img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/phone.png" width="200" alt="Phone layout"> |
+
+| List view |
+|---|
+| <img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/list.png" width="420" alt="List view"> |
 
 | German | Ventilation timer |
 |---|---|
@@ -66,7 +73,7 @@ Requires Home Assistant 2025.10 or newer.
 3. Hard-refresh the browser (Ctrl+Shift+R) or reopen the app, so the panel loads the new JavaScript.
 
 ## Settings
-**Settings → Devices & services → Luftwächter → Configure**: choose the weather entity, the areas to hide, and the CO₂ and fine dust limits (defaults 1000 / 1500 ppm and 20 / 50 µg/m³). Temperature and humidity use fixed comfort ranges. The panel, gauges and advice follow your limits.
+**Settings → Devices & services → Luftwächter → Configure**: choose the weather entity, the areas to hide, the CO₂ and fine dust limits (defaults 1000 / 1500 ppm and 20 / 50 µg/m³) and after how many minutes without data the panel warns (default 10). Temperature and humidity use fixed comfort ranges. The panel, gauges and advice follow your limits.
 
 ## How it works
 ```mermaid
@@ -97,14 +104,15 @@ The room level is the worst of the four.
 ## Entities
 | Entity | State | Attributes |
 |---|---|---|
-| `sensor.luftwaechter_<room>` | good / fair / poor | action, headline, detail, window, trend, values, devices, sources |
-| `sensor.luftwaechter_house` | worst level | rooms, outside, limits, updated |
+| `sensor.luftwachter_<room>` | good / fair / poor | action, headline, detail, window, trend, values, devices, sources |
+| `sensor.luftwachter_house` | worst level | rooms, outside, limits, updated, attention, attention_rooms, worst_room |
+| `binary_sensor.luftwachter_attention` | on while a room is poor or advises opening / waiting | count, rooms, worst_room |
 
 Example automation: notify when a room gets poor.
 ```yaml
 triggers:
   - trigger: state
-    entity_id: sensor.luftwaechter_house
+    entity_id: sensor.luftwachter_house
     to: poor
 actions:
   - action: notify.notify
@@ -142,6 +150,8 @@ The room attribute `trend` is `up`, `down` or `flat` (CO₂ or fine dust compare
 
 **Can I change the limits?** Yes, CO₂ and fine dust, under Configure (see Settings). Temperature and humidity use fixed comfort ranges.
 
+**What does the mold warning mean?** From 70 % relative humidity, mold can grow on cold surfaces such as outer walls. The tip is a guideline, not a measurement of mold; ventilate briefly and keep furniture off cold walls.
+
 **Do I need a window sensor?** No. With one (device class "window") you get "open / close the window" advice; without it you get ventilation advice only.
 
 **Does it send data anywhere?** No, see Privacy.
@@ -158,7 +168,7 @@ The room attribute `trend` is `up`, `down` or `flat` (CO₂ or fine dust compare
 - **History chart is empty**: the sensors need recorder history; recorder-excluded sensors have none.
 
 ## Roadmap
-Ideas, not promises: more languages (translations welcome), more sensor types, limits per room. Tell me what you need in an [issue](https://github.com/DanStasiak/luftwaechter-ha/issues).
+Ideas, not promises: more languages (translations welcome), more sensor types, limits per room, a Lovelace card. Tell me what you need in an [issue](https://github.com/DanStasiak/luftwaechter-ha/issues).
 
 ## Privacy
 Everything runs inside your Home Assistant. No accounts, no cloud services, no telemetry.

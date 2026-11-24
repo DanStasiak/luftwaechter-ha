@@ -24,10 +24,12 @@
           "co2_fair": "CO₂ fair below",
           "pm_good": "Fine dust good below",
           "pm_fair": "Fine dust fair below",
-          "excluded_areas": "Hide these areas"
+          "excluded_areas": "Hide these areas",
+          "stale_minutes": "Warn when data is older than"
         },
         "data_description": {
-          "excluded_areas": "Areas that should not appear in the panel (for example a garage or a cellar)."
+          "excluded_areas": "Areas that should not appear in the panel (for example a garage or a cellar).",
+          "stale_minutes": "Minutes without an update before the panel shows a warning."
         }
       }
     },
@@ -46,7 +48,8 @@
           "unknown": "Unknown"
         }
       }
-    }
+    },
+    "binary_sensor": {}
   },
   "services": {
     "refresh": {

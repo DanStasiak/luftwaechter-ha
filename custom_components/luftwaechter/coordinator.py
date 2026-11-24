@@ -16,8 +16,18 @@ from homeassistant.util import dt as dt_util
 
 from . import engine
 from .const import (
-    CONF_CO2_FAIR, CONF_CO2_GOOD, CONF_EXCLUDE, CONF_PM_FAIR, CONF_PM_GOOD, CONF_WEATHER, DOMAIN,
-    EVENT_LEVEL_CHANGED, LABEL, SCAN_SECONDS,
+    CONF_CO2_FAIR,
+    CONF_CO2_GOOD,
+    CONF_EXCLUDE,
+    CONF_PM_FAIR,
+    CONF_PM_GOOD,
+    CONF_STALE,
+    CONF_WEATHER,
+    DEFAULT_STALE,
+    DOMAIN,
+    EVENT_LEVEL_CHANGED,
+    LABEL,
+    SCAN_SECONDS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -152,4 +162,5 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         weather, rain_at = await self._weather()
         model = engine.build_model(areas, labelled, weather, rain_at, self.lang, dt_util.utcnow().timestamp(), self._limits())
         self._annotate(model)
+        model["stale_min"] = int(self.entry.options.get(CONF_STALE, DEFAULT_STALE) or DEFAULT_STALE)
         return model

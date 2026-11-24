@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.7.0
+- Mold risk: rooms at 70 % humidity or more get a warning and a tip, and the room view shows the dew point.
+- New entity `binary_sensor.luftwachter_attention`: on while any room is poor or advises opening or waiting. Attributes list the rooms and the worst one.
+- The house sensor reports `attention`, `attention_rooms` and `worst_room` for your own automations and cards.
+- New option: how many minutes without data before the panel warns (default 10).
+- Panel: search box for houses with six or more rooms (press `/`).
+- Panel: list view for the overview (press `V`), remembered per browser.
+- Panel: optional sound when the ventilation timer ends (bell button), remembered per browser.
+- Panel: "Copy link" in the room view for the deep link to that room.
+- Accessibility: respects reduced motion and Windows high contrast mode.
+- Docs: entity IDs in the README now match the real ones (`sensor.luftwachter_house`).
+- Quality: new lint job (ruff and a JavaScript syntax check) in CI, 27 tests.
+- DE: Schimmelwarnung ab 70 % Luftfeuchtigkeit mit Taupunkt, neue Entität `binary_sensor.luftwachter_attention`, einstellbare Veraltet-Warnung, Raumsuche, Listenansicht, Signalton für den Lüftungs-Timer, Link kopieren.
+
 ## 0.6.0
 - Tiles list all four readings, and a new CO₂ ranking card compares the rooms.
 - History chart: axis labels, a marker for the latest value, and a CSV download.

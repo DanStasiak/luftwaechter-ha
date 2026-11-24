@@ -111,3 +111,20 @@ def test_custom_limits_change_the_rating():
 def test_invalid_limits_fall_back_to_defaults():
     m = engine.build_model([area(co2=1300)], set(), None, "", "en", NOW, {"co2": (2000, 1000), "pm25": (0, 5)})
     assert m["limits"] == {"co2": [1000, 1500], "pm25": [20, 50]}
+
+
+def test_dew_point_and_mold_hint():
+    assert abs(engine.dew_point(20, 50) - 9.3) < 0.2
+    assert engine.dew_point(None, 50) is None and engine.dew_point(20, None) is None
+    wet = room(co2=600, t=21, h=75)
+    assert wet["mold"] is True and "mold" in wet["detail"].lower() and wet["dew"] != ""
+    assert room(co2=600, t=21, h=75, lang="de")["detail"].count("Schimmel") == 1
+    dry = room(co2=600, t=21, h=45)
+    assert dry["mold"] is False and "mold" not in dry["detail"].lower()
+
+
+def test_house_attention_summary():
+    m = engine.build_model([area(co2=1600, win="off")], set(), None, "", "en", NOW)
+    assert m["attention"] == 1 and m["attention_rooms"] == ["Office"] and m["worst_room"] == "Office"
+    ok = engine.build_model([area(co2=600, pm=5, t=21, h=45)], set(), None, "", "en", NOW)
+    assert ok["attention"] == 0 and ok["attention_rooms"] == []

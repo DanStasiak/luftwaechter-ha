@@ -4,12 +4,11 @@ from __future__ import annotations
 from typing import Any
 
 import voluptuous as vol
-
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.helpers import selector
 
-from .const import CONF_CO2_FAIR, CONF_CO2_GOOD, CONF_EXCLUDE, CONF_PM_FAIR, CONF_PM_GOOD, CONF_WEATHER, DOMAIN
+from .const import CONF_CO2_FAIR, CONF_CO2_GOOD, CONF_EXCLUDE, CONF_PM_FAIR, CONF_PM_GOOD, CONF_STALE, CONF_WEATHER, DEFAULT_STALE, DOMAIN
 
 SCHEMA = vol.Schema(
     {
@@ -66,6 +65,7 @@ class LuftwaechterOptionsFlow(OptionsFlow):
                 vol.Required(CONF_CO2_FAIR, default=o.get(CONF_CO2_FAIR, 1500)): _num(400, 5000, "ppm"),
                 vol.Required(CONF_PM_GOOD, default=o.get(CONF_PM_GOOD, 20)): _num(1, 500, "µg/m³"),
                 vol.Required(CONF_PM_FAIR, default=o.get(CONF_PM_FAIR, 50)): _num(1, 500, "µg/m³"),
+                vol.Required(CONF_STALE, default=o.get(CONF_STALE, DEFAULT_STALE)): _num(2, 120, "min"),
             }
         )
         return self.async_show_form(step_id="init", data_schema=schema, errors=errors)

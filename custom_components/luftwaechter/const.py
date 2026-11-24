@@ -10,4 +10,6 @@ CONF_CO2_FAIR = "co2_fair"
 CONF_PM_GOOD = "pm_good"
 CONF_PM_FAIR = "pm_fair"
 CONF_EXCLUDE = "excluded_areas"
+CONF_STALE = "stale_minutes"
+DEFAULT_STALE = 10
 EVENT_LEVEL_CHANGED = "luftwaechter_level_changed"
