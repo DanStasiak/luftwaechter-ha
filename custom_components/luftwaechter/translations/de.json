@@ -34,5 +34,11 @@
         }
       }
     }
+  },
+  "services": {
+    "refresh": {
+      "name": "Aktualisieren",
+      "description": "Alle Räume sofort neu berechnen, statt auf das nächste Update zu warten."
+    }
   }
 }

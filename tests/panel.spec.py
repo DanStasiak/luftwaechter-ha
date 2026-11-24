@@ -81,6 +81,26 @@ with sync_playwright() as p:
     assert "Jetzt tun" in txt() and "DE " in txt(), txt()[:200]
     pg.evaluate("() => { const h = el._hass; h.language = 'en'; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't4'; el.hass = Object.assign({}, h); }")
     assert "Do now" in txt()
+    # 0.4.0: level pills, house averages, legend, copy house status
+    assert pg.evaluate("el.shadowRoot.querySelectorAll('.pill').length") == 2 and "Dots:" in txt() and "CO₂ Ø" in txt()
+    clk("#copyall"); pg.wait_for_function("window.copied && window.copied.includes('Office: Poor')")
+    # ventilation timer: starts, shows a countdown, survives going back (header pill), can be cancelled
+    pg.evaluate("""() => { const h = el._hass, e = h.states['sensor.luftwaechter_house']; const a = JSON.parse(JSON.stringify(e.attributes));
+      a.rooms[0].action = 'open'; a.rooms[0].ventMin = 5; e.attributes = a; e.last_updated = 't5'; el.hass = Object.assign({}, h); el._select(a.rooms[0].key); }""")
+    assert "Start ventilation timer (5 min)" in txt()
+    clk("#ventstart")
+    import re
+    assert re.fullmatch(r"[45]:\d\d", pg.evaluate("el.shadowRoot.querySelector('.venttime').textContent")), txt()[:200]
+    clk("#back"); assert pg.evaluate("!!el.shadowRoot.querySelector('#ventpill')")
+    clk("#ventpill"); clk("#ventstop"); assert pg.evaluate("el._vent") is None
+    pg.evaluate("() => { const h = el._hass; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't6'; el.hass = Object.assign({}, h); el._select(null); }")
+    # onboarding for a house without rooms, and deep link via URL hash
+    pg.evaluate("""() => { const h2 = { language: 'en', states: { 'sensor.luftwaechter_house': { entity_id: 'sensor.luftwaechter_house', state: 'unknown', last_updated: 'x', attributes: { rooms: [], summary: [], lang: 'en', updated: Math.floor(Date.now() / 1000) } } } };
+      const e2 = document.createElement('luftwaechter-panel'); document.body.appendChild(e2); e2.hass = h2; window.e2 = e2; }""")
+    assert "How rooms get into the panel" in pg.evaluate("e2.shadowRoot.textContent")
+    pg.evaluate("() => { window.e2.remove(); location.hash = '#room=o'; const e3 = document.createElement('luftwaechter-panel'); document.body.appendChild(e3); e3.hass = el._hass; window.e3 = e3; }")
+    assert pg.evaluate("e3._sel") == "o"
+    pg.evaluate("() => { window.e3.remove(); location.hash = ''; el._select(null); }")
     pg.set_viewport_size({"width": 420, "height": 900}); pg.evaluate("el.shadowRoot.querySelector('.tile').click()")
     pg.wait_for_function("el.shadowRoot.querySelector('.chartwrap svg path') !== null")
     pg.screenshot(path=str(out / "room_phone.png"), full_page=True)

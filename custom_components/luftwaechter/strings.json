@@ -4,20 +4,41 @@
       "user": {
         "title": "Luftwächter",
         "description": "Rooms are found from your areas. Pick a weather entity for outside hints (optional).",
-        "data": { "weather": "Weather entity" }
+        "data": {
+          "weather": "Weather entity"
+        }
       }
     },
-    "abort": { "single_instance_allowed": "Luftwächter is already set up." }
+    "abort": {
+      "single_instance_allowed": "Luftwächter is already set up."
+    }
   },
   "options": {
-    "step": { "init": { "data": { "weather": "Weather entity" } } }
+    "step": {
+      "init": {
+        "data": {
+          "weather": "Weather entity"
+        }
+      }
+    }
   },
   "entity": {
     "sensor": {
       "house": {
         "name": "House",
-        "state": { "good": "Good", "fair": "Fair", "poor": "Poor", "unknown": "Unknown" }
+        "state": {
+          "good": "Good",
+          "fair": "Fair",
+          "poor": "Poor",
+          "unknown": "Unknown"
+        }
       }
+    }
+  },
+  "services": {
+    "refresh": {
+      "name": "Refresh",
+      "description": "Recalculate all rooms now instead of waiting for the next update."
     }
   }
 }

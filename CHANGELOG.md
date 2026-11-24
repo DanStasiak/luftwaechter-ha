@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+- Ventilation timer: start a countdown for the advised time; a header pill follows you between views and a clear alert appears when time is up.
+- Overview: house averages (CO₂, fine dust, temperature, humidity), a level label on every tile, a legend for the dots, and "copy house status".
+- Full-screen button and deep links (`#room=<key>`), e.g. for wall tablets.
+- Built-in guide when no rooms are found yet, and a clear message when the integration is missing.
+- Accessibility and layout: main landmark and live status, top-aligned tiles, print-friendly layout.
+- New action `luftwaechter.refresh` and downloadable diagnostics for bug reports.
+- GitHub page: contents list, how-it-works diagram, FAQ, wall tablet tips, SECURITY, CODE_OF_CONDUCT, CODEOWNERS, Dependabot for workflow updates.
+- DE: Lüftungs-Timer, Hausdurchschnitt und Stufen-Label auf den Kacheln, Vollbild und Direktlinks, Einstiegshilfe ohne Räume, Aktion `luftwaechter.refresh`, Diagnosedaten, überarbeitete GitHub-Seite.
+
 ## 0.3.1
 - Fix: the panel now follows each user's own language (profile setting) instead of the Home Assistant system language. The sensor carries every text in English and German, so one household can use both.
 - DE: Korrektur: Das Panel folgt jetzt der Sprache des jeweiligen Benutzers (Profil) statt der Systemsprache von Home Assistant. Alle Texte gibt es auf Englisch und Deutsch.

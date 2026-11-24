@@ -6,13 +6,25 @@ from pathlib import Path
 from homeassistant.components import panel_custom
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN, PANEL_URL, STATIC_URL
 from .coordinator import LuftwaechterCoordinator
 
 PLATFORMS = ["sensor"]
-_VERSION = "0.3.1"
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+_VERSION = "0.4.0"
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    async def _refresh(call: ServiceCall) -> None:
+        for coord in [v for v in hass.data.get(DOMAIN, {}).values() if hasattr(v, "async_request_refresh")]:
+            await coord.async_request_refresh()
+
+    hass.services.async_register(DOMAIN, "refresh", _refresh)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

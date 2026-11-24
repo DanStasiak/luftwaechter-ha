@@ -14,6 +14,8 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 
 <p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/overview.png" width="640" alt="Overview: what to do now, room tiles with indicator dots"></p>
 
+**Contents:** [Features](#features) · [Install](#install-hacs) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
+
 ## Features
 - **Do-now overview**: which rooms need attention, worst first, with a coloured dot per reading on every tile.
 - **Room view**: status badge, "what stands out" with the limits, gauge bars, 24 h / 6 h / 7 day history charts with hover readout.
@@ -21,6 +23,10 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 - **Help built in**: what each reading means, typical causes of bad values, what helps.
 - **Devices per room**: lights, heating, blinds (open / stop / close) with live state.
 - **Made for shared screens**: text size switch for wall tablets, remembers your last room, arrow keys, stale-data warning.
+- **Ventilation timer**: start a countdown for the recommended time and get a clear "close the window now" alert, even after switching rooms.
+- **House at a glance**: average CO₂, fine dust, temperature and humidity, a level label on every tile, and "copy house status" to share it.
+- **Your language, per person**: each user sees the panel in their own profile language (English or German).
+- **Easy to start**: a built-in guide when no rooms are found yet, deep links (`#room=<name>`) and a full-screen button.
 - **Entities for automations**: one sensor per room and a house sensor.
 
 | Room | Help |
@@ -34,6 +40,18 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 4. Open **Luftwächter** in the sidebar. It is visible to every household user.
 
 Requires Home Assistant 2025.10 or newer.
+
+## How it works
+```mermaid
+flowchart LR
+  S[CO₂ / PM2.5 / temperature / humidity sensors] --> A[Rooms from your areas]
+  W[Window sensors, weather] --> E
+  A --> E[Rating and advice engine]
+  E --> R[Room sensors and house sensor]
+  R --> P[Sidebar panel for every user]
+  R --> T[Your automations]
+```
+The integration recalculates every minute (or on demand with the `luftwaechter.refresh` action). The engine is plain Python without Home Assistant imports and is covered by tests.
 
 ## How rooms are found
 Put your CO₂ and/or fine dust (PM2.5) sensors into an **area**. Temperature, humidity and window sensors in the same area are used too.
@@ -67,9 +85,30 @@ actions:
 ```
 (Entity IDs depend on your installation; check the entity list.)
 
+## Actions and diagnostics
+- `luftwaechter.refresh` recalculates all rooms immediately.
+- **Download diagnostics** (device page, three dots) gives a compact, anonymous report for bug reports: levels, readings, sources and device ids, no names of people or accounts.
+
+## Wall tablet tips
+- Open the panel once, choose the **Aa** size, press the full-screen button.
+- Link straight to a room: `https://<your-ha>/luftwaechter#room=<room-key>` (the key is shown in the sensor attributes).
+- The panel warns when its data is older than 10 minutes, so a frozen tablet is visible.
+
+## FAQ
+**Why is a room red when CO₂ is fine?** The room level is the worst of its readings. The tile names the reading that caused it.
+
+**Can I change the limits?** Not yet; they follow common indoor-air guidance (see Limits). Open a feature request if you need other values.
+
+**Do I need a window sensor?** No. With one (device class "window") you get "open / close the window" advice; without it you get ventilation advice only.
+
+**Does it send data anywhere?** No, see Privacy.
+
+**Which languages?** English and German, chosen per user from the profile language.
+
 ## Troubleshooting
 - **No rooms in the panel**: the sensors must belong to an area (directly or through their device) and be CO₂ or PM2.5 sensors.
 - **A room is red but CO₂ is fine**: another reading is poor, usually fine dust. The tile names it.
+- **Panel text in the wrong language**: the panel uses your *profile* language (Profile → Language), not the system language. Update to 0.3.1 or later.
 - **Panel looks old after an update**: restart Home Assistant, then hard-refresh the browser (Ctrl+Shift+R) or reopen the app.
 - **Too many devices listed**: give only the wanted ones the label `airguard`.
 - **History chart is empty**: the sensors need recorder history; recorder-excluded sensors have none.
