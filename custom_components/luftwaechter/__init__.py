@@ -12,7 +12,7 @@ from .const import DOMAIN, PANEL_URL, STATIC_URL
 from .coordinator import LuftwaechterCoordinator
 
 PLATFORMS = ["sensor"]
-_VERSION = "0.1.1"
+_VERSION = "0.2.0"
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

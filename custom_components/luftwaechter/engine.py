@@ -459,4 +459,5 @@ def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rai
         "rooms": rooms, "summary": summary,
         "level": LEVELS[worst] if worst is not None else "unknown",
         "outside": outside_view(weather, rain_at, lang), "lang": lang, "colors": list(COLORS),
+        "updated": int(now),
     }
