@@ -55,7 +55,8 @@ with sync_playwright() as p:
     assert "may be outdated" in pg.evaluate("el.shadowRoot.querySelector('#stale').textContent") and not pg.evaluate("el.shadowRoot.querySelector('#stale').hidden")
     pg.evaluate("el._hass.states['sensor.luftwaechter_house'].attributes.updated = Math.floor(Date.now()/1000) - 120; el._sig=''; el.hass = el._hass")
     clk("#sort"); assert pg.evaluate("[...el.shadowRoot.querySelectorAll('.tile b')].map(x=>x.textContent)") == ["Bedroom", "Office"]
-    clk("#sort"); clk(".tile")
+    clk("#sort"); assert pg.evaluate("el._sort") == "co2" and pg.evaluate("[...el.shadowRoot.querySelectorAll('.tile b')].map(x=>x.textContent)") == ["Office", "Bedroom"]
+    clk("#sort"); assert pg.evaluate("el._sort") == "worst"; clk(".tile")
     pg.wait_for_function("el.shadowRoot.querySelector('.chartwrap svg path') !== null")
     t = txt()
     assert "Office" in t and "poor" in t.lower() and "Fine dust 131 µg/m³ is poor" in t and "What stands out" in t
@@ -109,7 +110,7 @@ with sync_playwright() as p:
     pg.keyboard.press("o"); assert pg.evaluate("[...el.shadowRoot.querySelectorAll('.tile b')].map(x=>x.textContent)") == ["Office"]
     pg.keyboard.press("o"); assert pg.evaluate("el.shadowRoot.querySelectorAll('.tile').length") == 2
     pg.keyboard.press("h"); assert "Possible causes" in txt() and "Keyboard:" in txt() and "< 1500 / < 2000 ppm" in txt(); pg.keyboard.press("h"); assert "Possible causes" not in txt()
-    pg.keyboard.press("s"); assert pg.evaluate("el._sort") == "name"; pg.keyboard.press("s"); assert pg.evaluate("el._sort") == "worst"
+    pg.keyboard.press("s"); assert pg.evaluate("el._sort") == "name"; pg.keyboard.press("s"); pg.keyboard.press("s"); assert pg.evaluate("el._sort") == "worst"
     pg.evaluate("() => { const h = el._hass; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't8'; el.hass = Object.assign({}, h); }")
     # 0.7.0: mold hint, search with many rooms, list view, copy link, sound toggle, configurable stale limit
     pg.evaluate("""() => { const h = el._hass, e = h.states['sensor.luftwaechter_house']; const a = JSON.parse(JSON.stringify(window.orig));
@@ -148,6 +149,11 @@ with sync_playwright() as p:
     clk("#cb"); assert pg.evaluate("el._cb") is False and pg.evaluate("!el.shadowRoot.querySelector('.dots.cbd')")
     pg.evaluate("el._select('o')"); assert "Poor for 1 h 35 min" in txt()
     pg.evaluate("el._select(null)")
+    # 0.9.0: pin favourite rooms (stay on top in every sort order), CO2 sort label
+    pg.evaluate("el._select('b')"); clk("#pin"); assert pg.evaluate("el._pins") == ["b"] and "Pinned" in txt()
+    pg.evaluate("el._select(null)"); assert pg.evaluate("[...el.shadowRoot.querySelectorAll('.tile b')].map(x=>x.textContent)") == ["★ Bedroom", "Office"]
+    pg.evaluate("el._select('b')"); pg.keyboard.press("p"); assert pg.evaluate("el._pins") == []
+    pg.evaluate("el._select(null)"); assert pg.evaluate("[...el.shadowRoot.querySelectorAll('.tile b')].map(x=>x.textContent)") == ["Office", "Bedroom"]
     # German UI screenshot for the README: server text in English, this viewer is German
     pg.evaluate("""() => { const h = el._hass, e = h.states['sensor.luftwaechter_house']; const a = JSON.parse(JSON.stringify(window.orig));
       const m = { 'Keep the window closed': 'Fenster zu lassen', 'All good': 'Alles in Ordnung', 'High fine dust in the room. Do not ventilate continuously.': 'Hoher Feinstaub im Raum. Nicht dauerhaft lüften.', 'The window can stay closed.': 'Das Fenster kann geschlossen bleiben.' };

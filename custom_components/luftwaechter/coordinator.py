@@ -10,6 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers import label_registry as lr
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
@@ -25,7 +26,9 @@ from .const import (
     CONF_WEATHER,
     DEFAULT_STALE,
     DOMAIN,
+    EMPTY_BEFORE_ISSUE,
     EVENT_LEVEL_CHANGED,
+    ISSUE_NO_ROOMS,
     LABEL,
     SCAN_SECONDS,
 )
@@ -44,6 +47,7 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         self._samples: dict[str, deque] = {}
         self._levels: dict[str, str] | None = None
         self._since: dict[str, tuple[str, float]] = {}
+        self._empty = 0
 
     @property
     def weather_entity(self) -> str | None:
@@ -165,6 +169,16 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
                     )
         self._levels = levels
 
+    def _check_rooms(self, model: dict) -> None:
+        """Raise a repair issue when no room has been found for a while (about 5 minutes), clear it once rooms appear."""
+        self._empty = 0 if model["rooms"] else self._empty + 1
+        if self._empty >= EMPTY_BEFORE_ISSUE:
+            ir.async_create_issue(
+                self.hass, DOMAIN, ISSUE_NO_ROOMS, is_fixable=False, severity=ir.IssueSeverity.WARNING, translation_key=ISSUE_NO_ROOMS
+            )
+        elif model["rooms"]:
+            ir.async_delete_issue(self.hass, DOMAIN, ISSUE_NO_ROOMS)
+
     async def _async_update_data(self) -> dict:
         self.lang = (self.hass.config.language or "en").split("-")[0]
         areas, labelled = self._collect_areas()
@@ -173,5 +187,6 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         weather, rain_at = await self._weather()
         model = engine.build_model(areas, labelled, weather, rain_at, self.lang, dt_util.utcnow().timestamp(), self._limits())
         self._annotate(model)
+        self._check_rooms(model)
         model["stale_min"] = int(self.entry.options.get(CONF_STALE, DEFAULT_STALE) or DEFAULT_STALE)
         return model

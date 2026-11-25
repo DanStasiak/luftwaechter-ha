@@ -56,5 +56,11 @@
       "name": "Refresh",
       "description": "Recalculate all rooms now instead of waiting for the next update."
     }
+  },
+  "issues": {
+    "no_rooms": {
+      "title": "Luftwächter finds no rooms",
+      "description": "No area has a CO₂, fine dust, temperature or humidity sensor yet. Assign your sensors to an area (Settings → Areas, labels & zones). Rooms appear here by themselves as soon as a sensor reports values."
+    }
   }
 }

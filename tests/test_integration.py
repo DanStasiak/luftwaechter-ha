@@ -139,3 +139,26 @@ async def test_room_since_and_spark(hass, enable_custom_integrations):
 async def test_stale_minutes_option(hass, enable_custom_integrations):
     await _setup(hass, options={"stale_minutes": 30})
     assert hass.states.get("sensor.luftwachter_house").attributes["stale_min"] == 30
+
+
+async def test_no_rooms_repair_issue(hass, enable_custom_integrations):
+    from homeassistant.helpers import issue_registry as ir
+
+    entry = MockConfigEntry(domain=DOMAIN, data={})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    coord = hass.data[DOMAIN][entry.entry_id]
+    reg = ir.async_get(hass)
+    assert reg.async_get_issue(DOMAIN, "no_rooms") is None  # not right away, sensors may still be loading
+    for _ in range(5):
+        await coord.async_refresh()
+    assert reg.async_get_issue(DOMAIN, "no_rooms") is not None
+    areas = ar.async_get(hass)
+    ents = er.async_get(hass)
+    office = areas.async_create("Office")
+    e = ents.async_get_or_create("sensor", "test", "co2", original_device_class="carbon_dioxide")
+    ents.async_update_entity(e.entity_id, area_id=office.id)
+    hass.states.async_set(e.entity_id, "700", {"device_class": "carbon_dioxide"})
+    await coord.async_refresh()
+    assert reg.async_get_issue(DOMAIN, "no_rooms") is None

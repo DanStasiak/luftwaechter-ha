@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.0
+- Pin favourite rooms: a ☆ button in the room view (key `P`) keeps a room on top in every sort order, remembered per browser.
+- New sort order "Highest CO₂ first"; the sort button now cycles worst first, name, highest CO₂.
+- Home Assistant **Repairs** hint when no room has been found for about 5 minutes, with the steps to fix it; it clears itself once a room appears.
+- German README (`README.de.md`) with install, settings, entities and troubleshooting.
+- README: new "Windows widget" section that explains which of the two to use, and links both ways.
+- Tests: 30 (repair issue, sorting, pinning).
+- DE: Räume anheften (☆, Taste `P`), neue Sortierung "Höchstes CO₂ zuerst", Reparaturen-Hinweis wenn kein Raum gefunden wird, deutsche README, Abschnitt zum Windows-Widget.
+
 ## 0.8.0
 - Header decluttered: sorting, filters, list view, rotate, full screen, text size and more now live in a labelled **More** menu (key `M`), with check marks for what is on.
 - Tiles show a small sparkline of the last hour, and the tooltip on the level badge tells how long the room has been at that level. The room view shows it too ("Poor for 1 h 35 min"). New room attribute `since` (minutes).

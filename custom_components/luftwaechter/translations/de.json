@@ -56,5 +56,11 @@
       "name": "Aktualisieren",
       "description": "Alle Räume sofort neu berechnen, statt auf das nächste Update zu warten."
     }
+  },
+  "issues": {
+    "no_rooms": {
+      "title": "Luftwächter findet keine Räume",
+      "description": "Kein Bereich hat bisher einen CO₂-, Feinstaub-, Temperatur- oder Feuchte-Sensor. Weise deine Sensoren einem Bereich zu (Einstellungen → Bereiche, Beschriftungen & Zonen). Räume erscheinen von selbst, sobald ein Sensor Werte meldet."
+    }
   }
 }

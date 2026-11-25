@@ -11,6 +11,8 @@
 [![Stars](https://img.shields.io/github/stars/DanStasiak/luftwaechter-ha?style=flat)](https://github.com/DanStasiak/luftwaechter-ha/stargazers)
 [![Issues](https://img.shields.io/github/issues/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/issues)
 
+🇩🇪 [Deutsche Version](README.de.md)
+
 Room air quality, ventilation advice and window hints for Home Assistant, with a sidebar panel for the whole household.
 Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/airguard-widget). German and English, no cloud, no extra requests.
 
@@ -18,7 +20,7 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 
 <p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/demo.gif" width="640" alt="Demo: overview, room view, ventilation timer, German interface"></p>
 
-**Contents:** [Features](#features) · [Install](#install-marketplace) · [Update](#update) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Settings](#settings) · [Events](#events-for-automations) · [Blueprint](#blueprint) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Roadmap](#roadmap) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
+**Contents:** [Features](#features) · [Install](#install-marketplace) · [Update](#update) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Settings](#settings) · [Events](#events-for-automations) · [Blueprint](#blueprint) · [Windows widget](#windows-widget) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Roadmap](#roadmap) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
 
 ## Features
 - **Do-now overview**: which rooms need attention, worst first, with a coloured dot per reading on every tile.
@@ -44,6 +46,9 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 - **Sparklines and time in level**: the last hour on every tile, and "Poor for 1 h 35 min" in the room view.
 - **Color-blind mode** with symbols next to the colours, and **Refresh now** from the panel.
 - **Automation blueprint**: one click to get a "room became poor" notification, no YAML needed.
+- **Pin favourite rooms** (key `P`) and sort by highest CO₂.
+- **Repairs hint** in Home Assistant when no room is found, with what to do.
+- **German README** ([README.de.md](README.de.md)).
 - **Timer sound** (optional) and a **copy link** button for the deep link to a room.
 - **Entities for automations**: one sensor per room, a house sensor and an "Attention" binary sensor.
 
@@ -154,7 +159,7 @@ Prefer clicks to YAML? Import the blueprint and pick the level, an optional room
 - **Download diagnostics** (device page, three dots) gives a compact, anonymous report for bug reports: levels, readings, sources and device ids, no names of people or accounts.
 
 ## Wall tablet tips
-- Keyboard: ← → switch room, Esc back, **/** search, **S** sort, **O** only problems, **V** list view, **M** menu, **R** rotate rooms, **F** full screen, **H** help.
+- Keyboard: ← → switch room, Esc back, **/** search, **S** sort (worst, name, highest CO₂), **P** pin a room, **O** only problems, **V** list view, **M** menu, **R** rotate rooms, **F** full screen, **H** help.
 - **Rotate** (⟳ button or **R**) steps through the rooms every 12 seconds; a tap stops it. In full screen the panel asks the tablet to keep the screen on.
 - The header stays visible while you scroll.
 - Open the panel once, choose the **Aa** size, press the full-screen button.
@@ -170,6 +175,8 @@ Prefer clicks to YAML? Import the blueprint and pick the level, an optional room
 
 **Can I use the panel if I cannot tell red from green?** Yes: turn on **Color-blind mode** in the **More** menu. Every reading then also shows a symbol (✓ fine, ! fair, ✕ poor).
 
+**A room is missing. Why?** Rooms come from your areas: a room needs at least one CO₂, fine dust, temperature or humidity sensor assigned to an area. If no room is found for about 5 minutes, Home Assistant shows a hint under **Settings → Repairs**.
+
 **Do I need a window sensor?** No. With one (device class "window") you get "open / close the window" advice; without it you get ventilation advice only.
 
 **Does it send data anywhere?** No, see Privacy.
@@ -184,6 +191,15 @@ Prefer clicks to YAML? Import the blueprint and pick the level, an optional room
 - **Can't find HACS**: in Home Assistant 2026.11 and newer it is the Marketplace under Settings.
 - **Too many devices listed**: give only the wanted ones the label `airguard`.
 - **History chart is empty**: the sensors need recorder history; recorder-excluded sensors have none.
+
+## Windows widget
+Luftwächter also exists as a small desktop widget for Windows, [airguard-widget](https://github.com/DanStasiak/airguard-widget). It connects straight to your Home Assistant, shows the same rooms and advice on the desktop and in the tray, and has a simple view for family members who do not use Home Assistant. You do not need this integration for the widget, and the widget is not needed for this integration. Use both and the widget's right-click menu opens this panel directly (**Open Luftwächter panel in Home Assistant**).
+
+| | This integration | Windows widget |
+|---|---|---|
+| Runs in | Home Assistant, in the browser or app | Windows desktop and tray |
+| Best for | Wall tablets, phones, automations | A PC where someone works all day |
+| Needs | Home Assistant 2025.10+ | Windows 10 / 11, a long-lived access token |
 
 ## Roadmap
 Ideas, not promises: more languages (translations welcome), more sensor types, limits per room, a Lovelace card. Tell me what you need in an [issue](https://github.com/DanStasiak/luftwaechter-ha/issues).
