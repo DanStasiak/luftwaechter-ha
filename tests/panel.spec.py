@@ -8,6 +8,7 @@ def room(k, n, lv, act, head, det, co2, pm=6, pml=0, co2l=1):
     return {"key": k, "name": n, "level": lv, "action": act, "headline": head, "detail": det, "warn": "",
         "values": [{"key": "co2", "value": str(co2), "raw": co2, "unit": "ppm", "level": co2l}, {"key": "pm25", "value": str(pm), "raw": pm, "unit": "µg/m³", "level": pml},
                    {"key": "temperature", "value": "21.5", "raw": 21.5, "unit": "°C", "level": 0}, {"key": "humidity", "value": "48", "raw": 48, "unit": "%", "level": 0}],
+        "spark": [co2 - 150, co2 - 90, co2 - 120, co2 - 30, co2 - 60, co2], "since": 95 if lv == "poor" else 12,
         "sources": {"carbon_dioxide": ["sensor.co2_" + k], "pm25": ["sensor.pm_" + k], "temperature": [], "humidity": []},
         "devices": [{"entity": "light.office", "name": "Lamp", "domain": "light", "group": "Light", "type": "switch"},
                     {"entity": "climate.a", "name": "Heizung", "domain": "climate", "group": "Heating", "type": "climate"},
@@ -133,6 +134,20 @@ with sync_playwright() as p:
     clk("#snd"); assert pg.evaluate("el._snd") is False
     pg.evaluate("() => { const h = el._hass; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't13'; el.hass = Object.assign({}, h); el._select(null); }")
     assert pg.evaluate("el.shadowRoot.querySelectorAll('.tile').length") == 2 and pg.evaluate("!el.shadowRoot.querySelector('#q')")
+    # 0.8.0: header menu, sparklines, time in level, color-blind symbols, refresh action
+    assert pg.evaluate("el.shadowRoot.querySelector('#menu').hidden") is True
+    assert pg.evaluate("el.shadowRoot.querySelectorAll('.tile .spark').length") == 2 and "Poor for 1 h 35 min" not in pg.evaluate("el.shadowRoot.querySelector('.tile').textContent")
+    assert pg.evaluate("el.shadowRoot.querySelector('.tile .pill').title") == "Poor for 1 h 35 min"
+    pg.keyboard.press("m"); assert pg.evaluate("el.shadowRoot.querySelector('#menu').hidden") is False and pg.evaluate("el.shadowRoot.querySelector('#more').getAttribute('aria-expanded')") == "true"
+    assert pg.evaluate("[...el.shadowRoot.querySelectorAll('#menu .mi')].length") >= 7
+    pg.screenshot(path=str(out / "menu.png"))
+    pg.keyboard.press("Escape"); assert pg.evaluate("el.shadowRoot.querySelector('#menu').hidden") is True
+    clk("#refresh"); assert pg.evaluate("window.calls.at(-1)") == ["luftwaechter", "refresh", None]
+    clk("#cb"); assert pg.evaluate("el._cb") is True and pg.evaluate("!!el.shadowRoot.querySelector('.dots.cbd')") and "✓" in pg.evaluate("el.shadowRoot.querySelector('.dots').textContent")
+    pg.screenshot(path=str(out / "colorblind.png"))
+    clk("#cb"); assert pg.evaluate("el._cb") is False and pg.evaluate("!el.shadowRoot.querySelector('.dots.cbd')")
+    pg.evaluate("el._select('o')"); assert "Poor for 1 h 35 min" in txt()
+    pg.evaluate("el._select(null)")
     # German UI screenshot for the README: server text in English, this viewer is German
     pg.evaluate("""() => { const h = el._hass, e = h.states['sensor.luftwaechter_house']; const a = JSON.parse(JSON.stringify(window.orig));
       const m = { 'Keep the window closed': 'Fenster zu lassen', 'All good': 'Alles in Ordnung', 'High fine dust in the room. Do not ventilate continuously.': 'Hoher Feinstaub im Raum. Nicht dauerhaft lüften.', 'The window can stay closed.': 'Das Fenster kann geschlossen bleiben.' };
@@ -167,7 +182,7 @@ with sync_playwright() as p:
     if docs:
         docs.mkdir(exist_ok=True)
         import shutil
-        for src, dst, maxh in (("overview", "overview", 9999), ("room_desktop", "room", 9999), ("help", "help", 9999), ("room_phone", "phone", 9999), ("overview_de", "overview_de", 9999), ("overview_light", "overview_light", 9999), ("timer", "timer", 300)):
+        for src, dst, maxh in (("overview", "overview", 9999), ("room_desktop", "room", 9999), ("help", "help", 9999), ("room_phone", "phone", 9999), ("overview_de", "overview_de", 9999), ("overview_light", "overview_light", 9999), ("timer", "timer", 300), ("menu", "menu", 9999)):
             from PIL import Image, ImageChops
             im = Image.open(out / f"{src}.png").convert("RGB")
             bgc = Image.new("RGB", im.size, (17, 17, 17))

@@ -1,0 +1,57 @@
+blueprint:
+  name: Luftwächter - react when a room changes level
+  description: >
+    Runs your actions when a room reaches a chosen air quality level, for example
+    "send a notification when a room becomes poor". Uses the event that the
+    Luftwächter integration fires on every level change. In your actions you can
+    use the variables `room`, `headline`, `level` and `previous`.
+  domain: automation
+  author: Dan Stasiak
+  source_url: https://github.com/DanStasiak/luftwaechter-ha/blob/main/blueprints/automation/luftwaechter/level_changed.yaml
+  homeassistant:
+    min_version: 2025.10.0
+  input:
+    to_level:
+      name: Level that triggers the actions
+      description: The room must change to this level.
+      default: poor
+      selector:
+        select:
+          options:
+            - good
+            - fair
+            - poor
+    room_filter:
+      name: Room name (optional)
+      description: Leave empty for all rooms, or enter one room name exactly as shown in the panel.
+      default: ""
+      selector:
+        text:
+    actions:
+      name: Actions
+      description: What to do, for example send a notification or speak a message. Use {{ room }} and {{ headline }} in texts.
+      default: []
+      selector:
+        action:
+
+mode: queued
+max_exceeded: silent
+
+triggers:
+  - trigger: event
+    event_type: luftwaechter_level_changed
+    event_data:
+      to: !input to_level
+
+variables:
+  room_filter: !input room_filter
+  room: "{{ trigger.event.data.room }}"
+  headline: "{{ trigger.event.data.headline }}"
+  level: "{{ trigger.event.data.to }}"
+  previous: "{{ trigger.event.data.from }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ room_filter | trim == '' or room | lower == room_filter | trim | lower }}"
+
+actions: !input actions

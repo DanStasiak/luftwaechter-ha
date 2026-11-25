@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.8.0
+- Header decluttered: sorting, filters, list view, rotate, full screen, text size and more now live in a labelled **More** menu (key `M`), with check marks for what is on.
+- Tiles show a small sparkline of the last hour, and the tooltip on the level badge tells how long the room has been at that level. The room view shows it too ("Poor for 1 h 35 min"). New room attribute `since` (minutes).
+- Color-blind mode (menu): readings get symbols (✓ ! ✕) in addition to colours, on tiles and in the room view.
+- "Refresh now" in the menu runs the `luftwaechter.refresh` action from the panel.
+- New automation blueprint: react when a room reaches a level (notification, speech, anything), with an optional room filter. Import it from the README.
+- Every release now carries `luftwaechter.zip` for manual installs.
+- README: blueprint section, manual install steps, download badge, menu screenshot, updated shortcuts and FAQ.
+- Tests: 29 (sparkline and time in level, blueprint check) plus new panel checks.
+- DE: Menü "Mehr" statt vieler Knöpfe im Kopf, Verlaufslinie auf den Kacheln, "seit wie lange" pro Raum, Farbenblind-Modus, "Jetzt aktualisieren", Automations-Blueprint, ZIP für manuelle Installation bei jeder Version.
+
 ## 0.7.0
 - Mold risk: rooms at 70 % humidity or more get a warning and a tip, and the room view shows the dew point.
 - New entity `binary_sensor.luftwachter_attention`: on while any room is poor or advises opening or waiting. Attributes list the rooms and the worst one.

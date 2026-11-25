@@ -43,6 +43,7 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         self.lang = "en"
         self._samples: dict[str, deque] = {}
         self._levels: dict[str, str] | None = None
+        self._since: dict[str, tuple[str, float]] = {}
 
     @property
     def weather_entity(self) -> str | None:
@@ -126,6 +127,8 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         """Add a rising/falling trend per room and fire an event when a room's level changes."""
         now = model["updated"]
         trends: dict[str, str] = {}
+        sparks: dict[str, list[int]] = {}
+        sinces: dict[str, int] = {}
         for r in model["rooms"]:
             co2 = next((v["raw"] for v in r["values"] if v["key"] == "co2"), None)
             pm = next((v["raw"] for v in r["values"] if v["key"] == "pm25"), None)
@@ -140,9 +143,17 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
                     trend = "up" if diff > step else "down" if diff < -step else "flat"
                 q.append((now, kind, val))
             trends[r["key"]] = trend
+            spark = [round(s[2]) for s in q if s[1] == kind][-30:]
+            sparks[r["key"]] = spark if len(spark) >= 3 else []
+            prev = self._since.get(r["key"])
+            if prev is None or prev[0] != r["level"]:
+                self._since[r["key"]] = (r["level"], now)
+            sinces[r["key"]] = int((now - self._since[r["key"]][1]) // 60)
         for rooms in [model["rooms"]] + [a["rooms"] for a in model.get("alt", {}).values()]:
             for r in rooms:
                 r["trend"] = trends.get(r["key"], "")
+                r["spark"] = sparks.get(r["key"], [])
+                r["since"] = sinces.get(r["key"], 0)
         levels = {r["key"]: r["level"] for r in model["rooms"]}
         if self._levels is not None:
             for r in model["rooms"]:

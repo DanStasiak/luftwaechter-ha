@@ -96,4 +96,4 @@ class RoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     @property
     def extra_state_attributes(self) -> dict:
         r = self._room() or {}
-        return {k: r.get(k) for k in ("action", "headline", "detail", "window", "ventMin", "trend", "warn", "mold", "dew", "values", "devices", "sources")}
+        return {k: r.get(k) for k in ("action", "headline", "detail", "window", "ventMin", "trend", "warn", "mold", "dew", "since", "values", "devices", "sources")}

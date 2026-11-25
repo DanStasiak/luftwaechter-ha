@@ -18,4 +18,5 @@ jobs:
           if gh release view "v$v" >/dev/null 2>&1; then echo "v$v exists"; exit 0; fi
           awk -v v="$v" '$0=="## " v {f=1; next} /^## / {f=0} f' CHANGELOG.md > notes.md
           [ -s notes.md ] || echo "Release v$v" > notes.md
-          gh release create "v$v" --target "$GITHUB_SHA" --title "v$v" --notes-file notes.md
+          (cd custom_components/luftwaechter && zip -qr "$GITHUB_WORKSPACE/luftwaechter.zip" .)
+          gh release create "v$v" --target "$GITHUB_SHA" --title "v$v" --notes-file notes.md luftwaechter.zip

@@ -121,6 +121,21 @@ async def test_attention_binary_sensor(hass, enable_custom_integrations):
     assert house.attributes["attention"] == 0 and house.attributes["stale_min"] == 10
 
 
+async def test_room_since_and_spark(hass, enable_custom_integrations):
+    entry, _eid = await _setup(hass, co2="1300")
+    coord = hass.data[DOMAIN][entry.entry_id]
+    for _ in range(2):
+        await coord.async_refresh()
+    await hass.async_block_till_done()
+    room = hass.states.get("sensor.luftwachter_house").attributes["rooms"][0]
+    assert room["spark"] == [1300, 1300, 1300] and room["since"] == 0
+    coord._since[room["key"]] = ("fair", coord.data["updated"] - 3600)
+    await coord.async_refresh()
+    await hass.async_block_till_done()
+    assert hass.states.get("sensor.luftwachter_house").attributes["rooms"][0]["since"] == 60
+    assert hass.states.get("sensor.luftwachter_office").attributes["since"] == 60
+
+
 async def test_stale_minutes_option(hass, enable_custom_integrations):
     await _setup(hass, options={"stale_minutes": 30})
     assert hass.states.get("sensor.luftwachter_house").attributes["stale_min"] == 30

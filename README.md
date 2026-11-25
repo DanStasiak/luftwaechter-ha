@@ -6,6 +6,7 @@
 [![Release](https://img.shields.io/github/v/release/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/releases)
 ![Home Assistant Marketplace](https://img.shields.io/badge/Home%20Assistant-Marketplace%20%7C%20HACS-41BDF5.svg)
 [![License: MIT](https://img.shields.io/github/license/DanStasiak/luftwaechter-ha)](LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/DanStasiak/luftwaechter-ha/total)](https://github.com/DanStasiak/luftwaechter-ha/releases)
 [![Last commit](https://img.shields.io/github/last-commit/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/commits/main)
 [![Stars](https://img.shields.io/github/stars/DanStasiak/luftwaechter-ha?style=flat)](https://github.com/DanStasiak/luftwaechter-ha/stargazers)
 [![Issues](https://img.shields.io/github/issues/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/issues)
@@ -17,7 +18,7 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 
 <p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/demo.gif" width="640" alt="Demo: overview, room view, ventilation timer, German interface"></p>
 
-**Contents:** [Features](#features) · [Install](#install-marketplace) · [Update](#update) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Settings](#settings) · [Events](#events-for-automations) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Roadmap](#roadmap) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
+**Contents:** [Features](#features) · [Install](#install-marketplace) · [Update](#update) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Settings](#settings) · [Events](#events-for-automations) · [Blueprint](#blueprint) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Roadmap](#roadmap) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
 
 ## Features
 - **Do-now overview**: which rooms need attention, worst first, with a coloured dot per reading on every tile.
@@ -39,6 +40,10 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 - **Easy to start**: a built-in guide when no rooms are found yet, deep links (`#room=<name>`) and a full-screen button.
 - **Mold warning**: at 70 % humidity or more a room gets a tip, and the room view shows the dew point.
 - **Search and list view**: find a room by name (press `/`) and switch the overview to a compact list (press `V`).
+- **Tidy header, clear menu**: everything secondary sits in a labelled **More** menu (press `M`).
+- **Sparklines and time in level**: the last hour on every tile, and "Poor for 1 h 35 min" in the room view.
+- **Color-blind mode** with symbols next to the colours, and **Refresh now** from the panel.
+- **Automation blueprint**: one click to get a "room became poor" notification, no YAML needed.
 - **Timer sound** (optional) and a **copy link** button for the deep link to a room.
 - **Entities for automations**: one sensor per room, a house sensor and an "Attention" binary sensor.
 
@@ -49,6 +54,10 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 | List view |
 |---|
 | <img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/list.png" width="420" alt="List view"> |
+
+| More menu |
+|---|
+| <img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/menu.png" width="420" alt="More menu"> |
 
 | German | Ventilation timer |
 |---|---|
@@ -66,6 +75,8 @@ Home Assistant 2026.11 and newer have the **Marketplace** built in (Settings →
 4. Open **Luftwächter** in the sidebar. It is visible to every household user.
 
 Requires Home Assistant 2025.10 or newer.
+
+**Manual install:** download `luftwaechter.zip` from the [latest release](https://github.com/DanStasiak/luftwaechter-ha/releases/latest), unzip it into `config/custom_components/luftwaechter/` and restart Home Assistant.
 
 ## Update
 1. **Settings → Marketplace → Installed → Luftwächter → Update** (or the update entity under Settings → Updates).
@@ -104,7 +115,7 @@ The room level is the worst of the four.
 ## Entities
 | Entity | State | Attributes |
 |---|---|---|
-| `sensor.luftwachter_<room>` | good / fair / poor | action, headline, detail, window, trend, values, devices, sources |
+| `sensor.luftwachter_<room>` | good / fair / poor | action, headline, detail, window, trend, since, mold, dew, values, devices, sources |
 | `sensor.luftwachter_house` | worst level | rooms, outside, limits, updated, attention, attention_rooms, worst_room |
 | `binary_sensor.luftwachter_attention` | on while a room is poor or advises opening / waiting | count, rooms, worst_room |
 
@@ -131,14 +142,19 @@ actions:
   - action: notify.notify
     data: { message: "{{ trigger.event.data.room }}: {{ trigger.event.data.headline }}" }
 ```
-The room attribute `trend` is `up`, `down` or `flat` (CO₂ or fine dust compared with about 15 minutes ago).
+The room attribute `trend` is `up`, `down` or `flat` (CO₂ or fine dust compared with about 15 minutes ago), and `since` is how many minutes the room has been at its current level.
+
+### Blueprint
+Prefer clicks to YAML? Import the blueprint and pick the level, an optional room and what should happen (notification, speech, a light, anything). In your actions you can use `{{ room }}`, `{{ headline }}`, `{{ level }}` and `{{ previous }}`.
+
+[![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FDanStasiak%2Fluftwaechter-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fluftwaechter%2Flevel_changed.yaml)
 
 ## Actions and diagnostics
 - `luftwaechter.refresh` recalculates all rooms immediately.
 - **Download diagnostics** (device page, three dots) gives a compact, anonymous report for bug reports: levels, readings, sources and device ids, no names of people or accounts.
 
 ## Wall tablet tips
-- Keyboard: ← → switch room, Esc back, **S** sort, **O** only problems, **R** rotate rooms, **F** full screen, **H** help.
+- Keyboard: ← → switch room, Esc back, **/** search, **S** sort, **O** only problems, **V** list view, **M** menu, **R** rotate rooms, **F** full screen, **H** help.
 - **Rotate** (⟳ button or **R**) steps through the rooms every 12 seconds; a tap stops it. In full screen the panel asks the tablet to keep the screen on.
 - The header stays visible while you scroll.
 - Open the panel once, choose the **Aa** size, press the full-screen button.
@@ -151,6 +167,8 @@ The room attribute `trend` is `up`, `down` or `flat` (CO₂ or fine dust compare
 **Can I change the limits?** Yes, CO₂ and fine dust, under Configure (see Settings). Temperature and humidity use fixed comfort ranges.
 
 **What does the mold warning mean?** From 70 % relative humidity, mold can grow on cold surfaces such as outer walls. The tip is a guideline, not a measurement of mold; ventilate briefly and keep furniture off cold walls.
+
+**Can I use the panel if I cannot tell red from green?** Yes: turn on **Color-blind mode** in the **More** menu. Every reading then also shows a symbol (✓ fine, ! fair, ✕ poor).
 
 **Do I need a window sensor?** No. With one (device class "window") you get "open / close the window" advice; without it you get ventilation advice only.
 
