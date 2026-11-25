@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.12.0
+- **Kiosk mode** for wall tablets (key `K`, More menu, or `#kiosk` in the link): biggest text, rooms rotate by themselves, buttons fade out but stay reachable.
+- **Browser alerts** (opt-in, More menu): a notification when a room turns poor while the tab is in the background.
+- **Language** choice in the More menu (automatic, German, English) for this browser, independent of the profile language.
+- **Reset view settings** in the More menu clears pins, sort, size, list view, color-blind mode and the rest if the panel is ever stuck in a state you do not like.
+- Settings now keep working when the browser blocks local storage (private window, locked-down kiosk profile): they last until the page is closed instead of silently failing.
+- New sensor `sensor.luftwachter_worst_room`: the name of the room with the worst air, for voice assistants and dashboards.
+- README: the FAQ folds open and closed, kiosk and alerts are documented, English and German.
+- `CITATION.cff`, so GitHub shows "Cite this repository".
+- Tests: 34, plus panel checks for language override, kiosk, reset and the new menu entries.
+- DE: Kiosk-Modus für Wandtablets (Taste `K`), Browser-Hinweise (optional), Sprachwahl und „Ansicht zurücksetzen“ im Menü, Einstellungen funktionieren auch bei gesperrtem Speicher, neuer Sensor „Schlechtester Raum“, FAQ klappbar, `CITATION.cff`.
+
 ## 0.11.0
 - New binary sensor per room, `binary_sensor.luftwachter_<room>_ventilate`: on while the advice is "open the window". The simplest trigger for your own automations.
 - New blueprint "remind me to ventilate": pick the room's ventilate sensor, set how long the advice must last, choose the action. One-click import badge in the README.

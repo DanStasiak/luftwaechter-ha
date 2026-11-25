@@ -30,6 +30,8 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 Questions? See [SUPPORT.md](SUPPORT.md).
 
 ## Features
+- **Browser alerts (opt-in):** More → *Browser alerts* shows a notification when a room turns poor while the tab is in the background.
+- **Your own language and a reset:** More → *Language* overrides the profile language for this browser; *Reset view settings* clears pins, sort, size and the rest.
 - **Screen-reader friendly:** level changes are announced politely, tiles have tooltips with the full advice, everything works by keyboard.
 - **Do-now overview**: which rooms need attention, worst first, with a coloured dot per reading on every tile.
 - **Room view**: status badge, "what stands out" with the limits, gauge bars, 24 h / 6 h / 7 day history charts with hover readout.
@@ -130,6 +132,7 @@ The room level is the worst of the four.
 |---|---|---|
 | `sensor.luftwachter_<room>` | good / fair / poor | action, headline, detail, window, trend, since, mold, dew, values, devices, sources |
 | `sensor.luftwachter_house` | worst level | rooms, outside, limits, updated, attention, attention_rooms, worst_room |
+| `sensor.luftwachter_worst_room` | name of the room with the worst air | level, attention |
 | `sensor.luftwachter_good_rooms` | share of rooms with good air, % | good, total |
 | `binary_sensor.luftwachter_<room>_ventilate` | on while the advice for the room is "open the window" | room, headline, level |
 | `binary_sensor.luftwachter_attention` | on while a room is poor or advises opening / waiting | count, rooms, worst_room |
@@ -173,6 +176,7 @@ Prefer clicks to YAML? Import the blueprint and pick the level, an optional room
 - **Download diagnostics** (device page, three dots) gives a compact, anonymous report for bug reports: levels, readings, sources and device ids, no names of people or accounts.
 
 ## Wall tablet tips
+- **Kiosk mode** (key **K** or More → *Kiosk mode*): biggest text size, rooms rotate by themselves, the buttons fade out (still there when you touch them). Open `https://<your-ha>/luftwaechter#kiosk` to start in kiosk mode.
 - Keyboard: ← → switch room, Esc back, **/** search, **S** sort (worst, name, highest CO₂), **P** pin a room, **O** only problems, **V** list view, **M** menu, **R** rotate rooms, **F** full screen, **H** help.
 - **Rotate** (⟳ button or **R**) steps through the rooms every 12 seconds; a tap stops it. In full screen the panel asks the tablet to keep the screen on.
 - The header stays visible while you scroll.
@@ -181,21 +185,54 @@ Prefer clicks to YAML? Import the blueprint and pick the level, an optional room
 - The panel warns when its data is older than 10 minutes, so a frozen tablet is visible.
 
 ## FAQ
-**Why is a room red when CO₂ is fine?** The room level is the worst of its readings. The tile names the reading that caused it.
 
-**Can I change the limits?** Yes, CO₂ and fine dust, under Configure (see Settings). Temperature and humidity use fixed comfort ranges.
+<details><summary><b>Why is a room red when CO₂ is fine?</b></summary>
 
-**What does the mold warning mean?** From 70 % relative humidity, mold can grow on cold surfaces such as outer walls. The tip is a guideline, not a measurement of mold; ventilate briefly and keep furniture off cold walls.
+The room level is the worst of its readings. The tile names the reading that caused it.
 
-**Can I use the panel if I cannot tell red from green?** Yes: turn on **Color-blind mode** in the **More** menu. Every reading then also shows a symbol (✓ fine, ! fair, ✕ poor).
+</details>
 
-**A room is missing. Why?** Rooms come from your areas: a room needs at least one CO₂, fine dust, temperature or humidity sensor assigned to an area. If no room is found for about 5 minutes, Home Assistant shows a hint under **Settings → Repairs**.
+<details><summary><b>Can I change the limits?</b></summary>
 
-**Do I need a window sensor?** No. With one (device class "window") you get "open / close the window" advice; without it you get ventilation advice only.
+Yes, CO₂ and fine dust, under Configure (see Settings). Temperature and humidity use fixed comfort ranges.
 
-**Does it send data anywhere?** No, see Privacy.
+</details>
 
-**Which languages?** English and German, chosen per user from the profile language.
+<details><summary><b>What does the mold warning mean?</b></summary>
+
+From 70 % relative humidity, mold can grow on cold surfaces such as outer walls. The tip is a guideline, not a measurement of mold; ventilate briefly and keep furniture off cold walls.
+
+</details>
+
+<details><summary><b>Can I use the panel if I cannot tell red from green?</b></summary>
+
+Yes: turn on **Color-blind mode** in the **More** menu. Every reading then also shows a symbol (✓ fine, ! fair, ✕ poor).
+
+</details>
+
+<details><summary><b>A room is missing. Why?</b></summary>
+
+Rooms come from your areas: a room needs at least one CO₂, fine dust, temperature or humidity sensor assigned to an area. If no room is found for about 5 minutes, Home Assistant shows a hint under **Settings → Repairs**.
+
+</details>
+
+<details><summary><b>Do I need a window sensor?</b></summary>
+
+No. With one (device class "window") you get "open / close the window" advice; without it you get ventilation advice only.
+
+</details>
+
+<details><summary><b>Does it send data anywhere?</b></summary>
+
+No, see Privacy.
+
+</details>
+
+<details><summary><b>Which languages?</b></summary>
+
+English and German, chosen per user from the profile language.
+
+</details>
 
 ## Troubleshooting
 - **No rooms in the panel**: the sensors must belong to an area (directly or through their device) and be CO₂ or PM2.5 sensors.

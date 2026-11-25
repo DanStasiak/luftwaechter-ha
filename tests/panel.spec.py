@@ -177,6 +177,15 @@ with sync_playwright() as p:
     assert "rooms have good air" in pg.evaluate("el.shadowRoot.querySelector('.goodof').textContent") and "·" in pg.evaluate("el.shadowRoot.querySelector('.tile').title")
     assert pg.evaluate("el.shadowRoot.querySelector('[aria-live=polite]') !== null") and pg.evaluate("el.shadowRoot.querySelector('#print') !== null")
     pg.evaluate("() => { window.__printed = 0; window.print = () => { window.__printed++; }; el.shadowRoot.querySelector('#print').click(); }"); assert pg.evaluate("window.__printed") == 1
+    # language override, kiosk mode, reset, alerts item
+    pg.evaluate("el._cycleLang()"); assert "Jetzt tun" in txt()
+    pg.evaluate("el._cycleLang()"); assert "Do now" in txt() or "Do it now" in txt() or "Jetzt tun" not in txt()
+    pg.evaluate("el._cycleLang()"); assert "Jetzt tun" not in txt() and pg.evaluate("el._lang()") == "en"
+    pg.keyboard.press("k"); assert pg.evaluate("el._kiosk") is True and pg.evaluate("el.shadowRoot.querySelector('.wrap').classList.contains('kiosk')") is True
+    pg.keyboard.press("k"); assert pg.evaluate("el._kiosk") is False and pg.evaluate("el._rot") is False
+    assert pg.evaluate("el.shadowRoot.querySelector('#alerts') !== null && el.shadowRoot.querySelector('#kiosk') !== null && el.shadowRoot.querySelector('#reset') !== null")
+    pg.evaluate("() => { el._pins = ['x']; el._cycleLang(); el.shadowRoot.querySelector('#reset').click(); }")
+    assert pg.evaluate("el._pins.length") == 0 and "Jetzt tun" not in txt() and pg.evaluate("el._lang()") == "en"
     assert pg.evaluate("document.title").startswith("Luftwächter")
     pg.evaluate("el._select(el._rooms()[0].key)"); r0 = pg.evaluate("el._sel")
     pg.evaluate("""() => { const w = el.shadowRoot.querySelector('.wrap'); const ev = (t, x) => w.dispatchEvent(new PointerEvent(t, { pointerType: 'touch', clientX: x, clientY: 200, bubbles: true })); ev('pointerdown', 300); ev('pointerup', 120); }""")

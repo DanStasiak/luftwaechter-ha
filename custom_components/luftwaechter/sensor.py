@@ -33,7 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         if new:
             async_add_entities(new)
 
-    async_add_entities([HouseSensor(coord, entry), GoodRoomsSensor(coord, entry)])
+    async_add_entities([HouseSensor(coord, entry), GoodRoomsSensor(coord, entry), WorstRoomSensor(coord, entry)])
     _add()
     entry.async_on_unload(coord.async_add_listener(_add))
 
@@ -86,6 +86,27 @@ class GoodRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     def extra_state_attributes(self) -> dict:
         d = self.coordinator.data or {}
         return {"good": d.get("good", 0), "total": d.get("total", 0)}
+
+
+class WorstRoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
+    """Name of the room with the worst air; handy for voice and dashboards."""
+
+    _attr_has_entity_name = False
+    _attr_name = "Luftwächter Worst room"
+
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coord)
+        self._attr_unique_id = f"{entry.entry_id}_worst_room"
+        self._attr_device_info = _device(entry)
+
+    @property
+    def native_value(self) -> str | None:
+        return (self.coordinator.data or {}).get("worst_room") or None
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        d = self.coordinator.data or {}
+        return {"level": d.get("level", "unknown"), "attention": d.get("attention", 0)}
 
 
 class RoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):

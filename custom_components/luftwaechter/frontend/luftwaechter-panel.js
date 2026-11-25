@@ -11,7 +11,7 @@ const UI = {
     cover_open: "Auf", cover_stop: "Stopp", cover_close: "Zu", allgood: "Alle Werte im grünen Bereich.",
     isPoor: "ist schlecht", isFair: "ist mittel", tooHigh: "zu hoch", tooLow: "zu niedrig", limit: "Grenze",
     attention: "Jetzt tun", nothing: "Nichts zu tun, alles in Ordnung.", rooms_n: "{a} von {n} Räumen brauchen Aufmerksamkeit", stale: "Die Daten sind möglicherweise veraltet (letztes Update vor {n} min).",
-    goodOf: "{g} von {n} Räumen haben gute Luft", print: "Drucken / als PDF speichern", kTitle: "Tastenkürzel", kRoom: "Raum wechseln", kBack: "Zurück", kSearch: "Suchen", kSort: "Sortieren", kPin: "Raum anheften", kOnly: "Nur Probleme", kList: "Listenansicht", kCopy: "Hausübersicht kopieren", kMenu: "Menü", kRot: "Räume durchschalten", kFs: "Vollbild", kHelp: "Hilfe", swiped: "Wischen wechselt den Raum", size: "Textgröße", onbTitle: "So kommen Räume ins Panel", onb1: "Weise CO₂-, Feinstaub-, Temperatur- oder Luftfeuchte-Sensoren einem Bereich zu (Einstellungen → Bereiche).", onb2: "Der Raum erscheint automatisch, sobald ein Sensor Werte liefert.", onb3: "Optional: Gib einem Fenstersensor die Geräteklasse „Fenster“, dann bekommst du Lüftungsempfehlungen.", noHouse: "Die Integration Luftwächter wurde nicht gefunden. Einstellungen → Geräte & Dienste → Integration hinzufügen → Luftwächter.", legend: "Punkte: CO₂ · Feinstaub · Temperatur · Luftfeuchte", avgT: "Ø im Haus", ventStart: "Lüftungs-Timer starten ({n} min)", ventRun: "Lüften läuft", ventDone: "Zeit ist um: Fenster jetzt schließen", ventStop: "Abbrechen", fs: "Vollbild", fsExit: "Vollbild beenden", copyAll: "Hausstatus kopieren", trendUp: "Steigend", trendDown: "Fallend", onlyProblems: "Nur Probleme", rank: "CO₂ im Vergleich", rotate: "Räume automatisch durchschalten", csv: "CSV", shortcuts: "Tastatur: ← → Raum wechseln · Esc zurück · / suchen · S sortieren · P anheften · O nur Probleme · V Listenansicht · M Menü · R durchschalten · F Vollbild · H Hilfe", search: "Raum suchen…", noMatch: "Kein Raum gefunden.", listView: "Listenansicht", tileView: "Kachelansicht", soundOn: "Signalton bei Ablauf: an", soundOff: "Signalton bei Ablauf: aus", copyLink: "Link kopieren", mold: "Schimmelgefahr", dew: "Taupunkt", more: "Mehr", refreshNow: "Jetzt aktualisieren", cbMode: "Farbenblind-Modus (Symbole)", sinceFor: "{l} seit {t}", sortCo2: "Höchstes CO₂ zuerst", pin: "Oben anheften", unpin: "Nicht mehr anheften", pinned: "Angeheftet", copy: "Status kopieren", copied: "Kopiert", r6h: "6 h", r24h: "24 h", r7d: "7 Tage", a6h: "vor 6 h", a24h: "vor 24 h", a7d: "vor 7 Tagen", dayU: "Tg", hourU: "h",
+    alerts: "Browser-Hinweise", alertsOn: "Browser-Hinweise: an", alertsDenied: "Browser-Hinweise sind im Browser blockiert", alertBody: "{r}: {l}", kiosk: "Kiosk-Modus", kioskOff: "Kiosk-Modus beenden", langOpt: "Sprache", langAuto: "automatisch", resetView: "Ansicht zurücksetzen", goodOf: "{g} von {n} Räumen haben gute Luft", print: "Drucken / als PDF speichern", kTitle: "Tastenkürzel", kRoom: "Raum wechseln", kBack: "Zurück", kSearch: "Suchen", kSort: "Sortieren", kPin: "Raum anheften", kOnly: "Nur Probleme", kList: "Listenansicht", kCopy: "Hausübersicht kopieren", kMenu: "Menü", kRot: "Räume durchschalten", kFs: "Vollbild", kHelp: "Hilfe", swiped: "Wischen wechselt den Raum", size: "Textgröße", onbTitle: "So kommen Räume ins Panel", onb1: "Weise CO₂-, Feinstaub-, Temperatur- oder Luftfeuchte-Sensoren einem Bereich zu (Einstellungen → Bereiche).", onb2: "Der Raum erscheint automatisch, sobald ein Sensor Werte liefert.", onb3: "Optional: Gib einem Fenstersensor die Geräteklasse „Fenster“, dann bekommst du Lüftungsempfehlungen.", noHouse: "Die Integration Luftwächter wurde nicht gefunden. Einstellungen → Geräte & Dienste → Integration hinzufügen → Luftwächter.", legend: "Punkte: CO₂ · Feinstaub · Temperatur · Luftfeuchte", avgT: "Ø im Haus", ventStart: "Lüftungs-Timer starten ({n} min)", ventRun: "Lüften läuft", ventDone: "Zeit ist um: Fenster jetzt schließen", ventStop: "Abbrechen", fs: "Vollbild", fsExit: "Vollbild beenden", copyAll: "Hausstatus kopieren", trendUp: "Steigend", trendDown: "Fallend", onlyProblems: "Nur Probleme", rank: "CO₂ im Vergleich", rotate: "Räume automatisch durchschalten", csv: "CSV", shortcuts: "Tastatur: ← → Raum wechseln · Esc zurück · / suchen · S sortieren · P anheften · O nur Probleme · V Listenansicht · M Menü · R durchschalten · F Vollbild · H Hilfe", search: "Raum suchen…", noMatch: "Kein Raum gefunden.", listView: "Listenansicht", tileView: "Kachelansicht", soundOn: "Signalton bei Ablauf: an", soundOff: "Signalton bei Ablauf: aus", copyLink: "Link kopieren", mold: "Schimmelgefahr", dew: "Taupunkt", more: "Mehr", refreshNow: "Jetzt aktualisieren", cbMode: "Farbenblind-Modus (Symbole)", sinceFor: "{l} seit {t}", sortCo2: "Höchstes CO₂ zuerst", pin: "Oben anheften", unpin: "Nicht mehr anheften", pinned: "Angeheftet", copy: "Status kopieren", copied: "Kopiert", r6h: "6 h", r24h: "24 h", r7d: "7 Tage", a6h: "vor 6 h", a24h: "vor 24 h", a7d: "vor 7 Tagen", dayU: "Tg", hourU: "h",
     helpTitle: "Was bedeuten die Messwerte?", causes: "Mögliche Ursachen", todo: "Was hilft",
     hCo2: "CO₂ (Kohlendioxid) zeigt, wie verbraucht die Raumluft ist. Wir atmen es aus.",
     cCo2: "Viele Personen im Raum, Schlafen bei geschlossenem Fenster, kleine Räume, geschlossene Türen, Kerzen oder Gasflammen.",
@@ -36,7 +36,7 @@ const UI = {
     cover_open: "Open", cover_stop: "Stop", cover_close: "Close", allgood: "All readings are in the green.",
     isPoor: "is poor", isFair: "is fair", tooHigh: "too high", tooLow: "too low", limit: "Limit",
     attention: "Do now", nothing: "Nothing to do, all good.", rooms_n: "{a} of {n} rooms need attention", stale: "Data may be outdated (last update {n} min ago).",
-    goodOf: "{g} of {n} rooms have good air", print: "Print / save as PDF", kTitle: "Keyboard shortcuts", kRoom: "Switch room", kBack: "Back", kSearch: "Search", kSort: "Sort", kPin: "Pin room", kOnly: "Only problems", kList: "List view", kCopy: "Copy house summary", kMenu: "Menu", kRot: "Rotate rooms", kFs: "Full screen", kHelp: "Help", swiped: "Swipe to change room", size: "Text size", onbTitle: "How rooms get into the panel", onb1: "Assign CO₂, fine dust, temperature or humidity sensors to an area (Settings → Areas).", onb2: "The room appears automatically as soon as a sensor reports values.", onb3: "Optional: give a window sensor the device class \"window\" to get ventilation advice.", noHouse: "The Luftwächter integration was not found. Settings → Devices & services → Add integration → Luftwächter.", legend: "Dots: CO₂ · fine dust · temperature · humidity", avgT: "House average", ventStart: "Start ventilation timer ({n} min)", ventRun: "Ventilating", ventDone: "Time is up: close the window now", ventStop: "Cancel", fs: "Full screen", fsExit: "Exit full screen", copyAll: "Copy house status", trendUp: "Rising", trendDown: "Falling", onlyProblems: "Only problems", rank: "CO₂ compared", rotate: "Rotate through rooms automatically", csv: "CSV", shortcuts: "Keyboard: ← → switch room · Esc back · / search · S sort · P pin · O only problems · V list view · M menu · R rotate · F full screen · H help", search: "Find a room…", noMatch: "No room found.", listView: "List view", tileView: "Tile view", soundOn: "Sound when time is up: on", soundOff: "Sound when time is up: off", copyLink: "Copy link", mold: "Mold risk", dew: "Dew point", more: "More", refreshNow: "Refresh now", cbMode: "Color-blind mode (symbols)", sinceFor: "{l} for {t}", sortCo2: "Highest CO₂ first", pin: "Pin to top", unpin: "Unpin", pinned: "Pinned", copy: "Copy status", copied: "Copied", r6h: "6 h", r24h: "24 h", r7d: "7 days", a6h: "6 h ago", a24h: "24 h ago", a7d: "7 days ago", dayU: "d", hourU: "h",
+    alerts: "Browser alerts", alertsOn: "Browser alerts: on", alertsDenied: "Browser alerts are blocked in the browser", alertBody: "{r}: {l}", kiosk: "Kiosk mode", kioskOff: "Leave kiosk mode", langOpt: "Language", langAuto: "automatic", resetView: "Reset view settings", goodOf: "{g} of {n} rooms have good air", print: "Print / save as PDF", kTitle: "Keyboard shortcuts", kRoom: "Switch room", kBack: "Back", kSearch: "Search", kSort: "Sort", kPin: "Pin room", kOnly: "Only problems", kList: "List view", kCopy: "Copy house summary", kMenu: "Menu", kRot: "Rotate rooms", kFs: "Full screen", kHelp: "Help", swiped: "Swipe to change room", size: "Text size", onbTitle: "How rooms get into the panel", onb1: "Assign CO₂, fine dust, temperature or humidity sensors to an area (Settings → Areas).", onb2: "The room appears automatically as soon as a sensor reports values.", onb3: "Optional: give a window sensor the device class \"window\" to get ventilation advice.", noHouse: "The Luftwächter integration was not found. Settings → Devices & services → Add integration → Luftwächter.", legend: "Dots: CO₂ · fine dust · temperature · humidity", avgT: "House average", ventStart: "Start ventilation timer ({n} min)", ventRun: "Ventilating", ventDone: "Time is up: close the window now", ventStop: "Cancel", fs: "Full screen", fsExit: "Exit full screen", copyAll: "Copy house status", trendUp: "Rising", trendDown: "Falling", onlyProblems: "Only problems", rank: "CO₂ compared", rotate: "Rotate through rooms automatically", csv: "CSV", shortcuts: "Keyboard: ← → switch room · Esc back · / search · S sort · P pin · O only problems · V list view · M menu · R rotate · F full screen · H help", search: "Find a room…", noMatch: "No room found.", listView: "List view", tileView: "Tile view", soundOn: "Sound when time is up: on", soundOff: "Sound when time is up: off", copyLink: "Copy link", mold: "Mold risk", dew: "Dew point", more: "More", refreshNow: "Refresh now", cbMode: "Color-blind mode (symbols)", sinceFor: "{l} for {t}", sortCo2: "Highest CO₂ first", pin: "Pin to top", unpin: "Unpin", pinned: "Pinned", copy: "Copy status", copied: "Copied", r6h: "6 h", r24h: "24 h", r7d: "7 days", a6h: "6 h ago", a24h: "24 h ago", a7d: "7 days ago", dayU: "d", hourU: "h",
     helpTitle: "What do the readings mean?", causes: "Possible causes", todo: "What helps",
     hCo2: "CO₂ (carbon dioxide) shows how stale the room air is. We breathe it out.",
     cCo2: "Many people in the room, sleeping with the window closed, small rooms, closed doors, candles or gas flames.",
@@ -66,9 +66,11 @@ const SCALE = {
 };
 const rooms_ok = (el) => el._rooms().length > 1;
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const mem = {}; // fallback when the browser blocks localStorage (private window, kiosk profile): settings then last until the page closes
 const store = {
-  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
-  set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } },
+  get(k) { try { const v = localStorage.getItem(k); if (v !== null) return v; } catch (e) { /* use memory */ } return k in mem ? mem[k] : null; },
+  set(k, v) { mem[k] = v; try { localStorage.setItem(k, v); } catch (e) { /* memory only */ } },
+  remove(k) { delete mem[k]; try { localStorage.removeItem(k); } catch (e) { /* ignore */ } },
 };
 
 class LuftwaechterPanel extends HTMLElement {
@@ -82,6 +84,7 @@ class LuftwaechterPanel extends HTMLElement {
     this._chartKey = "co2";
     this._range = store.get("lw_range") || "24h";
     this._size = parseInt(store.get("lw_size") || "1", 10);
+    this._alerts = store.get("lw_alerts") === "1"; this._kiosk = store.get("lw_kiosk") === "1" || /kiosk/.test(location.hash);
     this._only = store.get("lw_only") === "1";
     this._list = store.get("lw_list") === "1"; this._snd = store.get("lw_snd") === "1"; this._q = ""; this._cb = store.get("lw_cb") === "1"; try { this._pins = JSON.parse(store.get("lw_pins") || "[]"); } catch (e) { this._pins = []; } if (!Array.isArray(this._pins)) this._pins = []; this._menu = false;
     this._help = false;
@@ -125,8 +128,16 @@ class LuftwaechterPanel extends HTMLElement {
     return [ov && many ? b("only", "⚠", t.onlyProblems, this._only) : "", ov && many ? b("sort", "↕", this._sortLabel(t)) : "",
       ov && many ? b("dens", this._list ? "▦" : "☰", this._list ? t.tileView : t.listView) : "", many ? b("rot", "⟳", t.rotate, this._rot) : "",
       ov && rooms.length ? b("copyall", "⧉", t.copyAll) : "", document.fullscreenEnabled ? b("fs", fs ? "🗗" : "⛶", fs ? t.fsExit : t.fs) : "",
-      b("print", "🖨", t.print), b("size", "Aa", t.size), b("cb", "◐", t.cbMode, this._cb), b("refresh", "↻", t.refreshNow)].join("");
+      b("alerts", "🔔", this._alerts ? t.alertsOn : (this._alertDenied ? t.alertsDenied : t.alerts), this._alerts), b("kiosk", "▣", this._kiosk ? t.kioskOff : t.kiosk, this._kiosk), b("lang", "🌐", `${t.langOpt}: ${(store.get("lw_lang") || "").toUpperCase() || t.langAuto}`), b("reset", "↺", t.resetView), b("print", "🖨", t.print), b("size", "Aa", t.size), b("cb", "◐", t.cbMode, this._cb), b("refresh", "↻", t.refreshNow)].join("");
   }
+  _cycleLang() { const o = store.get("lw_lang") || ""; const n = { "": "de", de: "en", en: "" }[o] ?? ""; store.set("lw_lang", n); this._render(); }
+  _setKiosk(on) { this._kiosk = on; store.set("lw_kiosk", on ? "1" : "0"); if (on) { this._size = 2; if (!this._rot && this._rooms().length > 1) { this._rotToggle(); return; } } else { this._size = parseInt(store.get("lw_size") || "1", 10); this._rotStop(); return; } this._render(); }
+  async _toggleAlerts() {
+    if (this._alerts) { this._alerts = false; store.set("lw_alerts", "0"); this._render(); return; }
+    try { const p = typeof Notification === "undefined" ? "denied" : (Notification.permission === "default" ? await Notification.requestPermission() : Notification.permission); this._alerts = p === "granted"; } catch (e) { this._alerts = false; }
+    store.set("lw_alerts", this._alerts ? "1" : "0"); if (!this._alerts) this._alertDenied = true; this._render();
+  }
+  _resetView() { ["lw_size", "lw_sort", "lw_pins", "lw_only", "lw_list", "lw_cb", "lw_lang", "lw_alerts", "lw_kiosk", "lw_room"].forEach((k) => store.remove(k)); this._size = 1; this._sort = "worst"; this._pins = []; this._only = false; this._list = false; this._cb = false; this._alerts = false; this._kiosk = false; this._sel = null; this._menu = false; this._rotStop(); }
   _nextSort() { this._sort = { worst: "name", name: "co2" }[this._sort] || "worst"; store.set("lw_sort", this._sort); this._render(); }
   _pin(key) { const i = this._pins.indexOf(key); if (i < 0) this._pins.push(key); else this._pins.splice(i, 1); store.set("lw_pins", JSON.stringify(this._pins)); this._render(); }
   _sortLabel(t) { return this._sort === "worst" ? t.sortWorst : this._sort === "co2" ? t.sortCo2 : t.sortName; }
@@ -175,7 +186,7 @@ class LuftwaechterPanel extends HTMLElement {
     if (!st) return null;
     return Object.values(st).find((s) => s.entity_id.startsWith("sensor.") && s.attributes && Array.isArray(s.attributes.rooms) && s.attributes.summary) || null;
   }
-  _lang() { const e = this._house(), srv = ((e && e.attributes.lang) || "en").slice(0, 2), mine = ((this._hass && this._hass.language) || "").slice(0, 2); return UI[mine] ? mine : (UI[srv] ? srv : "en"); }
+  _lang() { const ov = store.get("lw_lang"); if (ov && UI[ov]) return ov; const e = this._house(), srv = ((e && e.attributes.lang) || "en").slice(0, 2), mine = ((this._hass && this._hass.language) || "").slice(0, 2); return UI[mine] ? mine : (UI[srv] ? srv : "en"); }
   _attrs() { const e = this._house(); if (!e) return {}; const a = e.attributes, l = this._lang(); return l !== a.lang && a.alt && a.alt[l] ? Object.assign({}, a, a.alt[l], { lang: l }) : a; }
   _t() { return UI[this._lang()] || UI.en; }
   _lim(k) { const l = this._attrs().limits || {}; if (k === "co2" && l.co2) return `< ${l.co2[0]} / < ${l.co2[1]} ppm`; if (k === "pm25" && l.pm25) return `< ${l.pm25[0]} / < ${l.pm25[1]} µg/m³`; return LIM[k]; }
@@ -217,6 +228,7 @@ class LuftwaechterPanel extends HTMLElement {
       if (k === "p" && this._sel) { this._pin(this._sel); return; }
       if (k === "o" && !this._sel) { this._only = !this._only; store.set("lw_only", this._only ? "1" : "0"); this._render(); return; }
       if (k === "/" && !this._sel) { const qi = this.shadowRoot.querySelector("#q"); if (qi) { ev.preventDefault(); qi.focus(); return; } }
+      if (k === "k") { this._setKiosk(!this._kiosk); return; }
       if (k === "c" && !this._sel) { this.shadowRoot.querySelector("#copyall")?.click(); return; }
       if (k === "m") { this._toggleMenu(); return; }
       if (k === "v" && !this._sel) { this._list = !this._list; store.set("lw_list", this._list ? "1" : "0"); this._render(); return; }
@@ -417,6 +429,7 @@ header{position:sticky;top:0;z-index:5;background:var(--primary-background-color
 @media (forced-colors:active){.tile{border:2px solid CanvasText!important}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .keys table{border-collapse:collapse;width:100%}.keys th{text-align:left;white-space:nowrap;padding:3px 10px 3px 0;font-weight:400}.keys td{padding:3px 0}kbd{font:inherit;font-size:.85em;border:1px solid var(--divider-color,#8886);border-radius:5px;padding:1px 6px;background:var(--card-background-color,#f4f6f8)}
+.kiosk header .tool{opacity:.3}.kiosk header .tool:hover,.kiosk header .tool:focus-visible{opacity:1}.kiosk #help,.kiosk #ventpill,.kiosk #q{display:none}
 @media print{.menuwrap,.tool,.back,#ovl,.chips{display:none!important}.wrap{max-width:none}}
 @media (prefers-reduced-motion:no-preference){.tile,.dev,.chip{transition:filter .15s}}`;
     if (!e) { const has = this._hass && this._hass.states && Object.keys(this._hass.states).length > 5; root.innerHTML = `<style>${css}</style><div class="wrap" role="main">${has ? `<div class="card">${esc(t.noHouse)}</div>` : "<p>…</p>"}</div>`; return; }
@@ -459,7 +472,11 @@ header{position:sticky;top:0;z-index:5;background:var(--primary-background-color
     root.appendChild(this._live);
     const lv = {}; rooms.forEach((r) => { lv[r.key] = r.level; });
     if (this._lvPrev) { const ch = rooms.filter((r) => this._lvPrev[r.key] && this._lvPrev[r.key] !== r.level); if (ch.length) this._live.textContent = ch.map((r) => `${r.name}: ${t[r.level] || t.unknown}`).join(". "); }
+    if (this._alerts && this._lvPrev && document.hidden && typeof Notification !== "undefined" && Notification.permission === "granted") {
+      rooms.filter((r) => r.level === "poor" && this._lvPrev[r.key] && this._lvPrev[r.key] !== "poor").forEach((r) => { try { new Notification("Luftwächter", { body: t.alertBody.replace("{r}", r.name).replace("{l}", t.poor || "Poor"), tag: "lw-" + r.key }); } catch (er) { /* ignore */ } });
+    }
     this._lvPrev = lv;
+    this.shadowRoot.querySelector(".wrap")?.classList.toggle("kiosk", !!this._kiosk);
     const wrap = q(".wrap");
     if (wrap && sel && rooms.length > 1) {
       let x0 = null, y0 = 0;
@@ -483,6 +500,10 @@ header{position:sticky;top:0;z-index:5;background:var(--primary-background-color
     q("#more")?.addEventListener("click", () => this._toggleMenu());
     q("#menu")?.addEventListener("click", () => { this._menu = false; }, true);
     q("#cb")?.addEventListener("click", () => { this._cb = !this._cb; store.set("lw_cb", this._cb ? "1" : "0"); this._render(); });
+    q("#alerts")?.addEventListener("click", () => this._toggleAlerts());
+    q("#kiosk")?.addEventListener("click", () => { this._toggleMenu(false); this._setKiosk(!this._kiosk); });
+    q("#lang")?.addEventListener("click", () => this._cycleLang());
+    q("#reset")?.addEventListener("click", () => { this._resetView(); this._render(); });
     q("#print")?.addEventListener("click", () => { this._toggleMenu(false); try { window.print(); } catch (e) { /* ignore */ } });
     q("#refresh")?.addEventListener("click", () => { try { this._hass.callService("luftwaechter", "refresh", {}); } catch (e) { /* ignore */ } });
     q("#dens")?.addEventListener("click", () => { this._list = !this._list; store.set("lw_list", this._list ? "1" : "0"); this._render(); });

@@ -182,3 +182,9 @@ async def test_room_ventilate_binary_sensor(hass, enable_custom_integrations):
     await hass.data[DOMAIN][entry.entry_id].async_refresh()
     await hass.async_block_till_done()
     assert hass.states.get("binary_sensor.luftwachter_office_ventilate").state == "off"
+
+
+async def test_worst_room_sensor(hass, enable_custom_integrations):
+    await _setup(hass, co2="1900")
+    s = hass.states.get("sensor.luftwachter_worst_room")
+    assert s is not None and s.state == "Office" and s.attributes["level"] == "poor"
