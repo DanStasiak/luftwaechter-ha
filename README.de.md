@@ -52,6 +52,7 @@ Weise CO₂-, Feinstaub-, Temperatur- oder Feuchte-Sensoren einem **Bereich** zu
 | `sensor.luftwachter_house` | schlechtester Wert | rooms, outside, limits, attention, attention_rooms, worst_room |
 | `sensor.luftwachter_worst_room` | Name des Raums mit der schlechtesten Luft | level, attention |
 | `sensor.luftwachter_good_rooms` | Anteil der Räume mit guter Luft, % | good, total |
+| `binary_sensor.luftwachter_sensor_problem` | an, solange der Luftsensor eines Raums nichts meldet oder als veraltet ignoriert wird (Diagnose) | count, rooms |
 | `binary_sensor.luftwachter_<raum>_ventilate` | an, solange für den Raum „Fenster öffnen“ geraten wird | room, headline, level |
 | `binary_sensor.luftwachter_attention` | an, solange ein Raum schlecht ist oder Lüften/Warten rät | count, rooms, worst_room |
 
@@ -67,12 +68,20 @@ Zweiter Blueprint „Ans Lüften erinnern“: Lüften-Sensor eines Raums wählen
 **Kiosk-Modus** (Taste `K` oder Menü → „Kiosk-Modus“): größte Schrift, Räume wechseln automatisch, Knöpfe blenden aus. Direkt starten: `https://<dein-ha>/luftwaechter#kiosk`. Im Menü außerdem: Browser-Hinweise (wenn ein Raum schlecht wird), Sprache wählen, Ansicht zurücksetzen.
 
 ## Tastatur
-← → Raum wechseln · Esc zurück · `/` suchen · `S` sortieren (schlechtester, Name, CO₂) · `P` Raum anheften · `O` nur Probleme · `V` Listenansicht · `C` Hausübersicht kopieren · `K` Kiosk-Modus · `M` Menü · `R` durchschalten · `F` Vollbild · `H` oder `?` Hilfe. Am Handy wischt du im Raum nach links oder rechts, um den Raum zu wechseln.
+← → Raum wechseln · `1`–`9` Raum wählen · `T` Zeitraum des Verlaufs · Esc zurück · `/` suchen · `S` sortieren (schlechtester, Name, CO₂) · `P` Raum anheften · `O` nur Probleme · `V` Listenansicht · `C` Hausübersicht kopieren · `K` Kiosk-Modus · `M` Menü · `R` durchschalten · `F` Vollbild · `H` oder `?` Hilfe. Am Handy wischt du im Raum nach links oder rechts, um den Raum zu wechseln.
 
 ## Fehlersuche
 - **Panel zeigt noch alte Texte nach dem Update**: Browser-Seite hart neu laden (Strg + F5).
 - **Kein Raum sichtbar**: Sensoren einem Bereich zuweisen, siehe oben; Reparaturen prüfen.
 - **Fehler melden**: [Issue öffnen](https://github.com/DanStasiak/luftwaechter-ha/issues/new/choose); die Diagnosedaten der Integration helfen dabei.
+
+## Kompatibilität
+Benötigt Home Assistant 2025.10 oder neuer, jede Installationsart. Das Panel läuft in aktuellem Chrome, Edge, Firefox und Safari, am PC und am Handy. Es wird nichts außerhalb von Home Assistant kontaktiert.
+
+## Deinstallation
+1. Einstellungen → Geräte & Dienste → Luftwächter → ⋮ → **Löschen**.
+2. In HACS Luftwächter öffnen → ⋮ → **Entfernen**, danach Home Assistant neu starten.
+3. Automationen aus den Blueprints behalten ihre eigene Kopie; lösche sie, wenn du sie nicht mehr brauchst.
 
 ## Datenschutz
 Alles läuft in deinem Home Assistant. Keine Konten, keine Cloud-Dienste, keine Telemetrie.

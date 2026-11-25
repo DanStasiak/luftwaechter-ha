@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.13.0
+- **Number keys 1–9** jump straight to a room; **T** cycles the chart range (6 h, 24 h, 7 d). Both are listed in the help.
+- The **browser tab title names the room** you are looking at, so several tabs are easy to tell apart.
+- New **sensor problem** binary sensor (`binary_sensor.luftwachter_sensor_problem`, diagnostic): on while a room's air sensor has stopped reporting or was ignored as stale. It lists the rooms, so one automation can tell you a battery is empty.
+- The house model now carries `silent_rooms` for the same purpose.
+- GitHub page: new **Compatibility** and **Uninstall** sections (English and German), the entities table lists the new sensor, and the keyboard lines name the new keys.
+- New [`docs/TRANSLATING.md`](docs/TRANSLATING.md): how to add a language to the panel and the advice texts.
+- The validation workflow now runs with read-only permissions and cancels superseded runs.
+- Three more tests (silent rooms in the engine, the new binary sensor, keys 1–9 / T / tab title in the panel).
+- DE: **Zifferntasten 1–9** springen direkt zu einem Raum, **T** schaltet den Zeitraum des Verlaufs um (6 h, 24 h, 7 T). Beides steht in der Hilfe.
+- DE: Der **Titel des Browser-Tabs nennt den Raum**, den du ansiehst.
+- DE: Neuer Binärsensor **Sensor-Problem** (`binary_sensor.luftwachter_sensor_problem`): an, solange der Luftsensor eines Raums nichts mehr meldet oder als veraltet ignoriert wurde. Er nennt die Räume, so meldet dir eine Automation z. B. eine leere Batterie.
+- DE: GitHub-Seite mit neuen Abschnitten **Kompatibilität** und **Deinstallation**; die Entitäten-Tabelle nennt den neuen Sensor.
+- DE: Neue Anleitung [`docs/TRANSLATING.md`](docs/TRANSLATING.md) zum Hinzufügen einer Sprache.
+- DE: Der Prüf-Workflow läuft mit Nur-Lese-Rechten und bricht überholte Läufe ab.
+
 ## 0.12.0
 - **Kiosk mode** for wall tablets (key `K`, More menu, or `#kiosk` in the link): biggest text, rooms rotate by themselves, buttons fade out but stay reachable.
 - **Browser alerts** (opt-in, More menu): a notification when a room turns poor while the tab is in the background.

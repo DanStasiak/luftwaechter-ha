@@ -201,6 +201,15 @@ with sync_playwright() as p:
     pg.evaluate("() => { window.e2.remove(); location.hash = '#room=o'; const e3 = document.createElement('luftwaechter-panel'); document.body.appendChild(e3); e3.hass = el._hass; window.e3 = e3; }")
     assert pg.evaluate("e3._sel") == "o"
     pg.evaluate("() => { window.e3.remove(); location.hash = ''; el._select(null); }")
+    # keys 1-9 pick a room, T cycles the chart range, the tab title names the room
+    pg.evaluate("() => { el._select(null); }")
+    pg.evaluate("() => el._key({ key: '1', composedPath: () => [document.body], preventDefault() {} })")
+    assert pg.evaluate("el._sel") is not None
+    assert pg.evaluate("document.title").startswith("Luftwächter · ") and "need attention" not in pg.evaluate("document.title") and "Alles gut" not in pg.evaluate("document.title")
+    r0 = pg.evaluate("el._range")
+    pg.evaluate("() => el._key({ key: 't', composedPath: () => [document.body], preventDefault() {} })")
+    assert pg.evaluate("el._range") != r0
+    pg.evaluate("() => { el._range = '24h'; el._select(null); }")
     pg.set_viewport_size({"width": 420, "height": 900}); pg.evaluate("el.shadowRoot.querySelector('.tile').click()")
     pg.wait_for_function("el.shadowRoot.querySelector('.chartwrap svg path') !== null")
     pg.screenshot(path=str(out / "room_phone.png"), full_page=True)

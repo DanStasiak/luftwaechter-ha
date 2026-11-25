@@ -70,6 +70,14 @@ def test_stale_sensor_ignored():
     r = m["rooms"][0]
     assert r["values"][0]["raw"] == 900 and "ignored" in r["warn"]
 
+def test_silent_rooms_listed():
+    ok = engine.build_model([area(co2=900)], set(), None, "", "en", NOW)
+    assert ok["silent_rooms"] == []
+    a = area(co2=900)
+    a["entities"].append(ent("sensor.co2_old", "carbon_dioxide", 3000, age=120, name="Office old"))
+    m = engine.build_model([a], set(), None, "", "en", NOW)
+    assert m["silent_rooms"] == [m["rooms"][0]["name"]]
+
 def test_outside_view_tip():
     o = engine.outside_view({"temperature": 3, "condition": "cloudy", "wind_speed": 10, "wind_speed_unit": "m/s", "wind_bearing": 90}, "", "en")
     assert o["wind"] == "36" and o["windDir"] == "E" and "cold" in o["tip"]

@@ -135,6 +135,7 @@ The room level is the worst of the four.
 | `sensor.luftwachter_worst_room` | name of the room with the worst air | level, attention |
 | `sensor.luftwachter_good_rooms` | share of rooms with good air, % | good, total |
 | `binary_sensor.luftwachter_<room>_ventilate` | on while the advice for the room is "open the window" | room, headline, level |
+| `binary_sensor.luftwachter_sensor_problem` | on while a room's air sensor is silent or ignored as stale (diagnostic) | count, rooms |
 | `binary_sensor.luftwachter_attention` | on while a room is poor or advises opening / waiting | count, rooms, worst_room |
 
 Example automation: notify when a room gets poor.
@@ -177,7 +178,7 @@ Prefer clicks to YAML? Import the blueprint and pick the level, an optional room
 
 ## Wall tablet tips
 - **Kiosk mode** (key **K** or More → *Kiosk mode*): biggest text size, rooms rotate by themselves, the buttons fade out (still there when you touch them). Open `https://<your-ha>/luftwaechter#kiosk` to start in kiosk mode.
-- Keyboard: ← → switch room, Esc back, **/** search, **S** sort (worst, name, highest CO₂), **P** pin a room, **O** only problems, **V** list view, **M** menu, **R** rotate rooms, **F** full screen, **H** help.
+- Keyboard: ← → switch room, **1–9** pick a room, **T** chart range, Esc back, **/** search, **S** sort (worst, name, highest CO₂), **P** pin a room, **O** only problems, **V** list view, **M** menu, **R** rotate rooms, **F** full screen, **H** help.
 - **Rotate** (⟳ button or **R**) steps through the rooms every 12 seconds; a tap stops it. In full screen the panel asks the tablet to keep the screen on.
 - The header stays visible while you scroll.
 - Open the panel once, choose the **Aa** size, press the full-screen button.
@@ -254,6 +255,14 @@ Luftwächter also exists as a small desktop widget for Windows, [airguard-widget
 
 ## Roadmap
 Ideas, not promises: more languages (translations welcome), more sensor types, limits per room, a Lovelace card. Tell me what you need in an [issue](https://github.com/DanStasiak/luftwaechter-ha/issues).
+
+## Compatibility
+Needs Home Assistant 2025.10 or newer, any install type (OS, Container, Core, Supervised). The panel works in current Chrome, Edge, Firefox and Safari, on desktop and phone. Nothing outside Home Assistant is contacted.
+
+## Uninstall
+1. Settings → Devices & services → Luftwächter → ⋮ → **Delete**.
+2. In HACS, open Luftwächter → ⋮ → **Remove**, then restart Home Assistant.
+3. Automations built from the blueprints keep their own copy and stay; delete them if you no longer need them.
 
 ## Privacy
 Everything runs inside your Home Assistant. No accounts, no cloud services, no telemetry.

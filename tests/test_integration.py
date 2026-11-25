@@ -121,6 +121,12 @@ async def test_attention_binary_sensor(hass, enable_custom_integrations):
     assert house.attributes["attention"] == 0 and house.attributes["stale_min"] == 10
 
 
+async def test_sensor_problem_binary_sensor(hass, enable_custom_integrations):
+    await _setup(hass, co2="900")
+    b = hass.states.get("binary_sensor.luftwachter_sensor_problem")
+    assert b is not None and b.state == "off" and b.attributes["count"] == 0
+
+
 async def test_room_since_and_spark(hass, enable_custom_integrations):
     entry, _eid = await _setup(hass, co2="1300")
     coord = hass.data[DOMAIN][entry.entry_id]

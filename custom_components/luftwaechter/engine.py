@@ -508,7 +508,8 @@ def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rai
     return {
         "rooms": rooms, "summary": summary,
         "good": sum(1 for r in rooms if r["level"] == "good"), "total": len(rooms),
-        "attention": len(attn), "attention_rooms": [r["name"] for r in attn], "worst_room": worst_room,
+        "attention": len(attn), "attention_rooms": [r["name"] for r in attn],
+        "silent_rooms": [r["name"] for r in rooms if r.get("warn")], "worst_room": worst_room,
         "level": LEVELS[worst] if worst is not None else "unknown",
         "outside": outside, "lang": lang, "alt": alt,
         "limits": {k: list(v) for k, v in norm_limits(limits).items()}, "colors": list(COLORS),
