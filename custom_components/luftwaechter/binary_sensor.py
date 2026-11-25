@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -13,7 +13,22 @@ from .coordinator import LuftwaechterCoordinator
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
-    async_add_entities([AttentionSensor(hass.data[DOMAIN][entry.entry_id], entry)])
+    coord: LuftwaechterCoordinator = hass.data[DOMAIN][entry.entry_id]
+    async_add_entities([AttentionSensor(coord, entry)])
+    known: set[str] = set()
+
+    @callback
+    def _add() -> None:
+        new = []
+        for room in (coord.data or {}).get("rooms", []):
+            if room["key"] not in known:
+                known.add(room["key"])
+                new.append(RoomVentilateSensor(coord, entry, room["key"]))
+        if new:
+            async_add_entities(new)
+
+    _add()
+    entry.async_on_unload(coord.async_add_listener(_add))
 
 
 class AttentionSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySensorEntity):
@@ -37,3 +52,37 @@ class AttentionSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySensorEn
     def extra_state_attributes(self) -> dict:
         d = self.coordinator.data or {}
         return {"count": d.get("attention", 0), "rooms": d.get("attention_rooms", []), "worst_room": d.get("worst_room", "")}
+
+
+class RoomVentilateSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySensorEntity):
+    """On while Luftwächter advises opening a window in this room (one per room, for automations)."""
+
+    _attr_has_entity_name = False
+
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry, key: str) -> None:
+        super().__init__(coord)
+        self._key = key
+        self._attr_unique_id = f"{entry.entry_id}_ventilate_{key}"
+        self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, entry.entry_id)}, name="Luftwächter", manufacturer="Dan Stasiak")
+
+    def _room(self) -> dict | None:
+        return next((r for r in (self.coordinator.data or {}).get("rooms", []) if r["key"] == self._key), None)
+
+    @property
+    def name(self) -> str:
+        room = self._room()
+        return f"Luftwächter {room['name'] if room else self._key} ventilate"
+
+    @property
+    def available(self) -> bool:
+        return super().available and self._room() is not None
+
+    @property
+    def is_on(self) -> bool:
+        room = self._room()
+        return bool(room and room["action"] == "open")
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        room = self._room() or {}
+        return {"room": room.get("name", ""), "headline": room.get("headline", ""), "level": room.get("level", "unknown")}

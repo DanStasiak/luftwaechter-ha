@@ -30,6 +30,7 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 Questions? See [SUPPORT.md](SUPPORT.md).
 
 ## Features
+- **Screen-reader friendly:** level changes are announced politely, tiles have tooltips with the full advice, everything works by keyboard.
 - **Do-now overview**: which rooms need attention, worst first, with a coloured dot per reading on every tile.
 - **Room view**: status badge, "what stands out" with the limits, gauge bars, 24 h / 6 h / 7 day history charts with hover readout.
 - **Advice**: open, close or keep the window; how long to ventilate; wait for storms; rain-soon hint from your weather forecast.
@@ -130,6 +131,7 @@ The room level is the worst of the four.
 | `sensor.luftwachter_<room>` | good / fair / poor | action, headline, detail, window, trend, since, mold, dew, values, devices, sources |
 | `sensor.luftwachter_house` | worst level | rooms, outside, limits, updated, attention, attention_rooms, worst_room |
 | `sensor.luftwachter_good_rooms` | share of rooms with good air, % | good, total |
+| `binary_sensor.luftwachter_<room>_ventilate` | on while the advice for the room is "open the window" | room, headline, level |
 | `binary_sensor.luftwachter_attention` | on while a room is poor or advises opening / waiting | count, rooms, worst_room |
 
 Example automation: notify when a room gets poor.
@@ -161,6 +163,10 @@ The room attribute `trend` is `up`, `down` or `flat` (CO₂ or fine dust compare
 Prefer clicks to YAML? Import the blueprint and pick the level, an optional room and what should happen (notification, speech, a light, anything). In your actions you can use `{{ room }}`, `{{ headline }}`, `{{ level }}` and `{{ previous }}`.
 
 [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FDanStasiak%2Fluftwaechter-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fluftwaechter%2Flevel_changed.yaml)
+
+**Second blueprint, "remind me to ventilate":** pick a room's *ventilate* sensor and how long the advice must last (for example 5 minutes), then choose what happens. Use `{{ room }}` and `{{ headline }}` in your texts.
+
+[![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FDanStasiak%2Fluftwaechter-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fluftwaechter%2Fventilate_reminder.yaml)
 
 ## Actions and diagnostics
 - `luftwaechter.refresh` recalculates all rooms immediately.

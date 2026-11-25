@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.11.0
+- New binary sensor per room, `binary_sensor.luftwachter_<room>_ventilate`: on while the advice is "open the window". The simplest trigger for your own automations.
+- New blueprint "remind me to ventilate": pick the room's ventilate sensor, set how long the advice must last, choose the action. One-click import badge in the README.
+- The overview says how many rooms are fine ("3 of 5 rooms have good air").
+- Screen readers announce level changes ("Office: Poor") without moving the focus.
+- Tiles show the full advice as a tooltip.
+- More menu: "Print / save as PDF" (the print layout hides buttons and menus).
+- Blueprint test now checks every blueprint in the folder.
+- Tests: 33, plus panel checks for the summary line, tooltip, print entry and announcer.
+- README: second blueprint, new entity row and a screen-reader line in the feature list, English and German.
+- DE: Neuer Lüften-Sensor pro Raum (`binary_sensor.luftwachter_<raum>_ventilate`), neuer Blueprint „Ans Lüften erinnern“, Übersicht zeigt „3 von 5 Räumen haben gute Luft“, Screenreader-Ansagen bei Wechsel, Tooltips an den Kacheln, Menüpunkt „Drucken / als PDF speichern“.
+
 ## 0.10.0
 - Help dialog: a proper keyboard shortcut table instead of one long line; the `?` key opens the help too.
 - Key `C` copies the house summary (the same text as the menu entry) without opening the menu.

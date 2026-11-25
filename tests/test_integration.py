@@ -172,3 +172,13 @@ async def test_good_rooms_sensor_and_diagnostics(hass, enable_custom_integration
 
     diag = await async_get_config_entry_diagnostics(hass, entry)
     assert diag["good"] == 1 and diag["total"] == 1 and "stale_min" in diag and "attention" in diag
+
+
+async def test_room_ventilate_binary_sensor(hass, enable_custom_integrations):
+    entry, _eid = await _setup(hass, co2="1300")
+    s = hass.states.get("binary_sensor.luftwachter_office_ventilate")
+    assert s is not None and s.state == "on" and s.attributes["room"] == "Office"
+    hass.states.async_set(_eid, "450", {"device_class": "carbon_dioxide"})
+    await hass.data[DOMAIN][entry.entry_id].async_refresh()
+    await hass.async_block_till_done()
+    assert hass.states.get("binary_sensor.luftwachter_office_ventilate").state == "off"

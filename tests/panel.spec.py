@@ -174,6 +174,9 @@ with sync_playwright() as p:
     # help: shortcut table and the ? key; tab title; swipe between rooms; C copies the house summary
     pg.keyboard.press("?"); assert pg.evaluate("el._help") is True and "Keyboard shortcuts" in txt() and pg.evaluate("el.shadowRoot.querySelectorAll('.keys kbd').length") >= 10
     pg.keyboard.press("Escape"); assert pg.evaluate("el._help") is False
+    assert "rooms have good air" in pg.evaluate("el.shadowRoot.querySelector('.goodof').textContent") and "·" in pg.evaluate("el.shadowRoot.querySelector('.tile').title")
+    assert pg.evaluate("el.shadowRoot.querySelector('[aria-live=polite]') !== null") and pg.evaluate("el.shadowRoot.querySelector('#print') !== null")
+    pg.evaluate("() => { window.__printed = 0; window.print = () => { window.__printed++; }; el.shadowRoot.querySelector('#print').click(); }"); assert pg.evaluate("window.__printed") == 1
     assert pg.evaluate("document.title").startswith("Luftwächter")
     pg.evaluate("el._select(el._rooms()[0].key)"); r0 = pg.evaluate("el._sel")
     pg.evaluate("""() => { const w = el.shadowRoot.querySelector('.wrap'); const ev = (t, x) => w.dispatchEvent(new PointerEvent(t, { pointerType: 'touch', clientX: x, clientY: 200, bubbles: true })); ev('pointerdown', 300); ev('pointerup', 120); }""")

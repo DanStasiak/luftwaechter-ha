@@ -1,0 +1,52 @@
+blueprint:
+  name: Luftwächter - remind me to ventilate
+  description: >
+    Runs your actions when Luftwächter advises opening a window in a room and the
+    advice has lasted for the time you choose, for example "send a notification
+    after 5 minutes". Pick the room's "ventilate" sensor. In your actions you can
+    use the variables `room` and `headline`.
+  domain: automation
+  author: Dan Stasiak
+  source_url: https://github.com/DanStasiak/luftwaechter-ha/blob/main/blueprints/automation/luftwaechter/ventilate_reminder.yaml
+  homeassistant:
+    min_version: 2025.10.0
+  input:
+    ventilate_sensor:
+      name: Room (ventilate sensor)
+      description: The binary sensor "Luftwächter <room> ventilate" of the room to watch.
+      selector:
+        entity:
+          filter:
+            - integration: luftwaechter
+              domain: binary_sensor
+    wait_minutes:
+      name: Wait before reminding (minutes)
+      description: The advice must last this long before the actions run, so short peaks are ignored.
+      default: 5
+      selector:
+        number:
+          min: 0
+          max: 120
+          unit_of_measurement: min
+    actions:
+      name: Actions
+      description: What to do, for example send a notification. Use {{ room }} and {{ headline }} in texts.
+      default: []
+      selector:
+        action:
+
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: state
+    entity_id: !input ventilate_sensor
+    to: "on"
+    for:
+      minutes: !input wait_minutes
+
+variables:
+  room: "{{ state_attr(trigger.entity_id, 'room') }}"
+  headline: "{{ state_attr(trigger.entity_id, 'headline') }}"
+
+actions: !input actions
