@@ -14,7 +14,12 @@ async def async_get_config_entry_diagnostics(hass: HomeAssistant, entry: ConfigE
     model = coord.data or {}
     return {
         "entry": {"data": dict(entry.data), "options": dict(entry.options)},
+        "version": entry.version,
         "language": coord.lang,
+        "good": model.get("good"),
+        "total": model.get("total"),
+        "attention": model.get("attention"),
+        "stale_min": model.get("stale_min"),
         "rooms": [
             {
                 "key": r["key"], "level": r["level"], "action": r["action"],

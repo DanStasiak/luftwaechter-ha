@@ -11,6 +11,13 @@ Luftqualität pro Raum, Lüftungshinweise und Fensterempfehlungen für Home Assi
 
 <p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/overview_de.png" width="640" alt="Übersicht auf Deutsch"></p>
 
+## Schnellstart
+1. **Luftwächter** im Marketplace installieren, Home Assistant neu starten.
+2. Einstellungen → Geräte & Dienste → Integration hinzufügen → **Luftwächter**.
+3. CO₂-, Feinstaub-, Temperatur- oder Feuchte-Sensoren einem **Bereich** zuweisen. Der Raum erscheint innerhalb einer Minute im Panel.
+
+Hilfe: [SUPPORT.md](SUPPORT.md).
+
 ## Das kann es
 - **„Jetzt tun“-Übersicht**: welche Räume Aufmerksamkeit brauchen, der schlechteste zuerst, mit Verlaufslinie der letzten Stunde.
 - **Raumansicht**: Status, „Das fällt auf“ mit Grenzwerten, Skalen, Verlauf über 6 Stunden, 24 Stunden oder 7 Tage, Taupunkt und Schimmelwarnung.
@@ -43,6 +50,7 @@ Weise CO₂-, Feinstaub-, Temperatur- oder Feuchte-Sensoren einem **Bereich** zu
 |---|---|---|
 | `sensor.luftwachter_<raum>` | good / fair / poor | action, headline, detail, window, trend, since, mold, dew, values, devices |
 | `sensor.luftwachter_house` | schlechtester Wert | rooms, outside, limits, attention, attention_rooms, worst_room |
+| `sensor.luftwachter_good_rooms` | Anteil der Räume mit guter Luft, % | good, total |
 | `binary_sensor.luftwachter_attention` | an, solange ein Raum schlecht ist oder Lüften/Warten rät | count, rooms, worst_room |
 
 Die Entity-IDs hängen von deiner Installation ab. Ereignis und Blueprint sind in der [englischen Beschreibung](README.md#events-for-automations) erklärt; der Blueprint lässt sich mit einem Klick importieren:
@@ -50,7 +58,7 @@ Die Entity-IDs hängen von deiner Installation ab. Ereignis und Blueprint sind i
 [![Blueprint importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FDanStasiak%2Fluftwaechter-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fluftwaechter%2Flevel_changed.yaml)
 
 ## Tastatur
-← → Raum wechseln · Esc zurück · `/` suchen · `S` sortieren (schlechtester, Name, CO₂) · `P` Raum anheften · `O` nur Probleme · `V` Listenansicht · `M` Menü · `R` durchschalten · `F` Vollbild · `H` Hilfe
+← → Raum wechseln · Esc zurück · `/` suchen · `S` sortieren (schlechtester, Name, CO₂) · `P` Raum anheften · `O` nur Probleme · `V` Listenansicht · `C` Hausübersicht kopieren · `M` Menü · `R` durchschalten · `F` Vollbild · `H` oder `?` Hilfe. Am Handy wischt du im Raum nach links oder rechts, um den Raum zu wechseln.
 
 ## Fehlersuche
 - **Panel zeigt noch alte Texte nach dem Update**: Browser-Seite hart neu laden (Strg + F5).

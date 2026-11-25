@@ -1,8 +1,9 @@
 """Sensors: one per room plus a house summary that feeds the panel."""
 from __future__ import annotations
 
-from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import PERCENTAGE
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -32,7 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         if new:
             async_add_entities(new)
 
-    async_add_entities([HouseSensor(coord, entry)])
+    async_add_entities([HouseSensor(coord, entry), GoodRoomsSensor(coord, entry)])
     _add()
     entry.async_on_unload(coord.async_add_listener(_add))
 
@@ -58,7 +59,33 @@ class HouseSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     @property
     def extra_state_attributes(self) -> dict:
         d = self.coordinator.data or {}
-        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated", "attention", "attention_rooms", "worst_room", "stale_min")}
+        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated", "attention", "attention_rooms", "worst_room", "stale_min", "good", "total")}
+
+
+class GoodRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
+    """Share of rooms with good air, for dashboards and automations."""
+
+    _attr_has_entity_name = False
+    _attr_name = "Luftwächter Good rooms"
+    _attr_native_unit_of_measurement = PERCENTAGE
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_suggested_display_precision = 0
+
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coord)
+        self._attr_unique_id = f"{entry.entry_id}_good_rooms"
+        self._attr_device_info = _device(entry)
+
+    @property
+    def native_value(self) -> int | None:
+        d = self.coordinator.data or {}
+        total = d.get("total") or 0
+        return round(100 * (d.get("good") or 0) / total) if total else None
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        d = self.coordinator.data or {}
+        return {"good": d.get("good", 0), "total": d.get("total", 0)}
 
 
 class RoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.0
+- Help dialog: a proper keyboard shortcut table instead of one long line; the `?` key opens the help too.
+- Key `C` copies the house summary (the same text as the menu entry) without opening the menu.
+- Touch: swipe left or right in the room view to switch rooms.
+- The browser tab title shows the state, e.g. "Luftwächter · 2 of 5 need attention", so you can see it from another tab.
+- New sensor `sensor.luftwachter_good_rooms`: the share of rooms with good air in %, with `good` and `total` attributes. Handy for dashboards and automations.
+- House sensor attributes `good` and `total`.
+- Entity and service icons (`icons.json`).
+- Diagnostics download now also lists version, room counts, attention count and the stale limit.
+- GitHub: `SUPPORT.md` (where to ask what), README "Quick start" in three steps, updated entity table and contents.
+- Tests: 31 (good-rooms sensor, diagnostics) plus panel checks for the shortcut table, `?`, tab title and swipe.
+- DE: Tastenkürzel-Tabelle in der Hilfe und `?`-Taste, Taste `C` kopiert die Hausübersicht, Wischen wechselt den Raum, Tab-Titel zeigt den Zustand, neuer Sensor „Gute Räume (%)“, Symbole, mehr Diagnose-Daten, `SUPPORT.md` und Schnellstart im README.
+
 ## 0.9.0
 - Pin favourite rooms: a ☆ button in the room view (key `P`) keeps a room on top in every sort order, remembered per browser.
 - New sort order "Highest CO₂ first"; the sort button now cycles worst first, name, highest CO₂.

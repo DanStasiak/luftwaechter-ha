@@ -109,7 +109,7 @@ with sync_playwright() as p:
     assert "Rising" in txt()
     pg.keyboard.press("o"); assert pg.evaluate("[...el.shadowRoot.querySelectorAll('.tile b')].map(x=>x.textContent)") == ["Office"]
     pg.keyboard.press("o"); assert pg.evaluate("el.shadowRoot.querySelectorAll('.tile').length") == 2
-    pg.keyboard.press("h"); assert "Possible causes" in txt() and "Keyboard:" in txt() and "< 1500 / < 2000 ppm" in txt(); pg.keyboard.press("h"); assert "Possible causes" not in txt()
+    pg.keyboard.press("h"); assert "Possible causes" in txt() and "Keyboard shortcuts" in txt() and "< 1500 / < 2000 ppm" in txt(); pg.keyboard.press("h"); assert "Possible causes" not in txt()
     pg.keyboard.press("s"); assert pg.evaluate("el._sort") == "name"; pg.keyboard.press("s"); pg.keyboard.press("s"); assert pg.evaluate("el._sort") == "worst"
     pg.evaluate("() => { const h = el._hass; const e = h.states['sensor.luftwaechter_house']; e.attributes = window.orig; e.last_updated = 't8'; el.hass = Object.assign({}, h); }")
     # 0.7.0: mold hint, search with many rooms, list view, copy link, sound toggle, configurable stale limit
@@ -170,6 +170,14 @@ with sync_playwright() as p:
     pg.keyboard.press("r"); assert pg.evaluate("el._rot") is True
     pg.evaluate("el._rotStop()"); assert pg.evaluate("el._rot") is False
     pg.evaluate("el._rotStep()"); first = pg.evaluate("el._sel"); pg.evaluate("el._rotStep()"); assert pg.evaluate("el._sel") != first
+    pg.evaluate("el._select(null)")
+    # help: shortcut table and the ? key; tab title; swipe between rooms; C copies the house summary
+    pg.keyboard.press("?"); assert pg.evaluate("el._help") is True and "Keyboard shortcuts" in txt() and pg.evaluate("el.shadowRoot.querySelectorAll('.keys kbd').length") >= 10
+    pg.keyboard.press("Escape"); assert pg.evaluate("el._help") is False
+    assert pg.evaluate("document.title").startswith("Luftwächter")
+    pg.evaluate("el._select(el._rooms()[0].key)"); r0 = pg.evaluate("el._sel")
+    pg.evaluate("""() => { const w = el.shadowRoot.querySelector('.wrap'); const ev = (t, x) => w.dispatchEvent(new PointerEvent(t, { pointerType: 'touch', clientX: x, clientY: 200, bubbles: true })); ev('pointerdown', 300); ev('pointerup', 120); }""")
+    assert pg.evaluate("el._sel") != r0
     pg.evaluate("el._select(null)")
     pg.evaluate("() => { document.documentElement.style.cssText = '--primary-background-color:#fafafa;--card-background-color:#ffffff;--secondary-background-color:#eceff1;--primary-text-color:#212121;--primary-color:#03a9f4;--divider-color:#0002'; document.body.style.background = '#fafafa'; el._render(); }")
     pg.screenshot(path=str(out / "overview_light.png"))

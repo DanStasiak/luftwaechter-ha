@@ -162,3 +162,13 @@ async def test_no_rooms_repair_issue(hass, enable_custom_integrations):
     hass.states.async_set(e.entity_id, "700", {"device_class": "carbon_dioxide"})
     await coord.async_refresh()
     assert reg.async_get_issue(DOMAIN, "no_rooms") is None
+
+
+async def test_good_rooms_sensor_and_diagnostics(hass, enable_custom_integrations):
+    entry, _eid = await _setup(hass, co2="500")
+    s = hass.states.get("sensor.luftwachter_good_rooms")
+    assert s is not None and s.state == "100" and s.attributes["good"] == 1 and s.attributes["total"] == 1
+    from custom_components.luftwaechter.diagnostics import async_get_config_entry_diagnostics
+
+    diag = await async_get_config_entry_diagnostics(hass, entry)
+    assert diag["good"] == 1 and diag["total"] == 1 and "stale_min" in diag and "attention" in diag

@@ -20,7 +20,14 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 
 <p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/demo.gif" width="640" alt="Demo: overview, room view, ventilation timer, German interface"></p>
 
-**Contents:** [Features](#features) · [Install](#install-marketplace) · [Update](#update) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Settings](#settings) · [Events](#events-for-automations) · [Blueprint](#blueprint) · [Windows widget](#windows-widget) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Roadmap](#roadmap) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
+**Contents:** [Quick start](#quick-start) · [Features](#features) · [Install](#install-marketplace) · [Update](#update) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Settings](#settings) · [Events](#events-for-automations) · [Blueprint](#blueprint) · [Windows widget](#windows-widget) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Roadmap](#roadmap) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
+
+## Quick start
+1. Install **Luftwächter** from the Marketplace and restart Home Assistant (see [Install](#install-marketplace)).
+2. Settings → Devices & services → Add integration → **Luftwächter**.
+3. Give your CO₂, fine-dust, temperature or humidity sensors an **area**. The room shows up in the sidebar panel by itself, within a minute.
+
+Questions? See [SUPPORT.md](SUPPORT.md).
 
 ## Features
 - **Do-now overview**: which rooms need attention, worst first, with a coloured dot per reading on every tile.
@@ -122,6 +129,7 @@ The room level is the worst of the four.
 |---|---|---|
 | `sensor.luftwachter_<room>` | good / fair / poor | action, headline, detail, window, trend, since, mold, dew, values, devices, sources |
 | `sensor.luftwachter_house` | worst level | rooms, outside, limits, updated, attention, attention_rooms, worst_room |
+| `sensor.luftwachter_good_rooms` | share of rooms with good air, % | good, total |
 | `binary_sensor.luftwachter_attention` | on while a room is poor or advises opening / waiting | count, rooms, worst_room |
 
 Example automation: notify when a room gets poor.
