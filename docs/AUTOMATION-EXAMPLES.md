@@ -83,5 +83,18 @@ actions:
         average CO₂ {{ states('sensor.luftwachter_average_co2') }} ppm.
 ```
 
-## 7. Dashboard badge
+## 7. Dehumidifier when the house is humid
+```yaml
+triggers:
+  - trigger: numeric_state
+    entity_id: sensor.luftwachter_average_humidity
+    above: 60
+    for: "00:30:00"
+actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.dehumidifier
+```
+
+## 8. Dashboard badge
 Use `sensor.luftwachter_rooms_to_ventilate` (a number) or `binary_sensor.luftwachter_attention` (on / off) in any badge or tile card.

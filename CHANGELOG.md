@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.16.0
+- New option **Mold risk from humidity of** (50 to 90 %, default 70 %) under Configure. The mold tip, the mold-risk binary sensor and the panel bar all follow it.
+- New sensors `sensor.luftwachter_average_temperature` and `sensor.luftwachter_average_humidity`.
+- The overview shows an **average line** (CO₂, temperature, humidity) under "rooms good".
+- The mold bar no longer says a fixed percentage, so it stays right when you change the limit.
+- New keys **A** (browser alerts on / off) and **B** (colour-blind mode). The help lists them.
+- New blueprint **speak when a room turns poor** (text to speech on the speakers you pick).
+- The README screenshots were regenerated with the current panel.
+- New [`docs/UPGRADING.md`](docs/UPGRADING.md): which entities and options came with which version.
+- GitHub page: settings text, entities table, keys and FAQ updated (English and German); two more automation examples and dashboard cards for humidity.
+- New issue form **Wording or translation**.
+- Five more tests (configurable mold limit, averages, new entities, colour-blind key, average line); the blueprint test expects six blueprints.
+- DE: Neue Option **Schimmelgefahr ab Luftfeuchte von** (50 bis 90 %, Standard 70 %) unter „Konfigurieren“. Tipp, Binärsensor und Panel-Leiste folgen ihr.
+- DE: Neue Sensoren `sensor.luftwachter_average_temperature` und `sensor.luftwachter_average_humidity`.
+- DE: Die Übersicht zeigt eine **Durchschnittszeile** (CO₂, Temperatur, Luftfeuchte) unter „Räume gut“.
+- DE: Die Schimmel-Leiste nennt keine feste Prozentzahl mehr und bleibt richtig, wenn du die Grenze änderst.
+- DE: Neue Tasten **A** (Browser-Hinweise an / aus) und **B** (Farbenblind-Modus). Die Hilfe nennt sie.
+- DE: Neuer Blueprint **Sprechen, wenn ein Raum schlecht wird** (Sprachausgabe auf den gewählten Lautsprechern).
+- DE: Die Screenshots der Startseite wurden mit dem aktuellen Panel neu erzeugt.
+- DE: Neue Seite [`docs/UPGRADING.md`](docs/UPGRADING.md): welche Entitäten und Optionen zu welcher Version kamen.
+- DE: GitHub-Seite: Einstellungen, Entitäten, Tasten und FAQ aktualisiert; zwei weitere Beispiele und Dashboard-Karten für Luftfeuchte.
+- DE: Neues Ticket-Formular **Formulierung oder Übersetzung**.
+
 ## 0.15.0
 - New sensor `sensor.luftwachter_average_co2`: average CO₂ of all rooms, ready for a gauge card.
 - New binary sensor `binary_sensor.luftwachter_mold_risk`: on while a room's humidity is 70 % or more, with the rooms as attributes.

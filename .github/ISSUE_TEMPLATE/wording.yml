@@ -1,0 +1,27 @@
+name: Wording or translation
+description: A text in the panel or the advice is unclear, wrong or badly translated.
+labels: [translation]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where do you see it?
+      placeholder: Panel overview, room view, help, advice text for CO₂ ...
+    validations:
+      required: true
+  - type: dropdown
+    id: lang
+    attributes:
+      label: Language
+      options: [Deutsch, English, Another language]
+    validations:
+      required: true
+  - type: textarea
+    id: text
+    attributes:
+      label: What does it say, and what should it say?
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: Want to add a whole language? See docs/TRANSLATING.md.

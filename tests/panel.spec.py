@@ -219,6 +219,10 @@ with sync_playwright() as p:
     assert pg.evaluate("el._size") == min(2, s0 + 1)
     pg.evaluate("() => el._key({ key: '-', composedPath: () => [document.body], preventDefault() {} })")
     assert pg.evaluate("el._size") == max(0, min(2, s0 + 1) - 1)
+    c0 = pg.evaluate("el._cb"); pg.evaluate("() => el._key({ key: 'b', composedPath: () => [document.body], preventDefault() {} })")
+    assert pg.evaluate("el._cb") != c0
+    pg.evaluate("() => el._key({ key: 'b', composedPath: () => [document.body], preventDefault() {} })")
+    assert isinstance(pg.evaluate("el._avgLine()"), str)
     r0 = pg.evaluate("el._range")
     pg.evaluate("() => el._key({ key: 't', composedPath: () => [document.body], preventDefault() {} })")
     assert pg.evaluate("el._range") != r0

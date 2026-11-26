@@ -35,7 +35,7 @@ def test_blueprint_is_valid_and_uses_defined_inputs():
 
 
 def test_every_blueprint_is_valid_and_uses_defined_inputs():
-    assert len(BPS) >= 3
+    assert len(BPS) >= 6
     for path in BPS:
         doc = yaml.load(path.read_text(encoding="utf-8"), Loader=_L)
         bp = doc["blueprint"]

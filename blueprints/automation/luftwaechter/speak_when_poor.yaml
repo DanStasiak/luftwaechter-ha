@@ -1,0 +1,48 @@
+blueprint:
+  name: Luftwächter - speak when a room turns poor
+  description: >
+    Says a short hint out loud (text to speech) when a room's air becomes poor,
+    for example with Piper. In your text you can use `{{ room }}` and `{{ headline }}`.
+  domain: automation
+  author: Dan Stasiak
+  source_url: https://github.com/DanStasiak/luftwaechter-ha/blob/main/blueprints/automation/luftwaechter/speak_when_poor.yaml
+  homeassistant:
+    min_version: 2025.10.0
+  input:
+    tts_engine:
+      name: Text to speech
+      selector:
+        entity:
+          domain: tts
+    speakers:
+      name: Speakers
+      selector:
+        entity:
+          domain: media_player
+          multiple: true
+    message:
+      name: Text
+      default: "{{ room }}: {{ headline }}"
+      selector:
+        template:
+
+mode: queued
+max: 3
+max_exceeded: silent
+
+triggers:
+  - trigger: event
+    event_type: luftwaechter_level_changed
+    event_data:
+      level: poor
+
+actions:
+  - variables:
+      room: "{{ trigger.event.data.room }}"
+      headline: "{{ trigger.event.data.headline }}"
+  - action: tts.speak
+    target:
+      entity_id: !input tts_engine
+    data:
+      media_player_entity_id: !input speakers
+      message: !input message

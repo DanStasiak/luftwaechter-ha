@@ -25,10 +25,12 @@
           "pm_good": "Feinstaub gut unter",
           "pm_fair": "Feinstaub mittel unter",
           "excluded_areas": "Diese Bereiche ausblenden",
+          "mold_rh": "Schimmelgefahr ab Luftfeuchte von",
           "stale_minutes": "Warnen, wenn Daten älter sind als"
         },
         "data_description": {
           "excluded_areas": "Bereiche, die nicht im Panel erscheinen sollen (zum Beispiel Garage oder Keller).",
+          "mold_rh": "Relative Luftfeuchte (%), ab der ein Raum als Schimmelgefahr gilt. Standard 70.",
           "stale_minutes": "Minuten ohne Aktualisierung, bevor das Panel warnt."
         }
       }

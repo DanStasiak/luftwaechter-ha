@@ -81,7 +81,7 @@ class SensorProblemSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySens
 
 
 class MoldRiskSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySensorEntity):
-    """On while a room's humidity is high enough to invite mold (70 % or more)."""
+    """On while a room's humidity is high enough to invite mold (your mold limit, 70 % by default)."""
 
     _attr_has_entity_name = False
     _attr_name = "Luftwächter Mold risk"

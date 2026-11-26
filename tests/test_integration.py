@@ -144,6 +144,13 @@ async def test_average_co2_and_mold_entities(hass, enable_custom_integrations):
     assert hass.states.get("sensor.luftwachter_house").attributes["icon"] == "mdi:air-filter"
 
 
+async def test_average_temperature_and_humidity_entities(hass, enable_custom_integrations):
+    await _setup(hass, co2="900")
+    assert hass.states.get("sensor.luftwachter_average_temperature") is not None
+    assert hass.states.get("sensor.luftwachter_average_humidity") is not None
+    assert "mold_rh" in hass.states.get("sensor.luftwachter_house").attributes
+
+
 async def test_room_since_and_spark(hass, enable_custom_integrations):
     entry, _eid = await _setup(hass, co2="1300")
     coord = hass.data[DOMAIN][entry.entry_id]

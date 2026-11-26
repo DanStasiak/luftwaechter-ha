@@ -94,6 +94,23 @@ def test_co2_average_and_mold_rooms():
     assert engine.build_model([area(t=21)], set(), None, "", "en", NOW)["co2_avg"] is None
 
 
+def test_mold_limit_configurable():
+    a = area(co2=800, h=65)
+    assert engine.build_model([a], set(), None, "", "en", NOW)["mold"] == 0
+    m = engine.build_model([a], set(), None, "", "en", NOW, {"mold_rh": 60})
+    assert m["mold"] == 1 and m["mold_rh"] == 60
+    assert engine.mold_limit({"mold_rh": 5}) == 70 and engine.mold_limit({"mold_rh": "x"}) == 70
+
+
+def test_temperature_and_humidity_averages():
+    a2 = area(co2=900, t=23, h=60)
+    a2["id"], a2["name"] = "a2", "Bedroom"
+    for e in a2["entities"]:
+        e["entity_id"] = e["entity_id"] + "_b"
+    m = engine.build_model([area(co2=800, t=21, h=40), a2], set(), None, "", "en", NOW)
+    assert m["temp_avg"] == 22.0 and m["rh_avg"] == 50
+
+
 def test_outside_view_tip():
     o = engine.outside_view({"temperature": 3, "condition": "cloudy", "wind_speed": 10, "wind_speed_unit": "m/s", "wind_bearing": 90}, "", "en")
     assert o["wind"] == "36" and o["windDir"] == "E" and "cold" in o["tip"]

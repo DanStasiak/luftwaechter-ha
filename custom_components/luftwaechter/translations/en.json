@@ -25,10 +25,12 @@
           "pm_good": "Fine dust good below",
           "pm_fair": "Fine dust fair below",
           "excluded_areas": "Hide these areas",
+          "mold_rh": "Mold risk from humidity of",
           "stale_minutes": "Warn when data is older than"
         },
         "data_description": {
           "excluded_areas": "Areas that should not appear in the panel (for example a garage or a cellar).",
+          "mold_rh": "Relative humidity (%) from which a room counts as mold risk. Default 70.",
           "stale_minutes": "Minutes without an update before the panel shows a warning."
         }
       }

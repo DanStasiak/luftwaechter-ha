@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONCENTRATION_PARTS_PER_MILLION, PERCENTAGE
+from homeassistant.const import CONCENTRATION_PARTS_PER_MILLION, PERCENTAGE, UnitOfTemperature
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -33,7 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         if new:
             async_add_entities(new)
 
-    async_add_entities([HouseSensor(coord, entry), GoodRoomsSensor(coord, entry), WorstRoomSensor(coord, entry), VentilateRoomsSensor(coord, entry), AverageCo2Sensor(coord, entry)])
+    async_add_entities([HouseSensor(coord, entry), GoodRoomsSensor(coord, entry), WorstRoomSensor(coord, entry), VentilateRoomsSensor(coord, entry), AverageCo2Sensor(coord, entry), AverageTemperatureSensor(coord, entry), AverageHumiditySensor(coord, entry)])
     _add()
     entry.async_on_unload(coord.async_add_listener(_add))
 
@@ -60,7 +60,7 @@ class HouseSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     @property
     def extra_state_attributes(self) -> dict:
         d = self.coordinator.data or {}
-        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated", "attention", "attention_rooms", "worst_room", "stale_min", "good", "total", "silent_rooms", "ventilate", "ventilate_rooms", "co2_avg", "mold", "mold_rooms")}
+        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated", "attention", "attention_rooms", "worst_room", "stale_min", "good", "total", "silent_rooms", "ventilate", "ventilate_rooms", "co2_avg", "temp_avg", "rh_avg", "mold_rh", "mold", "mold_rooms")}
 
 
 class GoodRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
@@ -130,6 +130,44 @@ class AverageCo2Sensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity)
     @property
     def native_value(self) -> int | None:
         return (self.coordinator.data or {}).get("co2_avg")
+
+
+class _AverageSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
+    _attr_has_entity_name = False
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _key = ""
+    _suffix = ""
+
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coord)
+        self._attr_unique_id = f"{entry.entry_id}_{self._suffix}"
+        self._attr_device_info = _device(entry)
+
+    @property
+    def native_value(self):
+        return (self.coordinator.data or {}).get(self._key)
+
+
+class AverageTemperatureSensor(_AverageSensor):
+    """Average temperature over all rooms that report it."""
+
+    _attr_name = "Luftwächter Average temperature"
+    _attr_device_class = SensorDeviceClass.TEMPERATURE
+    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+    _attr_suggested_display_precision = 1
+    _key = "temp_avg"
+    _suffix = "temp_avg"
+
+
+class AverageHumiditySensor(_AverageSensor):
+    """Average relative humidity over all rooms that report it."""
+
+    _attr_name = "Luftwächter Average humidity"
+    _attr_device_class = SensorDeviceClass.HUMIDITY
+    _attr_native_unit_of_measurement = PERCENTAGE
+    _attr_suggested_display_precision = 0
+    _key = "rh_avg"
+    _suffix = "rh_avg"
 
 
 class WorstRoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):

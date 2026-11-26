@@ -22,6 +22,18 @@ severity:
   red: 1500
 ```
 
+## Gauge for the average humidity
+```yaml
+type: gauge
+entity: sensor.luftwachter_average_humidity
+min: 20
+max: 80
+severity:
+  green: 30
+  yellow: 60
+  red: 70
+```
+
 ## Badges for the things that need you
 ```yaml
 badges:

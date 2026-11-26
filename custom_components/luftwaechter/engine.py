@@ -20,6 +20,15 @@ AIR_CLASSES = ("carbon_dioxide", "pm25", "temperature", "humidity")
 DEFAULT_LIMITS = {"co2": (1000, 1500), "pm25": (20, 50)}
 
 
+def mold_limit(limits: dict | None) -> int:
+    """Relative humidity (%) from which a room counts as mold risk; invalid values fall back to MOLD_RH."""
+    try:
+        v = int((limits or {}).get("mold_rh", MOLD_RH))
+    except (TypeError, ValueError):
+        return MOLD_RH
+    return v if 50 <= v <= 90 else MOLD_RH
+
+
 def norm_limits(limits: dict | None) -> dict:
     """Good/fair limits for CO2 and PM2.5; falls back to the defaults for anything missing or invalid."""
     out = dict(DEFAULT_LIMITS)
@@ -449,7 +458,7 @@ def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits
     else:
         action, head = "keep_closed", tx(lang, "all_good")
         detail = tx(lang, "win_stay") if has_window else tx(lang, "air_fine")
-    mold = hh is not None and hh >= MOLD_RH and action != "unknown"
+    mold = hh is not None and hh >= mold_limit(limits) and action != "unknown"
     if mold:
         detail += tx(lang, "mold_d")
     return {
@@ -504,6 +513,10 @@ def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rai
     attn = [r for r in rooms if r["level"] == "poor" or r["action"] in ("open", "wait", "keep_open")]
     co2s = [r["values"][0]["raw"] for r in rooms if r["values"] and r["values"][0]["raw"] is not None]
     co2_avg = round(sum(co2s) / len(co2s)) if co2s else None
+    temps = [r["values"][2]["raw"] for r in rooms if len(r["values"]) > 2 and r["values"][2]["raw"] is not None]
+    hums = [r["values"][3]["raw"] for r in rooms if len(r["values"]) > 3 and r["values"][3]["raw"] is not None]
+    temp_avg = round(sum(temps) / len(temps), 1) if temps else None
+    rh_avg = round(sum(hums) / len(hums)) if hums else None
     worst_room = ""
     if worst is not None:
         worst_room = next((r["name"] for r in rooms if r["level"] == LEVELS[worst]), "")
@@ -512,7 +525,7 @@ def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rai
         "good": sum(1 for r in rooms if r["level"] == "good"), "total": len(rooms),
         "attention": len(attn), "attention_rooms": [r["name"] for r in attn],
         "silent_rooms": [r["name"] for r in rooms if r.get("warn")],
-        "co2_avg": co2_avg, "mold": sum(1 for r in rooms if r.get("mold")), "mold_rooms": [r["name"] for r in rooms if r.get("mold")],
+        "co2_avg": co2_avg, "temp_avg": temp_avg, "rh_avg": rh_avg, "mold_rh": mold_limit(limits), "mold": sum(1 for r in rooms if r.get("mold")), "mold_rooms": [r["name"] for r in rooms if r.get("mold")],
         "ventilate": sum(1 for r in rooms if r["action"] == "open"),
         "ventilate_rooms": [r["name"] for r in rooms if r["action"] == "open"], "worst_room": worst_room,
         "level": LEVELS[worst] if worst is not None else "unknown",

@@ -20,6 +20,7 @@ from .const import (
     CONF_CO2_FAIR,
     CONF_CO2_GOOD,
     CONF_EXCLUDE,
+    CONF_MOLD_RH,
     CONF_PM_FAIR,
     CONF_PM_GOOD,
     CONF_STALE,
@@ -125,6 +126,7 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         return {
             "co2": (o.get(CONF_CO2_GOOD, 1000), o.get(CONF_CO2_FAIR, 1500)),
             "pm25": (o.get(CONF_PM_GOOD, 20), o.get(CONF_PM_FAIR, 50)),
+            "mold_rh": o.get(CONF_MOLD_RH, 70),
         }
 
     def _annotate(self, model: dict) -> None:
