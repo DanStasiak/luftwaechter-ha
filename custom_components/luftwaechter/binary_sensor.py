@@ -15,7 +15,7 @@ from .coordinator import LuftwaechterCoordinator
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     coord: LuftwaechterCoordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([AttentionSensor(coord, entry), SensorProblemSensor(coord, entry)])
+    async_add_entities([AttentionSensor(coord, entry), SensorProblemSensor(coord, entry), MoldRiskSensor(coord, entry)])
     known: set[str] = set()
 
     @callback
@@ -37,6 +37,7 @@ class AttentionSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySensorEn
 
     _attr_has_entity_name = False
     _attr_name = "Luftwächter Attention"
+    _attr_icon = "mdi:alert"
     _attr_device_class = BinarySensorDeviceClass.PROBLEM
     _unrecorded_attributes = frozenset({"rooms"})
 
@@ -60,6 +61,7 @@ class SensorProblemSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySens
 
     _attr_has_entity_name = False
     _attr_name = "Luftwächter Sensor problem"
+    _attr_icon = "mdi:access-point-off"
     _attr_device_class = BinarySensorDeviceClass.PROBLEM
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
@@ -78,10 +80,34 @@ class SensorProblemSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySens
         return {"count": len(rooms), "rooms": rooms}
 
 
+class MoldRiskSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySensorEntity):
+    """On while a room's humidity is high enough to invite mold (70 % or more)."""
+
+    _attr_has_entity_name = False
+    _attr_name = "Luftwächter Mold risk"
+    _attr_device_class = BinarySensorDeviceClass.PROBLEM
+    _attr_icon = "mdi:water-alert"
+
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coord)
+        self._attr_unique_id = f"{entry.entry_id}_mold_risk"
+        self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, entry.entry_id)}, name="Luftwächter", manufacturer="Dan Stasiak")
+
+    @property
+    def is_on(self) -> bool:
+        return bool((self.coordinator.data or {}).get("mold"))
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        rooms = (self.coordinator.data or {}).get("mold_rooms", [])
+        return {"count": len(rooms), "rooms": rooms}
+
+
 class RoomVentilateSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySensorEntity):
     """On while Luftwächter advises opening a window in this room (one per room, for automations)."""
 
     _attr_has_entity_name = False
+    _attr_icon = "mdi:window-open-variant"
 
     def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry, key: str) -> None:
         super().__init__(coord)

@@ -52,6 +52,8 @@ Weise CO₂-, Feinstaub-, Temperatur- oder Feuchte-Sensoren einem **Bereich** zu
 | `sensor.luftwachter_house` | schlechtester Wert | rooms, outside, limits, attention, attention_rooms, worst_room |
 | `sensor.luftwachter_worst_room` | Name des Raums mit der schlechtesten Luft | level, attention |
 | `sensor.luftwachter_good_rooms` | Anteil der Räume mit guter Luft, % | good, total |
+| `sensor.luftwachter_average_co2` | durchschnittlicher CO₂-Wert aller Räume, ppm | |
+| `binary_sensor.luftwachter_mold_risk` | an, solange in einem Raum die Luftfeuchte 70 % oder mehr beträgt | count, rooms |
 | `sensor.luftwachter_rooms_to_ventilate` | Anzahl der Räume, für die „Fenster öffnen“ geraten wird | rooms |
 | `binary_sensor.luftwachter_sensor_problem` | an, solange der Luftsensor eines Raums nichts meldet oder als veraltet ignoriert wird (Diagnose) | count, rooms |
 | `binary_sensor.luftwachter_<raum>_ventilate` | an, solange für den Raum „Fenster öffnen“ geraten wird | room, headline, level |
@@ -71,12 +73,18 @@ Zweiter Blueprint „Ans Lüften erinnern“: Lüften-Sensor eines Raums wählen
 **Kiosk-Modus** (Taste `K` oder Menü → „Kiosk-Modus“): größte Schrift, Räume wechseln automatisch, Knöpfe blenden aus. Direkt starten: `https://<dein-ha>/luftwaechter#kiosk`. Im Menü außerdem: Browser-Hinweise (wenn ein Raum schlecht wird), Sprache wählen, Ansicht zurücksetzen.
 
 ## Tastatur
-← → Raum wechseln · `1`–`9` Raum wählen · `Pos1` / `Ende` erster / letzter Raum · `T` Zeitraum des Verlaufs · `L` Sprache · Esc zurück · `/` suchen · `S` sortieren (schlechtester, Name, CO₂) · `P` Raum anheften · `O` nur Probleme · `V` Listenansicht · `C` Hausübersicht kopieren · `K` Kiosk-Modus · `M` Menü · `R` durchschalten · `F` Vollbild · `H` oder `?` Hilfe. Am Handy wischt du im Raum nach links oder rechts, um den Raum zu wechseln.
+← → Raum wechseln · `1`–`9` Raum wählen · `Pos1` / `Ende` erster / letzter Raum · `E` Verlauf als CSV · `+` / `−` Textgröße · `T` Zeitraum des Verlaufs · `L` Sprache · Esc zurück · `/` suchen · `S` sortieren (schlechtester, Name, CO₂) · `P` Raum anheften · `O` nur Probleme · `V` Listenansicht · `C` Hausübersicht kopieren · `K` Kiosk-Modus · `M` Menü · `R` durchschalten · `F` Vollbild · `H` oder `?` Hilfe. Am Handy wischt du im Raum nach links oder rechts, um den Raum zu wechseln.
 
 ## Fehlersuche
 - **Panel zeigt noch alte Texte nach dem Update**: Browser-Seite hart neu laden (Strg + F5).
 - **Kein Raum sichtbar**: Sensoren einem Bereich zuweisen, siehe oben; Reparaturen prüfen.
 - **Fehler melden**: [Issue öffnen](https://github.com/DanStasiak/luftwaechter-ha/issues/new/choose); die Diagnosedaten der Integration helfen dabei.
+
+## Häufige Fragen
+- **„Sensor meldet nichts mehr“:** Der Luftsensor eines Raums hat länger nichts gemeldet (oft leere Batterie oder WLAN-Lücke). Die Leiste nennt die Räume; der Binärsensor *Sensor-Problem* meldet dasselbe für Automationen.
+- **Schimmelgefahr:** Ab 70 % Luftfeuchte in einem Raum. Der Binärsensor *Mold risk* und die Leiste im Panel nennen die Räume.
+- **Tägliche Zusammenfassung:** Blueprint *Tägliche Luft-Zusammenfassung* importieren oder Beispiel 6 aus [docs/AUTOMATION-EXAMPLES.md](docs/AUTOMATION-EXAMPLES.md) kopieren.
+- **Dashboards:** Fertige Karten stehen in [docs/DASHBOARD.md](docs/DASHBOARD.md).
 
 ## Kompatibilität
 Benötigt Home Assistant 2025.10 oder neuer, jede Installationsart. Das Panel läuft in aktuellem Chrome, Edge, Firefox und Safari, am PC und am Handy. Es wird nichts außerhalb von Home Assistant kontaktiert.

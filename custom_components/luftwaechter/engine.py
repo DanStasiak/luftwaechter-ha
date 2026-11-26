@@ -502,6 +502,8 @@ def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rai
             o_rooms, o_outside = _model_for(areas, labelled, weather, rain_at, other, now, limits)
             alt[other] = {"rooms": o_rooms, "outside": o_outside}
     attn = [r for r in rooms if r["level"] == "poor" or r["action"] in ("open", "wait", "keep_open")]
+    co2s = [r["values"][0]["raw"] for r in rooms if r["values"] and r["values"][0]["raw"] is not None]
+    co2_avg = round(sum(co2s) / len(co2s)) if co2s else None
     worst_room = ""
     if worst is not None:
         worst_room = next((r["name"] for r in rooms if r["level"] == LEVELS[worst]), "")
@@ -510,6 +512,7 @@ def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rai
         "good": sum(1 for r in rooms if r["level"] == "good"), "total": len(rooms),
         "attention": len(attn), "attention_rooms": [r["name"] for r in attn],
         "silent_rooms": [r["name"] for r in rooms if r.get("warn")],
+        "co2_avg": co2_avg, "mold": sum(1 for r in rooms if r.get("mold")), "mold_rooms": [r["name"] for r in rooms if r.get("mold")],
         "ventilate": sum(1 for r in rooms if r["action"] == "open"),
         "ventilate_rooms": [r["name"] for r in rooms if r["action"] == "open"], "worst_room": worst_room,
         "level": LEVELS[worst] if worst is not None else "unknown",

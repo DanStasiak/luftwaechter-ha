@@ -1,0 +1,47 @@
+blueprint:
+  name: Luftwächter - daily air summary
+  description: >
+    Runs your actions once a day at the time you choose, for example "send the
+    air summary at 8:00". In your actions you can use the variables `good`,
+    `total`, `worst_room` and `to_ventilate`.
+  domain: automation
+  author: Dan Stasiak
+  source_url: https://github.com/DanStasiak/luftwaechter-ha/blob/main/blueprints/automation/luftwaechter/daily_summary.yaml
+  homeassistant:
+    min_version: 2025.10.0
+  input:
+    house_sensor:
+      name: House sensor
+      description: The sensor "Luftwächter House".
+      selector:
+        entity:
+          filter:
+            - integration: luftwaechter
+              domain: sensor
+    run_at:
+      name: Time of day
+      default: "08:00:00"
+      selector:
+        time:
+    actions:
+      name: Actions
+      description: What to do, for example send a notification. Use {{ good }}, {{ total }}, {{ worst_room }} and {{ to_ventilate }} in texts.
+      default: []
+      selector:
+        action:
+
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: time
+    at: !input run_at
+
+variables:
+  house: !input house_sensor
+  good: "{{ state_attr(house, 'good') | int(0) }}"
+  total: "{{ state_attr(house, 'total') | int(0) }}"
+  worst_room: "{{ state_attr(house, 'worst_room') or '' }}"
+  to_ventilate: "{{ state_attr(house, 'ventilate') | int(0) }}"
+
+actions: !input actions

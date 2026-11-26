@@ -6,6 +6,7 @@ from typing import Any
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
+from . import _VERSION
 from .const import DOMAIN
 
 
@@ -15,6 +16,9 @@ async def async_get_config_entry_diagnostics(hass: HomeAssistant, entry: ConfigE
     return {
         "entry": {"data": dict(entry.data), "options": dict(entry.options)},
         "version": entry.version,
+        "integration_version": _VERSION,
+        "co2_avg": model.get("co2_avg"),
+        "mold_rooms": model.get("mold_rooms"),
         "language": coord.lang,
         "good": model.get("good"),
         "total": model.get("total"),

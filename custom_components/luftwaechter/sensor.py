@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE
+from homeassistant.const import CONCENTRATION_PARTS_PER_MILLION, PERCENTAGE
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -33,7 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         if new:
             async_add_entities(new)
 
-    async_add_entities([HouseSensor(coord, entry), GoodRoomsSensor(coord, entry), WorstRoomSensor(coord, entry), VentilateRoomsSensor(coord, entry)])
+    async_add_entities([HouseSensor(coord, entry), GoodRoomsSensor(coord, entry), WorstRoomSensor(coord, entry), VentilateRoomsSensor(coord, entry), AverageCo2Sensor(coord, entry)])
     _add()
     entry.async_on_unload(coord.async_add_listener(_add))
 
@@ -43,9 +43,10 @@ class HouseSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
 
     _attr_has_entity_name = False
     _attr_name = "Luftwächter House"
+    _attr_icon = "mdi:air-filter"
     _attr_device_class = SensorDeviceClass.ENUM
     _attr_options = LEVEL_OPTIONS
-    _unrecorded_attributes = frozenset({"rooms", "summary", "outside", "colors", "alt", "attention_rooms", "silent_rooms", "ventilate_rooms"})
+    _unrecorded_attributes = frozenset({"rooms", "summary", "outside", "colors", "alt", "attention_rooms", "silent_rooms", "ventilate_rooms", "mold_rooms"})
 
     def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
         super().__init__(coord)
@@ -59,7 +60,7 @@ class HouseSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     @property
     def extra_state_attributes(self) -> dict:
         d = self.coordinator.data or {}
-        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated", "attention", "attention_rooms", "worst_room", "stale_min", "good", "total", "silent_rooms", "ventilate", "ventilate_rooms")}
+        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated", "attention", "attention_rooms", "worst_room", "stale_min", "good", "total", "silent_rooms", "ventilate", "ventilate_rooms", "co2_avg", "mold", "mold_rooms")}
 
 
 class GoodRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
@@ -67,6 +68,7 @@ class GoodRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
 
     _attr_has_entity_name = False
     _attr_name = "Luftwächter Good rooms"
+    _attr_icon = "mdi:check-circle-outline"
     _attr_native_unit_of_measurement = PERCENTAGE
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_suggested_display_precision = 0
@@ -93,6 +95,7 @@ class VentilateRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEnt
 
     _attr_has_entity_name = False
     _attr_name = "Luftwächter Rooms to ventilate"
+    _attr_icon = "mdi:window-open-variant"
     _attr_state_class = SensorStateClass.MEASUREMENT
 
     def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
@@ -109,11 +112,32 @@ class VentilateRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEnt
         return {"rooms": (self.coordinator.data or {}).get("ventilate_rooms", [])}
 
 
+class AverageCo2Sensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
+    """Average CO2 over all rooms that report it."""
+
+    _attr_has_entity_name = False
+    _attr_name = "Luftwächter Average CO2"
+    _attr_device_class = SensorDeviceClass.CO2
+    _attr_native_unit_of_measurement = CONCENTRATION_PARTS_PER_MILLION
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_suggested_display_precision = 0
+
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coord)
+        self._attr_unique_id = f"{entry.entry_id}_co2_avg"
+        self._attr_device_info = _device(entry)
+
+    @property
+    def native_value(self) -> int | None:
+        return (self.coordinator.data or {}).get("co2_avg")
+
+
 class WorstRoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     """Name of the room with the worst air; handy for voice and dashboards."""
 
     _attr_has_entity_name = False
     _attr_name = "Luftwächter Worst room"
+    _attr_icon = "mdi:alert-circle-outline"
 
     def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
         super().__init__(coord)
@@ -132,6 +156,7 @@ class WorstRoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
 
 class RoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     _attr_has_entity_name = False
+    _attr_icon = "mdi:air-filter"
     _attr_device_class = SensorDeviceClass.ENUM
     _attr_options = LEVEL_OPTIONS
     _unrecorded_attributes = frozenset({"devices", "sources", "values"})

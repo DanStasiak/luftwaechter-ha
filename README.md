@@ -4,6 +4,7 @@
 
 [![Validate](https://github.com/DanStasiak/luftwaechter-ha/actions/workflows/validate.yml/badge.svg)](https://github.com/DanStasiak/luftwaechter-ha/actions/workflows/validate.yml)
 [![Release](https://img.shields.io/github/v/release/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/releases)
+![Home Assistant 2025.10+](https://img.shields.io/badge/Home%20Assistant-2025.10%2B-41BDF5.svg)
 ![Home Assistant Marketplace](https://img.shields.io/badge/Home%20Assistant-Marketplace%20%7C%20HACS-41BDF5.svg)
 [![License: MIT](https://img.shields.io/github/license/DanStasiak/luftwaechter-ha)](LICENSE)
 [![Downloads](https://img.shields.io/github/downloads/DanStasiak/luftwaechter-ha/total)](https://github.com/DanStasiak/luftwaechter-ha/releases)
@@ -20,7 +21,7 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 
 <p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/demo.gif" width="640" alt="Demo: overview, room view, ventilation timer, German interface"></p>
 
-**Contents:** [Quick start](#quick-start) · [Features](#features) · [Install](#install-marketplace) · [Update](#update) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Settings](#settings) · [Events](#events-for-automations) · [Blueprint](#blueprint) · [Examples](docs/AUTOMATION-EXAMPLES.md) · [Windows widget](#windows-widget) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Roadmap](#roadmap) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
+**Contents:** [Quick start](#quick-start) · [Features](#features) · [Install](#install-marketplace) · [Update](#update) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Settings](#settings) · [Events](#events-for-automations) · [Blueprint](#blueprint) · [Examples](docs/AUTOMATION-EXAMPLES.md) · [Dashboards](docs/DASHBOARD.md) · [Architecture](docs/ARCHITECTURE.md) · [Windows widget](#windows-widget) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Roadmap](#roadmap) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
 
 ## Quick start
 1. Install **Luftwächter** from the Marketplace and restart Home Assistant (see [Install](#install-marketplace)).
@@ -60,6 +61,8 @@ Questions? See [SUPPORT.md](SUPPORT.md).
 - **Repairs hint** in Home Assistant when no room is found, with what to do.
 - **German README** ([README.de.md](README.de.md)).
 - **Timer sound** (optional) and a **copy link** button for the deep link to a room.
+- **Mold-risk bar, average CO₂ sensor and mold-risk binary sensor**, icons on every entity, two more blueprints (mold, daily summary).
+- **More keys:** `E` saves the room history as CSV, `+` / `−` change the text size.
 - **Quiet-sensor warning bar** in the panel, a *rooms to ventilate* counter and a third blueprint for sensor problems.
 - **Entities for automations**: one sensor per room, a house sensor and an "Attention" binary sensor.
 
@@ -132,10 +135,12 @@ The room level is the worst of the four.
 | Entity | State | Attributes |
 |---|---|---|
 | `sensor.luftwachter_<room>` | good / fair / poor | action, headline, detail, window, trend, since, mold, dew, values, devices, sources |
-| `sensor.luftwachter_house` | worst level | rooms, outside, limits, updated, attention, attention_rooms, worst_room, silent_rooms, ventilate, ventilate_rooms |
+| `sensor.luftwachter_house` | worst level | rooms, outside, limits, updated, attention, attention_rooms, worst_room, silent_rooms, ventilate, ventilate_rooms, co2_avg, mold, mold_rooms |
 | `sensor.luftwachter_worst_room` | name of the room with the worst air | level, attention |
 | `sensor.luftwachter_good_rooms` | share of rooms with good air, % | good, total |
 | `binary_sensor.luftwachter_<room>_ventilate` | on while the advice for the room is "open the window" | room, headline, level |
+| `sensor.luftwachter_average_co2` | average CO₂ of all rooms, ppm | |
+| `binary_sensor.luftwachter_mold_risk` | on while a room's humidity is 70 % or more | count, rooms |
 | `sensor.luftwachter_rooms_to_ventilate` | number of rooms that advise opening a window | rooms |
 | `binary_sensor.luftwachter_sensor_problem` | on while a room's air sensor is silent or ignored as stale (diagnostic) | count, rooms |
 | `binary_sensor.luftwachter_attention` | on while a room is poor or advises opening / waiting | count, rooms, worst_room |
@@ -170,6 +175,8 @@ Prefer clicks to YAML? Import the blueprint and pick the level, an optional room
 
 [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FDanStasiak%2Fluftwaechter-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fluftwaechter%2Flevel_changed.yaml)
 
+**Four more blueprints:** *warn me about mold risk* (humidity stays high) and *daily air summary* (a message at a time you choose). Both are in the blueprints folder and import like the others.
+
 **Third blueprint, "tell me when a sensor goes quiet":** pick the *Sensor problem* binary sensor and how long it must last (30 minutes by default); use `{{ rooms }}` and `{{ count }}` in your texts. More ideas, ready to paste: [`docs/AUTOMATION-EXAMPLES.md`](docs/AUTOMATION-EXAMPLES.md).
 
 **Second blueprint, "remind me to ventilate":** pick a room's *ventilate* sensor and how long the advice must last (for example 5 minutes), then choose what happens. Use `{{ room }}` and `{{ headline }}` in your texts.
@@ -182,7 +189,7 @@ Prefer clicks to YAML? Import the blueprint and pick the level, an optional room
 
 ## Wall tablet tips
 - **Kiosk mode** (key **K** or More → *Kiosk mode*): biggest text size, rooms rotate by themselves, the buttons fade out (still there when you touch them). Open `https://<your-ha>/luftwaechter#kiosk` to start in kiosk mode.
-- Keyboard: ← → switch room, **1–9** pick a room, **Home / End** first / last room, **T** chart range, **L** language, Esc back, **/** search, **S** sort (worst, name, highest CO₂), **P** pin a room, **O** only problems, **V** list view, **M** menu, **R** rotate rooms, **F** full screen, **H** help.
+- Keyboard: ← → switch room, **1–9** pick a room, **E** save CSV, **+ / −** text size, **Home / End** first / last room, **T** chart range, **L** language, Esc back, **/** search, **S** sort (worst, name, highest CO₂), **P** pin a room, **O** only problems, **V** list view, **M** menu, **R** rotate rooms, **F** full screen, **H** help.
 - **Rotate** (⟳ button or **R**) steps through the rooms every 12 seconds; a tap stops it. In full screen the panel asks the tablet to keep the screen on.
 - The header stays visible while you scroll.
 - Open the panel once, choose the **Aa** size, press the full-screen button.
@@ -194,6 +201,24 @@ Prefer clicks to YAML? Import the blueprint and pick the level, an optional room
 <details><summary><b>Why is a room red when CO₂ is fine?</b></summary>
 
 The room level is the worst of its readings. The tile names the reading that caused it.
+
+</details>
+
+<details><summary><b>Why does the panel say "Sensor has gone quiet"?</b></summary>
+
+A room's air sensor has not reported for a while (often an empty battery or a Wi-Fi gap). The bar names the rooms; the *Sensor problem* binary sensor says the same for automations.
+
+</details>
+
+<details><summary><b>What counts as mold risk?</b></summary>
+
+Relative humidity of 70 % or more in a room. The *Mold risk* binary sensor and the blue bar in the panel name the rooms; the room view also shows the dew point.
+
+</details>
+
+<details><summary><b>Can I get a daily summary?</b></summary>
+
+Yes, import the *daily air summary* blueprint, or copy example 6 from [docs/AUTOMATION-EXAMPLES.md](docs/AUTOMATION-EXAMPLES.md).
 
 </details>
 

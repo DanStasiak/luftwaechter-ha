@@ -214,6 +214,11 @@ with sync_playwright() as p:
     l0 = pg.evaluate("el._lang()"); pg.evaluate("() => el._key({ key: 'l', composedPath: () => [document.body], preventDefault() {} })")
     assert pg.evaluate("el._lang()") != l0 or True
     pg.evaluate("() => { el._key({ key: 'l', composedPath: () => [document.body], preventDefault() {} }); el._key({ key: 'l', composedPath: () => [document.body], preventDefault() {} }); }")
+    assert pg.evaluate("el.shadowRoot.querySelector('#mold').hidden") and pg.evaluate("el._mold()") == []
+    s0 = pg.evaluate("el._size"); pg.evaluate("() => el._key({ key: '+', composedPath: () => [document.body], preventDefault() {} })")
+    assert pg.evaluate("el._size") == min(2, s0 + 1)
+    pg.evaluate("() => el._key({ key: '-', composedPath: () => [document.body], preventDefault() {} })")
+    assert pg.evaluate("el._size") == max(0, min(2, s0 + 1) - 1)
     r0 = pg.evaluate("el._range")
     pg.evaluate("() => el._key({ key: 't', composedPath: () => [document.body], preventDefault() {} })")
     assert pg.evaluate("el._range") != r0

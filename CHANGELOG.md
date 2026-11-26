@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.15.0
+- New sensor `sensor.luftwachter_average_co2`: average CO₂ of all rooms, ready for a gauge card.
+- New binary sensor `binary_sensor.luftwachter_mold_risk`: on while a room's humidity is 70 % or more, with the rooms as attributes.
+- The panel shows a **mold-risk bar** (like the quiet-sensor bar) naming the rooms.
+- New keys: **E** saves the room history as CSV, **+** and **−** change the text size. The help lists them.
+- Every entity now has a fitting icon.
+- Two more blueprints: **warn me about mold risk** and **daily air summary** (a message at a time you choose).
+- The house sensor carries `co2_avg`, `mold` and `mold_rooms`; the diagnostics also report the integration version, the average CO₂ and mold rooms.
+- GitHub page: dashboard ideas ([`docs/DASHBOARD.md`](docs/DASHBOARD.md)), an architecture page with a diagram ([`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)), three new FAQ answers, a Home Assistant version badge, German FAQ.
+- Two more automation examples (mold risk, morning summary).
+- CONTRIBUTING: a checklist before a pull request; new `.editorconfig`; the issue chooser links to discussions, the FAQ and the security policy.
+- Four more tests (average CO₂ and mold in the engine, the new entities and icons, panel keys and mold bar).
+- DE: Neuer Sensor `sensor.luftwachter_average_co2`: durchschnittlicher CO₂-Wert aller Räume, passend für eine Tacho-Karte.
+- DE: Neuer Binärsensor `binary_sensor.luftwachter_mold_risk`: an, solange in einem Raum die Luftfeuchte 70 % oder mehr beträgt, mit den Räumen als Attribut.
+- DE: Das Panel zeigt eine **Schimmel-Leiste** mit den Raumnamen.
+- DE: Neue Tasten: **E** speichert den Verlauf als CSV, **+** und **−** ändern die Textgröße. Die Hilfe nennt sie.
+- DE: Jede Entität hat jetzt ein passendes Symbol.
+- DE: Zwei weitere Blueprints: **Schimmelgefahr melden** und **tägliche Luft-Zusammenfassung** (Nachricht zur gewählten Uhrzeit).
+- DE: Haus-Sensor und Diagnose enthalten zusätzliche Werte (Durchschnitts-CO₂, Schimmel-Räume, Version der Integration).
+- DE: GitHub-Seite: Dashboard-Ideen, Architektur-Seite mit Schaubild, drei neue FAQ-Antworten, Versions-Abzeichen, deutsche FAQ.
+- DE: Zwei weitere Automations-Beispiele (Schimmel, Morgen-Zusammenfassung).
+- DE: CONTRIBUTING mit Checkliste, neue `.editorconfig`, der Ticket-Auswahlschirm verweist auf Diskussionen, FAQ und Sicherheitsrichtlinie.
+
 ## 0.14.0
 - New sensor `sensor.luftwachter_rooms_to_ventilate`: how many rooms advise opening a window right now (the rooms are in its attributes). Good for a dashboard badge or a spoken hint.
 - New third **blueprint** "tell me when a sensor goes quiet" for the sensor-problem binary sensor, with a wait time so short gaps are ignored.

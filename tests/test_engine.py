@@ -84,6 +84,16 @@ def test_ventilate_rooms_counted():
     assert isinstance(m["ventilate_rooms"], list)
 
 
+def test_co2_average_and_mold_rooms():
+    a2 = area(co2=1000)
+    a2["id"], a2["name"] = "a2", "Bedroom"
+    for e in a2["entities"]:
+        e["entity_id"] = e["entity_id"] + "_b"
+    m = engine.build_model([area(co2=800), a2], set(), None, "", "en", NOW)
+    assert m["co2_avg"] == 900 and m["mold"] == len(m["mold_rooms"])
+    assert engine.build_model([area(t=21)], set(), None, "", "en", NOW)["co2_avg"] is None
+
+
 def test_outside_view_tip():
     o = engine.outside_view({"temperature": 3, "condition": "cloudy", "wind_speed": 10, "wind_speed_unit": "m/s", "wind_bearing": 90}, "", "en")
     assert o["wind"] == "36" and o["windDir"] == "E" and "cold" in o["tip"]

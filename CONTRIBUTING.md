@@ -11,6 +11,12 @@ python tests/panel.spec.py shots   # panel against a mock hass, screenshots in .
 python tests/panel.spec.py shots docs   # also refresh the README screenshots
 ```
 
+## Before you open a pull request
+1. `ruff check custom_components` and `node --check custom_components/luftwaechter/frontend/luftwaechter-panel.js` are clean.
+2. `pytest -q` and `python tests/panel.spec.py shots` pass.
+3. New user-visible text exists in German and English; new keyboard keys are in the help table and both READMEs.
+4. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the pieces fit and [docs/TRANSLATING.md](docs/TRANSLATING.md) to add a language.
+
 ## Layout
 - `custom_components/luftwaechter/engine.py`: pure Python ratings and advice (no Home Assistant imports, unit tested).
 - `coordinator.py` / `sensor.py`: collects areas and entities, exposes the sensors.

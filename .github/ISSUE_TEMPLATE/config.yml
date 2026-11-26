@@ -1,1 +1,11 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/DanStasiak/luftwaechter-ha/discussions
+    about: Ask how something works or share an idea before opening an issue.
+  - name: Read the FAQ first
+    url: https://github.com/DanStasiak/luftwaechter-ha#faq
+    about: Many questions (red room, limits, no rooms found) are answered there.
+  - name: Security problem
+    url: https://github.com/DanStasiak/luftwaechter-ha/security/policy
+    about: Please report security problems privately.

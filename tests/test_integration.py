@@ -135,6 +135,15 @@ async def test_rooms_to_ventilate_sensor(hass, enable_custom_integrations):
     assert house.attributes["silent_rooms"] == [] and "ventilate_rooms" in house.attributes
 
 
+async def test_average_co2_and_mold_entities(hass, enable_custom_integrations):
+    await _setup(hass, co2="900")
+    s = hass.states.get("sensor.luftwachter_average_co2")
+    assert s is not None and s.state == "900" and s.attributes["unit_of_measurement"] == "ppm"
+    b = hass.states.get("binary_sensor.luftwachter_mold_risk")
+    assert b is not None and b.state == "off" and b.attributes["count"] == 0
+    assert hass.states.get("sensor.luftwachter_house").attributes["icon"] == "mdi:air-filter"
+
+
 async def test_room_since_and_spark(hass, enable_custom_integrations):
     entry, _eid = await _setup(hass, co2="1300")
     coord = hass.data[DOMAIN][entry.entry_id]

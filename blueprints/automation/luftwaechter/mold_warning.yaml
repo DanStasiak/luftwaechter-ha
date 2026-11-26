@@ -1,0 +1,51 @@
+blueprint:
+  name: Luftwächter - warn me about mold risk
+  description: >
+    Runs your actions when a room's humidity stays high (70 % or more) for the time
+    you choose. In your actions you can use the variables `rooms` (a list of room
+    names) and `count`.
+  domain: automation
+  author: Dan Stasiak
+  source_url: https://github.com/DanStasiak/luftwaechter-ha/blob/main/blueprints/automation/luftwaechter/mold_warning.yaml
+  homeassistant:
+    min_version: 2025.10.0
+  input:
+    mold_sensor:
+      name: Mold risk
+      description: The binary sensor "Luftwächter Mold risk".
+      selector:
+        entity:
+          filter:
+            - integration: luftwaechter
+              domain: binary_sensor
+    wait_minutes:
+      name: Wait before warning (minutes)
+      description: The humidity must stay high this long, so a hot shower is ignored.
+      default: 60
+      selector:
+        number:
+          min: 0
+          max: 1440
+          unit_of_measurement: min
+    actions:
+      name: Actions
+      description: What to do, for example send a notification. Use {{ rooms }} and {{ count }} in texts.
+      default: []
+      selector:
+        action:
+
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: state
+    entity_id: !input mold_sensor
+    to: "on"
+    for:
+      minutes: !input wait_minutes
+
+variables:
+  rooms: "{{ state_attr(trigger.entity_id, 'rooms') or [] }}"
+  count: "{{ state_attr(trigger.entity_id, 'count') | int(0) }}"
+
+actions: !input actions

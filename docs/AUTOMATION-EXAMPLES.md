@@ -56,5 +56,32 @@ actions:
       message: "{{ states('sensor.luftwachter_rooms_to_ventilate') }} rooms need fresh air."
 ```
 
-## 5. Dashboard badge
+## 5. Mold risk for an hour
+```yaml
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.luftwachter_mold_risk
+    to: "on"
+    for: "01:00:00"
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      message: "Mold risk in {{ state_attr('binary_sensor.luftwachter_mold_risk', 'rooms') | join(', ') }}"
+```
+
+## 6. Morning summary
+```yaml
+triggers:
+  - trigger: time
+    at: "08:00:00"
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      message: >
+        Air: {{ state_attr('sensor.luftwachter_house', 'good') }} of
+        {{ state_attr('sensor.luftwachter_house', 'total') }} rooms good,
+        average CO₂ {{ states('sensor.luftwachter_average_co2') }} ppm.
+```
+
+## 7. Dashboard badge
 Use `sensor.luftwachter_rooms_to_ventilate` (a number) or `binary_sensor.luftwachter_attention` (on / off) in any badge or tile card.
