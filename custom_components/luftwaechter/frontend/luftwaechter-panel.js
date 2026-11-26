@@ -379,7 +379,7 @@ class LuftwaechterPanel extends HTMLElement {
   _helpDlg(t) {
     if (!this._help) return "";
     return `<div class="ovl" id="ovl"><div class="dlg" role="dialog" aria-modal="true" aria-label="${esc(t.helpTitle)}"><div class="dh"><h2>${esc(t.helpTitle)}</h2><button class="x" id="hclose" aria-label="${esc(t.close)}">✕</button></div>
-      ${KEYS.map((k) => `<section><h3>${esc(t[k])} <small>${esc(this._lim(k))}</small></h3><p>${esc(t[HELPKEY[k][0]])}</p><p><b>${esc(t.causes)}:</b> ${esc(t[HELPKEY[k][1]])}</p><p><b>${esc(t.todo)}:</b> ${esc(t[HELPKEY[k][2]])}</p></section>`).join("")}${this._keysTable(t)}<p style="margin-top:14px;opacity:.85"><a href="https://buymeacoffee.com/dstasiak" target="_blank" rel="noopener noreferrer">${esc(t.coffee)}</a></p></div></div>`;
+      ${KEYS.map((k) => `<section><h3>${esc(t[k])} <small>${esc(this._lim(k))}</small></h3><p>${esc(t[HELPKEY[k][0]])}</p><p><b>${esc(t.causes)}:</b> ${esc(t[HELPKEY[k][1]])}</p><p><b>${esc(t.todo)}:</b> ${esc(t[HELPKEY[k][2]])}</p></section>`).join("")}${this._keysTable(t)}<p style="margin-top:14px"><a style="color:var(--primary-color,#03a9f4);text-decoration:underline" href="https://buymeacoffee.com/dstasiak" target="_blank" rel="noopener noreferrer">${esc(t.coffee)}</a></p></div></div>`;
   }
   _age(e, t) {
     const u = e.attributes.updated; if (!u) return "";

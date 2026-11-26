@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.17.1
+- Repaired: the coffee link in the panel help was dark on dark and hard to read; it now uses the theme colour.
+- DE: Repariert: Der Kaffee-Link in der Panel-Hilfe war dunkel auf dunkel und schlecht lesbar; er nutzt jetzt die Themenfarbe.
+
 ## 0.17.0
 - New: a quiet, optional **Buy me a coffee** link in the panel help, a *Sponsor* button on the GitHub page and a short "Support the project" section in the README. Nothing is shown in Home Assistant outside the help dialog.
 - DE: Neu: ein dezenter, freiwilliger **Kaffee-Link** in der Panel-Hilfe, ein *Sponsor*-Button auf der GitHub-Seite und ein kurzer Abschnitt „Support the project“ in der README. Außerhalb des Hilfe-Dialogs wird in Home Assistant nichts angezeigt.
