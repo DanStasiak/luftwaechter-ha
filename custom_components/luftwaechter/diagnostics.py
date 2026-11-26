@@ -20,6 +20,8 @@ async def async_get_config_entry_diagnostics(hass: HomeAssistant, entry: ConfigE
         "total": model.get("total"),
         "attention": model.get("attention"),
         "stale_min": model.get("stale_min"),
+        "silent_rooms": model.get("silent_rooms"),
+        "ventilate_rooms": model.get("ventilate_rooms"),
         "rooms": [
             {
                 "key": r["key"], "level": r["level"], "action": r["action"],

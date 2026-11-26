@@ -78,6 +78,12 @@ def test_silent_rooms_listed():
     m = engine.build_model([a], set(), None, "", "en", NOW)
     assert m["silent_rooms"] == [m["rooms"][0]["name"]]
 
+def test_ventilate_rooms_counted():
+    m = engine.build_model([area(co2=900)], set(), None, "", "en", NOW)
+    assert m["ventilate"] == len(m["ventilate_rooms"]) and m["ventilate"] in (0, 1)
+    assert isinstance(m["ventilate_rooms"], list)
+
+
 def test_outside_view_tip():
     o = engine.outside_view({"temperature": 3, "condition": "cloudy", "wind_speed": 10, "wind_speed_unit": "m/s", "wind_bearing": 90}, "", "en")
     assert o["wind"] == "36" and o["windDir"] == "E" and "cold" in o["tip"]

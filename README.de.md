@@ -52,6 +52,7 @@ Weise CO₂-, Feinstaub-, Temperatur- oder Feuchte-Sensoren einem **Bereich** zu
 | `sensor.luftwachter_house` | schlechtester Wert | rooms, outside, limits, attention, attention_rooms, worst_room |
 | `sensor.luftwachter_worst_room` | Name des Raums mit der schlechtesten Luft | level, attention |
 | `sensor.luftwachter_good_rooms` | Anteil der Räume mit guter Luft, % | good, total |
+| `sensor.luftwachter_rooms_to_ventilate` | Anzahl der Räume, für die „Fenster öffnen“ geraten wird | rooms |
 | `binary_sensor.luftwachter_sensor_problem` | an, solange der Luftsensor eines Raums nichts meldet oder als veraltet ignoriert wird (Diagnose) | count, rooms |
 | `binary_sensor.luftwachter_<raum>_ventilate` | an, solange für den Raum „Fenster öffnen“ geraten wird | room, headline, level |
 | `binary_sensor.luftwachter_attention` | an, solange ein Raum schlecht ist oder Lüften/Warten rät | count, rooms, worst_room |
@@ -59,6 +60,8 @@ Weise CO₂-, Feinstaub-, Temperatur- oder Feuchte-Sensoren einem **Bereich** zu
 Die Entity-IDs hängen von deiner Installation ab. Ereignis und Blueprint sind in der [englischen Beschreibung](README.md#events-for-automations) erklärt; der Blueprint lässt sich mit einem Klick importieren:
 
 [![Blueprint importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FDanStasiak%2Fluftwaechter-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fluftwaechter%2Flevel_changed.yaml)
+
+Dritter Blueprint „Sag Bescheid, wenn ein Sensor verstummt“: den Binärsensor *Sensor-Problem* wählen und wie lange das Problem bestehen muss (standardmäßig 30 Minuten); in Texten gehen `{{ rooms }}` und `{{ count }}`. Mehr Beispiele zum Kopieren: [`docs/AUTOMATION-EXAMPLES.md`](docs/AUTOMATION-EXAMPLES.md).
 
 Zweiter Blueprint „Ans Lüften erinnern“: Lüften-Sensor eines Raums wählen, dazu wie lange der Rat bestehen muss (z. B. 5 Minuten), dann festlegen, was passiert:
 
@@ -68,7 +71,7 @@ Zweiter Blueprint „Ans Lüften erinnern“: Lüften-Sensor eines Raums wählen
 **Kiosk-Modus** (Taste `K` oder Menü → „Kiosk-Modus“): größte Schrift, Räume wechseln automatisch, Knöpfe blenden aus. Direkt starten: `https://<dein-ha>/luftwaechter#kiosk`. Im Menü außerdem: Browser-Hinweise (wenn ein Raum schlecht wird), Sprache wählen, Ansicht zurücksetzen.
 
 ## Tastatur
-← → Raum wechseln · `1`–`9` Raum wählen · `T` Zeitraum des Verlaufs · Esc zurück · `/` suchen · `S` sortieren (schlechtester, Name, CO₂) · `P` Raum anheften · `O` nur Probleme · `V` Listenansicht · `C` Hausübersicht kopieren · `K` Kiosk-Modus · `M` Menü · `R` durchschalten · `F` Vollbild · `H` oder `?` Hilfe. Am Handy wischt du im Raum nach links oder rechts, um den Raum zu wechseln.
+← → Raum wechseln · `1`–`9` Raum wählen · `Pos1` / `Ende` erster / letzter Raum · `T` Zeitraum des Verlaufs · `L` Sprache · Esc zurück · `/` suchen · `S` sortieren (schlechtester, Name, CO₂) · `P` Raum anheften · `O` nur Probleme · `V` Listenansicht · `C` Hausübersicht kopieren · `K` Kiosk-Modus · `M` Menü · `R` durchschalten · `F` Vollbild · `H` oder `?` Hilfe. Am Handy wischt du im Raum nach links oder rechts, um den Raum zu wechseln.
 
 ## Fehlersuche
 - **Panel zeigt noch alte Texte nach dem Update**: Browser-Seite hart neu laden (Strg + F5).

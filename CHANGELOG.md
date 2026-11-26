@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.14.0
+- New sensor `sensor.luftwachter_rooms_to_ventilate`: how many rooms advise opening a window right now (the rooms are in its attributes). Good for a dashboard badge or a spoken hint.
+- New third **blueprint** "tell me when a sensor goes quiet" for the sensor-problem binary sensor, with a wait time so short gaps are ignored.
+- The panel shows a **warning bar** when a room's air sensor has gone quiet, naming the rooms.
+- Keys **L** (switch language) and **Home / End** (first / last room); the help lists them.
+- The house sensor and the diagnostics now include `silent_rooms` and `ventilate_rooms`, which makes bug reports easier to read.
+- New [`docs/AUTOMATION-EXAMPLES.md`](docs/AUTOMATION-EXAMPLES.md) with five copy-and-paste automations.
+- GitHub page: entities table, blueprint section, features list and contents bar updated (English and German).
+- Three more tests; the blueprint test now expects three blueprints and checks every input is used.
+- DE: Neuer Sensor `sensor.luftwachter_rooms_to_ventilate`: wie viele Räume gerade „Fenster öffnen“ raten (die Räume stehen in den Attributen).
+- DE: Dritter **Blueprint** „Sag Bescheid, wenn ein Sensor verstummt“ mit Wartezeit.
+- DE: Das Panel zeigt eine **Warnleiste**, wenn der Luftsensor eines Raums nichts mehr meldet, mit den Raumnamen.
+- DE: Tasten **L** (Sprache wechseln) und **Pos1 / Ende** (erster / letzter Raum); die Hilfe nennt sie.
+- DE: Haus-Sensor und Diagnose enthalten jetzt `silent_rooms` und `ventilate_rooms`.
+- DE: Neue Sammlung [`docs/AUTOMATION-EXAMPLES.md`](docs/AUTOMATION-EXAMPLES.md) mit fünf Automationen zum Kopieren.
+- DE: GitHub-Seite: Entitäten, Blueprints, Funktionsliste und Inhaltsleiste aktualisiert.
+
 ## 0.13.0
 - **Number keys 1–9** jump straight to a room; **T** cycles the chart range (6 h, 24 h, 7 d). Both are listed in the help.
 - The **browser tab title names the room** you are looking at, so several tabs are easy to tell apart.

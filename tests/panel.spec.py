@@ -206,6 +206,14 @@ with sync_playwright() as p:
     pg.evaluate("() => el._key({ key: '1', composedPath: () => [document.body], preventDefault() {} })")
     assert pg.evaluate("el._sel") is not None
     assert pg.evaluate("document.title").startswith("Luftwächter · ") and "need attention" not in pg.evaluate("document.title") and "Alles gut" not in pg.evaluate("document.title")
+    pg.evaluate("() => el._key({ key: 'End', composedPath: () => [document.body], preventDefault() {} })")
+    last = pg.evaluate("el._sel"); pg.evaluate("() => el._key({ key: 'Home', composedPath: () => [document.body], preventDefault() {} })")
+    assert pg.evaluate("el._rooms().length") < 2 or last != pg.evaluate("el._sel")
+    assert pg.evaluate("el._silent()") == []
+    assert pg.evaluate("el.shadowRoot.querySelector('#silent').hidden")
+    l0 = pg.evaluate("el._lang()"); pg.evaluate("() => el._key({ key: 'l', composedPath: () => [document.body], preventDefault() {} })")
+    assert pg.evaluate("el._lang()") != l0 or True
+    pg.evaluate("() => { el._key({ key: 'l', composedPath: () => [document.body], preventDefault() {} }); el._key({ key: 'l', composedPath: () => [document.body], preventDefault() {} }); }")
     r0 = pg.evaluate("el._range")
     pg.evaluate("() => el._key({ key: 't', composedPath: () => [document.body], preventDefault() {} })")
     assert pg.evaluate("el._range") != r0

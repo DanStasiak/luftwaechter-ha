@@ -127,6 +127,14 @@ async def test_sensor_problem_binary_sensor(hass, enable_custom_integrations):
     assert b is not None and b.state == "off" and b.attributes["count"] == 0
 
 
+async def test_rooms_to_ventilate_sensor(hass, enable_custom_integrations):
+    await _setup(hass, co2="900")
+    s = hass.states.get("sensor.luftwachter_rooms_to_ventilate")
+    assert s is not None and s.state.isdigit() and isinstance(s.attributes["rooms"], list)
+    house = hass.states.get("sensor.luftwachter_house")
+    assert house.attributes["silent_rooms"] == [] and "ventilate_rooms" in house.attributes
+
+
 async def test_room_since_and_spark(hass, enable_custom_integrations):
     entry, _eid = await _setup(hass, co2="1300")
     coord = hass.data[DOMAIN][entry.entry_id]

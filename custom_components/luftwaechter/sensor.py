@@ -33,7 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         if new:
             async_add_entities(new)
 
-    async_add_entities([HouseSensor(coord, entry), GoodRoomsSensor(coord, entry), WorstRoomSensor(coord, entry)])
+    async_add_entities([HouseSensor(coord, entry), GoodRoomsSensor(coord, entry), WorstRoomSensor(coord, entry), VentilateRoomsSensor(coord, entry)])
     _add()
     entry.async_on_unload(coord.async_add_listener(_add))
 
@@ -45,7 +45,7 @@ class HouseSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     _attr_name = "Luftwächter House"
     _attr_device_class = SensorDeviceClass.ENUM
     _attr_options = LEVEL_OPTIONS
-    _unrecorded_attributes = frozenset({"rooms", "summary", "outside", "colors", "alt", "attention_rooms"})
+    _unrecorded_attributes = frozenset({"rooms", "summary", "outside", "colors", "alt", "attention_rooms", "silent_rooms", "ventilate_rooms"})
 
     def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
         super().__init__(coord)
@@ -59,7 +59,7 @@ class HouseSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     @property
     def extra_state_attributes(self) -> dict:
         d = self.coordinator.data or {}
-        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated", "attention", "attention_rooms", "worst_room", "stale_min", "good", "total")}
+        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated", "attention", "attention_rooms", "worst_room", "stale_min", "good", "total", "silent_rooms", "ventilate", "ventilate_rooms")}
 
 
 class GoodRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
@@ -86,6 +86,27 @@ class GoodRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     def extra_state_attributes(self) -> dict:
         d = self.coordinator.data or {}
         return {"good": d.get("good", 0), "total": d.get("total", 0)}
+
+
+class VentilateRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
+    """How many rooms currently advise opening a window; handy for a dashboard badge."""
+
+    _attr_has_entity_name = False
+    _attr_name = "Luftwächter Rooms to ventilate"
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coord)
+        self._attr_unique_id = f"{entry.entry_id}_ventilate_rooms"
+        self._attr_device_info = _device(entry)
+
+    @property
+    def native_value(self) -> int:
+        return int((self.coordinator.data or {}).get("ventilate", 0))
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        return {"rooms": (self.coordinator.data or {}).get("ventilate_rooms", [])}
 
 
 class WorstRoomSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
