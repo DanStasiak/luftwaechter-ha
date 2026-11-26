@@ -8,6 +8,6 @@ authors:
 repository-code: "https://github.com/DanStasiak/luftwaechter-ha"
 url: "https://github.com/DanStasiak/luftwaechter-ha"
 license: MIT
-version: "0.16.0"
+version: "0.17.0"
 date-released: "2026-11-25"
 keywords: [home-assistant, air-quality, co2, ventilation]

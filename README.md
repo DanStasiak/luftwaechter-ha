@@ -297,6 +297,10 @@ Needs Home Assistant 2025.10 or newer, any install type (OS, Container, Core, Su
 2. In HACS, open Luftwächter → ⋮ → **Remove**, then restart Home Assistant.
 3. Automations built from the blueprints keep their own copy and stay; delete them if you no longer need them.
 
+## Support the project
+
+Luftwächter is free and stays free. If it makes your home a little better and you would like to say thanks, you can [buy me a coffee](https://buymeacoffee.com/dstasiak) (the *Sponsor* button on this page leads there too). Entirely optional; the integration never asks for it. Please also support [Home Assistant](https://www.home-assistant.io) itself.
+
 ## Privacy
 Everything runs inside your Home Assistant. No accounts, no cloud services, no telemetry.
 
