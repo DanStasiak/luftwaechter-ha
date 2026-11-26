@@ -4,7 +4,7 @@
 
 [![Validate](https://github.com/DanStasiak/luftwaechter-ha/actions/workflows/validate.yml/badge.svg)](https://github.com/DanStasiak/luftwaechter-ha/actions/workflows/validate.yml)
 [![Release](https://img.shields.io/github/v/release/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/releases)
-[![Lizenz: MIT](https://img.shields.io/github/license/DanStasiak/luftwaechter-ha)](LICENSE)
+[![Lizenz: MIT](https://img.shields.io/github/license/DanStasiak/luftwaechter-ha)](LICENSE) [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-%E2%98%95-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/dstasiak)
 
 Luftqualität pro Raum, Lüftungshinweise und Fensterempfehlungen für Home Assistant, mit einem Seitenleisten-Panel für den ganzen Haushalt. Ergänzung zum [Luftwächter-Widget für Windows](https://github.com/DanStasiak/airguard-widget). Deutsch und Englisch, keine Cloud, keine zusätzlichen Zugänge.  
 🇬🇧 [English version](README.md)

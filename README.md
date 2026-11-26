@@ -10,7 +10,7 @@
 [![Downloads](https://img.shields.io/github/downloads/DanStasiak/luftwaechter-ha/total)](https://github.com/DanStasiak/luftwaechter-ha/releases)
 [![Last commit](https://img.shields.io/github/last-commit/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/commits/main)
 [![Stars](https://img.shields.io/github/stars/DanStasiak/luftwaechter-ha?style=flat)](https://github.com/DanStasiak/luftwaechter-ha/stargazers)
-[![Issues](https://img.shields.io/github/issues/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/issues)
+[![Issues](https://img.shields.io/github/issues/DanStasiak/luftwaechter-ha)](https://github.com/DanStasiak/luftwaechter-ha/issues) [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-%E2%98%95-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/dstasiak)
 
 🇩🇪 [Deutsche Version](README.de.md)
 
