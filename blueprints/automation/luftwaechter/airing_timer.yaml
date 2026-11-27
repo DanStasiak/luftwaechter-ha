@@ -1,0 +1,104 @@
+blueprint:
+  name: Luftwächter - airing timer, "close the window now" (spoken or push)
+  description: >
+    When a window is opened, waits until the window is closed again, until Luftwächter's "close window" sensor of
+    the room turns on, or until your time is up (short airing, for example 5 minutes), whichever comes first. If the
+    window is still open then, it tells you to close it by speech and/or a notification.
+  domain: automation
+  author: Dan Stasiak
+  source_url: https://github.com/DanStasiak/luftwaechter-ha/blob/main/blueprints/automation/luftwaechter/airing_timer.yaml
+  homeassistant:
+    min_version: 2025.10.0
+  input:
+    window:
+      name: Window contact
+      selector:
+        entity:
+          domain: binary_sensor
+    close_sensor:
+      name: Luftwächter "close window" sensor of the room (optional)
+      default: ""
+      selector:
+        entity:
+          filter:
+            - integration: luftwaechter
+              domain: binary_sensor
+    minutes:
+      name: Airing time (minutes)
+      default: 5
+      selector:
+        number:
+          min: 1
+          max: 60
+          unit_of_measurement: min
+    tts_entity:
+      name: Text to speech engine (optional)
+      default: ""
+      selector:
+        entity:
+          domain: tts
+    speakers:
+      name: Speakers
+      default: []
+      selector:
+        entity:
+          domain: media_player
+          multiple: true
+    notify_service:
+      name: Notify service (optional)
+      description: For example notify.mobile_app_my_phone.
+      default: ""
+      selector:
+        text:
+    text:
+      name: Text
+      default: "Please close the window now."
+      selector:
+        text:
+
+mode: restart
+max_exceeded: silent
+
+triggers:
+  - trigger: state
+    entity_id: !input window
+    to: "on"
+
+variables:
+  window: !input window
+  close_sensor: !input close_sensor
+  minutes: !input minutes
+  tts_entity: !input tts_entity
+  speakers: !input speakers
+  notify_service: !input notify_service
+  text: !input text
+
+actions:
+  - wait_for_trigger:
+      - trigger: state
+        entity_id: !input window
+        to: "off"
+      - trigger: template
+        value_template: "{{ close_sensor | length > 0 and is_state(close_sensor, 'on') }}"
+    timeout:
+      minutes: !input minutes
+    continue_on_timeout: true
+  - condition: template
+    value_template: "{{ is_state(window, 'on') }}"
+  - if:
+      - condition: template
+        value_template: "{{ tts_entity | length > 0 and speakers | length > 0 }}"
+    then:
+      - action: tts.speak
+        target:
+          entity_id: "{{ tts_entity }}"
+        data:
+          media_player_entity_id: "{{ speakers }}"
+          message: "{{ text }}"
+  - if:
+      - condition: template
+        value_template: "{{ notify_service | length > 0 }}"
+    then:
+      - action: "{{ notify_service }}"
+        data:
+          message: "{{ text }}"

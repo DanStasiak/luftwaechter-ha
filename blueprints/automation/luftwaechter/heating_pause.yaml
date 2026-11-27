@@ -1,0 +1,92 @@
+blueprint:
+  name: Luftwächter - pause heating while a window is open (opt-in)
+  description: >
+    Optional and entirely your choice: when a window has been open for a while, the thermostats you pick are
+    switched off, and when all picked windows have been closed for a short time, their previous state (mode,
+    target temperature) is restored from a snapshot. Luftwächter itself never switches heating; this blueprint
+    does only what you set up here. Tip: with the *window open too long* reminders you may not need it.
+  domain: automation
+  author: Dan Stasiak
+  source_url: https://github.com/DanStasiak/luftwaechter-ha/blob/main/blueprints/automation/luftwaechter/heating_pause.yaml
+  homeassistant:
+    min_version: 2025.10.0
+  input:
+    windows:
+      name: Window contacts
+      description: The windows that should pause the heating (all of them must be closed to restore).
+      selector:
+        entity:
+          domain: binary_sensor
+          multiple: true
+    thermostats:
+      name: Thermostats
+      description: The heating devices to switch off while a window is open.
+      selector:
+        entity:
+          domain: climate
+          multiple: true
+    open_seconds:
+      name: Window open for (seconds)
+      default: 120
+      selector:
+        number:
+          min: 10
+          max: 1800
+          unit_of_measurement: s
+    closed_seconds:
+      name: All windows closed for (seconds)
+      default: 30
+      selector:
+        number:
+          min: 0
+          max: 1800
+          unit_of_measurement: s
+
+mode: restart
+max_exceeded: silent
+
+triggers:
+  - trigger: state
+    entity_id: !input windows
+    to: "on"
+    for:
+      seconds: !input open_seconds
+    id: opened
+  - trigger: state
+    entity_id: !input windows
+    to: "off"
+    for:
+      seconds: !input closed_seconds
+    id: closed
+
+variables:
+  windows: !input windows
+  thermostats: !input thermostats
+  scene_id: "luftwaechter_heating_{{ this.entity_id.split('.')[1] }}"
+
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: opened
+        sequence:
+          - action: scene.create
+            data:
+              scene_id: "{{ scene_id }}"
+              snapshot_entities: "{{ thermostats }}"
+          - action: climate.set_hvac_mode
+            target:
+              entity_id: "{{ thermostats }}"
+            data:
+              hvac_mode: "off"
+      - conditions:
+          - condition: trigger
+            id: closed
+          - condition: template
+            value_template: "{{ expand(windows) | selectattr('state', 'eq', 'on') | list | count == 0 }}"
+          - condition: template
+            value_template: "{{ states('scene.' ~ scene_id) not in ['unknown', 'unavailable'] }}"
+        sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: "scene.{{ scene_id }}"

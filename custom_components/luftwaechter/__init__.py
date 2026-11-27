@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import voluptuous as vol
-from homeassistant.components import panel_custom
+from homeassistant.components import frontend, panel_custom
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
@@ -16,7 +16,7 @@ from .coordinator import LuftwaechterCoordinator
 
 PLATFORMS = ["sensor", "binary_sensor"]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
-_VERSION = "0.20.0"
+_VERSION = "0.21.0"
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
@@ -67,6 +67,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             require_admin=False,
             config={},
         )
+        frontend.add_extra_js_url(hass, f"{STATIC_URL}/luftwaechter-card.js?v={_VERSION}")
         hass.data[DOMAIN]["panel"] = True
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

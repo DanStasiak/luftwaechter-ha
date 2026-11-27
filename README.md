@@ -199,6 +199,22 @@ Luftwächter can remind you when a window stays open too long, and it stays advi
 - **Event:** `luftwaechter_reminder` with `room`, `window`, `entity_id`, `minutes_open`, `outside_temp` and `message`.
 - Window contacts are found by device class *window* or *opening*, or a *door* contact whose name says window or Fenster.
 
+## Lovelace card
+
+The integration adds a small card to your dashboards automatically (no resource to add). Add it from the card picker (*Luftwächter*) or in YAML:
+
+```yaml
+type: custom:luftwaechter-card
+room: Office        # room name or key; leave out for the whole-house summary
+```
+
+Options: `title` (house summary), `values: false` (hide the numbers). It shows the face, the one-sentence advice and the readings, and follows your Home Assistant language (German or English).
+
+## More blueprints
+
+- **Pause heating while a window is open (opt-in):** switches the thermostats you pick off after the window was open for a while and restores their previous mode and temperature from a snapshot once all picked windows are closed. Luftwächter itself never switches heating.
+- **Airing timer, "close the window now":** when a window opens, waits until it is closed, until the room's *close window* sensor turns on, or until your airing time is over, then says or sends "close the window now" if it is still open.
+
 ## Actions and diagnostics
 - `luftwaechter.refresh` recalculates all rooms immediately.
 - `luftwaechter.snooze`, `luftwaechter.skip_until_closed` and `luftwaechter.clear_snooze` control window reminders (see above).

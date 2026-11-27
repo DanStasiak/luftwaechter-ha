@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.21.0
+- New: **Lovelace card** `custom:luftwaechter-card` (one room or the whole house). It is added to the dashboards automatically; it follows the Home Assistant language.
+- New blueprint **pause heating while a window is open (opt-in)**: snapshot, switch off, restore. Luftwächter itself still never switches anything.
+- New blueprint **airing timer, "close the window now"** (speech and/or notification).
+- DE: Neu: **Lovelace-Karte** `custom:luftwaechter-card` (ein Raum oder das ganze Haus). Sie wird automatisch zu den Dashboards hinzugefügt und folgt der Home-Assistant-Sprache.
+- DE: Neuer Blueprint **Heizung pausieren, solange ein Fenster offen ist (freiwillig)**: Schnappschuss, ausschalten, wiederherstellen. Luftwächter selbst schaltet weiterhin nichts.
+- DE: Neuer Blueprint **Lüftungs-Timer „Fenster jetzt schließen“** (Sprache und/oder Meldung).
+
 ## 0.20.0
 - New: **window reminders.** A window open for the first wait (10 min), while it is colder than your limit outside (10 °C) and inside your active hours (08 to 22), fires the event `luftwaechter_reminder` and repeats every 5 minutes (all adjustable under Configure). New sensors `binary_sensor.luftwachter_window_reminder` and `binary_sensor.luftwachter_<area>_window_reminder`.
 - New: **snooze, skip and mute.** Actions `luftwaechter.snooze`, `luftwaechter.skip_until_closed` and `luftwaechter.clear_snooze`; options *Never remind for these windows* and *Mute reminders while on*. Snoozes survive restarts.
