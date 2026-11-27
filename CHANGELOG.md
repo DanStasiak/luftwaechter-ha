@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.18.0
+- New: **smarter "close the window" advice.** A window that is open while the air is good again (CO₂ below your good limit) is now reported as "Please close the window" when it has been open 5 minutes or more and it is below 10 °C outside, or as soon as it rains. The advice shows how long the window has been open.
+- New binary sensor `binary_sensor.luftwachter_<room>_close_window` (on while the advice is "close the window") and the house sensor attributes `close` and `close_rooms`. Rooms with a "close" advice now count as needing attention.
+- Window contacts are found more reliably: device class window or opening, and door contacts whose name says window or Fenster.
+- Nothing is switched automatically. It only changes advice, texts and entities.
+- Four more tests.
+- DE: Neu: **klügerer Rat „Fenster schließen“.** Ein offenes Fenster bei wieder guter Luft (CO₂ unter Ihrer Grenze) meldet jetzt „Bitte Fenster schließen“, wenn es seit 5 Minuten oder länger offen ist und draußen weniger als 10 °C sind, oder sobald es regnet. Der Rat zeigt, wie lange das Fenster offen ist.
+- DE: Neuer Binärsensor `binary_sensor.luftwachter_<Raum>_close_window` (an, solange der Rat „Fenster schließen“ lautet) und die Attribute `close` und `close_rooms` am Haus-Sensor. Räume mit „schließen“ zählen jetzt als „braucht Aufmerksamkeit“.
+- DE: Fensterkontakte werden besser erkannt: Geräteklasse Fenster oder Öffnung sowie Türkontakte, deren Name Fenster oder window enthält.
+- DE: Es wird nichts automatisch geschaltet. Es ändern sich nur Rat, Texte und Entitäten.
+
 ## 0.17.1
 - Repaired: the coffee link in the panel help was dark on dark and hard to read; it now uses the theme colour.
 - DE: Repariert: Der Kaffee-Link in der Panel-Hilfe war dunkel auf dunkel und schlecht lesbar; er nutzt jetzt die Themenfarbe.

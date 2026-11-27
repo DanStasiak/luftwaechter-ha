@@ -107,6 +107,9 @@ TEXTS: dict[str, dict[str, str]] = {
         "now": "Ist {t} °C",
         "heating_on": " · heizt",
         "heating_off": " · aus",
+        "close_cold": "Die Luft ist in Ordnung und draußen sind {t} °C. Zu lassen spart Heizenergie.",
+        "close_rain": " Es regnet draußen.",
+        "open_for": " Fenster seit {m} min offen.",
         "open": "offen", "closed": "zu", "opening": "öffnet", "closing": "schließt",
         "dirs": "N,NO,O,SO,S,SW,W,NW",
         "g_light": "Licht", "g_power": "Strom", "g_heat": "Heizung", "g_cover": "Rollo",
@@ -148,6 +151,9 @@ TEXTS: dict[str, dict[str, str]] = {
         "now": "Now {t} °C",
         "heating_on": " · heating",
         "heating_off": " · off",
+        "close_cold": "The air is fine and it is {t} °C outside. Closing saves heating energy.",
+        "close_rain": " It is raining outside.",
+        "open_for": " Window open for {m} min.",
         "open": "open", "closed": "closed", "opening": "opening", "closing": "closing",
         "dirs": "N,NE,E,SE,S,SW,W,NW",
         "g_light": "Light", "g_power": "Power", "g_heat": "Heating", "g_cover": "Blinds",
@@ -402,12 +408,27 @@ def dew_point(t: float | None, h: float | None) -> float | None:
     return b * g / (a - g)
 
 
-def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits: dict | None = None) -> dict:
+COLD_OUTSIDE = 10  # deg C: below this an open window with good air should be closed
+CLOSE_AFTER_MIN = 5
+_WINDOW_NAME = re.compile(r"fenster|window")
+
+
+def is_window(e: dict) -> bool:
+    """Window contact: device class window or opening; a door contact only when its name says window."""
+    if e.get("domain") != "binary_sensor":
+        return False
+    dc = e.get("device_class")
+    if dc in ("window", "opening"):
+        return True
+    return dc == "door" and bool(_WINDOW_NAME.search(f"{e.get('entity_id', '')} {e.get('name', '')}".lower()))
+
+
+def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits: dict | None = None, now: float = 0.0) -> dict:
     lim_ = norm_limits(limits)
     co2_good, co2_fair = lim_["co2"]
     pm_dust = sum(lim_["pm25"]) / 2
     co2, pm, tt, hh = room.co2, room.pm, room.t, room.h
-    wins = [e for e in room.entities if e["domain"] == "binary_sensor" and e.get("device_class") == "window"]
+    wins = [e for e in room.entities if is_window(e)]
     has_window = bool(wins)
     wst = "unknown"
     if has_window:
@@ -415,6 +436,12 @@ def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits
             wst = "open"
         elif all(e["state"] == "off" for e in wins):
             wst = "closed"
+    open_min = 0
+    if wst == "open" and now:
+        stamps = [e.get("last_changed") or 0 for e in wins if e["state"] == "on"]
+        stamps = [x for x in stamps if x]
+        if stamps:
+            open_min = int(max(0, (now - min(stamps)) / 60))
     ot = num(weather.get("temperature")) if weather else None
     cond = str(weather.get("condition") or "") if weather else ""
     bad_out = cond in BAD_OUTSIDE
@@ -437,6 +464,13 @@ def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits
             action, head, detail = "close", tx(lang, "close"), tx(lang, "fresh")
             if ot is not None and ot < 15:
                 detail += tx(lang, "cold_room")
+        elif co2 is not None and co2 < co2_good and not (tt is not None and tt >= 25) and not (hh is not None and hh > 60) and (
+            (ot is not None and ot < COLD_OUTSIDE and open_min >= CLOSE_AFTER_MIN) or cond in RAIN_CONDITIONS
+        ):
+            action, head = "close", tx(lang, "close")
+            detail = tx(lang, "close_cold", t=fmt(ot, 0, lang)) if ot is not None and ot < COLD_OUTSIDE else tx(lang, "fresh")
+            if cond in RAIN_CONDITIONS:
+                detail += tx(lang, "close_rain")
         else:
             action, head, detail, vent_min = "keep_open", tx(lang, "keep_open"), tx(lang, "getting_better"), how_m
     elif need_vent:
@@ -458,18 +492,20 @@ def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits
     else:
         action, head = "keep_closed", tx(lang, "all_good")
         detail = tx(lang, "win_stay") if has_window else tx(lang, "air_fine")
+    if wst == "open" and open_min >= CLOSE_AFTER_MIN and action in ("close", "keep_open"):
+        detail += tx(lang, "open_for", m=open_min)
     mold = hh is not None and hh >= mold_limit(limits) and action != "unknown"
     if mold:
         detail += tx(lang, "mold_d")
     return {
         "action": action, "headline": head, "detail": detail, "window": wst, "hasWindow": has_window,
-        "ventMin": vent_min, "mold": mold, "dew": fmt(dew_point(tt, hh), 1, lang) if dew_point(tt, hh) is not None else "",
+        "ventMin": vent_min, "openMin": open_min, "mold": mold, "dew": fmt(dew_point(tt, hh), 1, lang) if dew_point(tt, hh) is not None else "",
     }
 
 
-def room_view(room: RoomEval, weather: dict | None, rain_at: str, labelled: set[str], lang: str, limits: dict | None = None) -> dict:
+def room_view(room: RoomEval, weather: dict | None, rain_at: str, labelled: set[str], lang: str, limits: dict | None = None, now: float = 0.0) -> dict:
     worst = room.worst
-    adv = advice(room, weather, rain_at, lang, limits)
+    adv = advice(room, weather, rain_at, lang, limits, now)
     keys = ("co2", "pm25", "temperature", "humidity")
     units = ("ppm", "µg/m³", "°C", "%")
     vals = (room.co2, room.pm, room.t, room.h)
@@ -491,7 +527,7 @@ def room_view(room: RoomEval, weather: dict | None, rain_at: str, labelled: set[
 def _model_for(areas: list[dict], labelled: set[str], weather: dict | None, rain_at: str, lang: str, now: float, limits: dict | None = None) -> tuple[list[dict], dict | None]:
     evals = [eval_room(a, labelled, lang, now, limits) for a in areas]
     evals = sorted([e for e in evals if e.has_air], key=lambda e: e.name.lower())
-    rooms = [room_view(e, weather, rain_at, labelled, lang, limits) for e in evals]
+    rooms = [room_view(e, weather, rain_at, labelled, lang, limits, now) for e in evals]
     return rooms, outside_view(weather, rain_at, lang)
 
 
@@ -510,7 +546,7 @@ def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rai
         if other != lang:
             o_rooms, o_outside = _model_for(areas, labelled, weather, rain_at, other, now, limits)
             alt[other] = {"rooms": o_rooms, "outside": o_outside}
-    attn = [r for r in rooms if r["level"] == "poor" or r["action"] in ("open", "wait", "keep_open")]
+    attn = [r for r in rooms if r["level"] == "poor" or r["action"] in ("open", "wait", "keep_open", "close")]
     co2s = [r["values"][0]["raw"] for r in rooms if r["values"] and r["values"][0]["raw"] is not None]
     co2_avg = round(sum(co2s) / len(co2s)) if co2s else None
     temps = [r["values"][2]["raw"] for r in rooms if len(r["values"]) > 2 and r["values"][2]["raw"] is not None]
@@ -528,6 +564,8 @@ def build_model(areas: list[dict], labelled: set[str], weather: dict | None, rai
         "co2_avg": co2_avg, "temp_avg": temp_avg, "rh_avg": rh_avg, "mold_rh": mold_limit(limits), "mold": sum(1 for r in rooms if r.get("mold")), "mold_rooms": [r["name"] for r in rooms if r.get("mold")],
         "ventilate": sum(1 for r in rooms if r["action"] == "open"),
         "ventilate_rooms": [r["name"] for r in rooms if r["action"] == "open"], "worst_room": worst_room,
+        "close": sum(1 for r in rooms if r["action"] == "close"),
+        "close_rooms": [r["name"] for r in rooms if r["action"] == "close"],
         "level": LEVELS[worst] if worst is not None else "unknown",
         "outside": outside, "lang": lang, "alt": alt,
         "limits": {k: list(v) for k, v in norm_limits(limits).items()}, "colors": list(COLORS),

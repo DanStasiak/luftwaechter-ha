@@ -59,6 +59,7 @@ Weise CO₂-, Feinstaub-, Temperatur- oder Feuchte-Sensoren einem **Bereich** zu
 | `sensor.luftwachter_rooms_to_ventilate` | Anzahl der Räume, für die „Fenster öffnen“ geraten wird | rooms |
 | `binary_sensor.luftwachter_sensor_problem` | an, solange der Luftsensor eines Raums nichts meldet oder als veraltet ignoriert wird (Diagnose) | count, rooms |
 | `binary_sensor.luftwachter_<raum>_ventilate` | an, solange für den Raum „Fenster öffnen“ geraten wird | room, headline, level |
+| `binary_sensor.luftwachter_<raum>_close_window` | an, solange „Fenster schließen“ geraten wird (Luft wieder gut und draußen kalt oder Regen) | room, headline, detail, open_minutes |
 | `binary_sensor.luftwachter_attention` | an, solange ein Raum schlecht ist oder Lüften/Warten rät | count, rooms, worst_room |
 
 Die Entity-IDs hängen von deiner Installation ab. Ereignis und Blueprint sind in der [englischen Beschreibung](README.md#events-for-automations) erklärt; der Blueprint lässt sich mit einem Klick importieren:

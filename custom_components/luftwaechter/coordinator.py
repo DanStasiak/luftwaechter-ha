@@ -86,6 +86,7 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
                     "state": st.state,
                     "device_class": st.attributes.get("device_class") or ent.original_device_class,
                     "last_reported": st.last_reported.timestamp() if st.last_reported else 0,
+                    "last_changed": st.last_changed.timestamp() if st.last_changed else 0,
                 }
             )
         areas = []

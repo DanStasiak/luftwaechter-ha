@@ -5,9 +5,9 @@ engine = importlib.util.module_from_spec(spec); sys.modules["engine"] = engine; 
 
 NOW = 1_000_000.0
 
-def ent(eid, dc, state, dom="sensor", name=None, age=0):
+def ent(eid, dc, state, dom="sensor", name=None, age=0, changed=None):
     return {"entity_id": eid, "domain": dom, "name": name or eid, "state": str(state),
-            "device_class": dc, "last_reported": NOW - age * 60}
+            "device_class": dc, "last_reported": NOW - age * 60, "last_changed": NOW - (age if changed is None else changed) * 60}
 
 def area(**v):
     ents = []
@@ -169,3 +169,43 @@ def test_house_attention_summary():
     assert m["attention"] == 1 and m["attention_rooms"] == ["Office"] and m["worst_room"] == "Office"
     ok = engine.build_model([area(co2=600, pm=5, t=21, h=45)], set(), None, "", "en", NOW)
     assert ok["attention"] == 0 and ok["attention_rooms"] == []
+
+
+def room_win(win_min, dc="window", name=None, **v):
+    a = area(**v)
+    a["entities"] = [e for e in a["entities"] if e["domain"] != "binary_sensor"]
+    a["entities"].append(ent("binary_sensor.w", dc, "on", dom="binary_sensor", name=name, changed=win_min))
+    return engine.build_model([a], set(), v.pop("weather", None), "", "en", NOW)["rooms"][0]
+
+
+def test_close_window_when_air_good_and_cold_after_minutes():
+    w = {"temperature": 2, "condition": "cloudy"}
+    a = area(co2=850, t=21, h=45)
+    a["entities"].append(ent("binary_sensor.w", "window", "on", dom="binary_sensor", changed=12))
+    r = engine.build_model([a], set(), w, "", "en", NOW)["rooms"][0]
+    assert r["action"] == "close" and r["openMin"] == 12 and "2 °C" in r["detail"] and "12 min" in r["detail"]
+    a["entities"][-1] = ent("binary_sensor.w", "window", "on", dom="binary_sensor", changed=2)
+    r = engine.build_model([a], set(), w, "", "en", NOW)["rooms"][0]
+    assert r["action"] == "keep_open"
+
+
+def test_close_window_when_raining_and_air_good():
+    a = area(co2=800, t=21, h=45)
+    a["entities"].append(ent("binary_sensor.w", "window", "on", dom="binary_sensor", changed=1))
+    r = engine.build_model([a], set(), {"temperature": 14, "condition": "rainy"}, "", "en", NOW)["rooms"][0]
+    assert r["action"] == "close" and "raining" in r["detail"]
+    m = engine.build_model([a], set(), {"temperature": 14, "condition": "rainy"}, "", "en", NOW)
+    assert m["close"] == 1 and m["close_rooms"] == ["Office"] and m["attention"] == 1
+
+
+def test_stale_air_keeps_window_open_even_when_cold():
+    a = area(co2=1200, t=21, h=45)
+    a["entities"].append(ent("binary_sensor.w", "window", "on", dom="binary_sensor", changed=30))
+    r = engine.build_model([a], set(), {"temperature": 0, "condition": "cloudy"}, "", "en", NOW)["rooms"][0]
+    assert r["action"] == "keep_open" and "30 min" in r["detail"]
+
+
+def test_door_contact_counts_as_window_only_when_named_so():
+    assert engine.is_window(ent("binary_sensor.x", "door", "on", dom="binary_sensor", name="Door Window Sensor 6"))
+    assert not engine.is_window(ent("binary_sensor.front", "door", "on", dom="binary_sensor", name="Front door"))
+    assert engine.is_window(ent("binary_sensor.y", "opening", "on", dom="binary_sensor", name="Balkon"))

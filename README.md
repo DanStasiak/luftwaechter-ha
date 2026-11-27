@@ -36,7 +36,7 @@ Questions? See [SUPPORT.md](SUPPORT.md).
 - **Screen-reader friendly:** level changes are announced politely, tiles have tooltips with the full advice, everything works by keyboard.
 - **Do-now overview**: which rooms need attention, worst first, with a coloured dot per reading on every tile.
 - **Room view**: status badge, "what stands out" with the limits, gauge bars, 24 h / 6 h / 7 day history charts with hover readout.
-- **Advice**: open, close or keep the window; how long to ventilate; wait for storms; rain-soon hint from your weather forecast.
+- **Advice**: open, close or keep the window (a window left open after the air is good again is flagged once it is cold or raining); how long to ventilate; wait for storms; rain-soon hint from your weather forecast.
 - **Help built in**: what each reading means, typical causes of bad values, what helps.
 - **Devices per room**: lights, heating, blinds (open / stop / close) with live state.
 - **Made for shared screens**: text size switch for wall tablets, remembers your last room, arrow keys, stale-data warning.
@@ -139,6 +139,7 @@ The room level is the worst of the four.
 | `sensor.luftwachter_worst_room` | name of the room with the worst air | level, attention |
 | `sensor.luftwachter_good_rooms` | share of rooms with good air, % | good, total |
 | `binary_sensor.luftwachter_<room>_ventilate` | on while the advice for the room is "open the window" | room, headline, level |
+| `binary_sensor.luftwachter_<room>_close_window` | on while the advice is "close the window" (air fine again and cold or raining outside) | room, headline, detail, open_minutes |
 | `sensor.luftwachter_average_co2` | average CO₂ of all rooms, ppm | |
 | `sensor.luftwachter_average_temperature` | average temperature of all rooms, °C | |
 | `sensor.luftwachter_average_humidity` | average humidity of all rooms, % | |

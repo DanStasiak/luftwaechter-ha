@@ -25,6 +25,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
             if room["key"] not in known:
                 known.add(room["key"])
                 new.append(RoomVentilateSensor(coord, entry, room["key"]))
+                new.append(RoomCloseSensor(coord, entry, room["key"]))
         if new:
             async_add_entities(new)
 
@@ -136,3 +137,31 @@ class RoomVentilateSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySens
     def extra_state_attributes(self) -> dict:
         room = self._room() or {}
         return {"room": room.get("name", ""), "headline": room.get("headline", ""), "level": room.get("level", "unknown")}
+
+
+class RoomCloseSensor(RoomVentilateSensor):
+    """On while Luftwächter advises closing the open window in this room (air is fine again, it is cold or raining)."""
+
+    _attr_icon = "mdi:window-closed-variant"
+
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry, key: str) -> None:
+        super().__init__(coord, entry, key)
+        self._attr_unique_id = f"{entry.entry_id}_close_{key}"
+
+    @property
+    def name(self) -> str:
+        room = self._room()
+        return f"Luftwächter {room['name'] if room else self._key} close window"
+
+    @property
+    def is_on(self) -> bool:
+        room = self._room()
+        return bool(room and room["action"] == "close")
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        room = self._room() or {}
+        return {
+            "room": room.get("name", ""), "headline": room.get("headline", ""), "detail": room.get("detail", ""),
+            "open_minutes": room.get("openMin", 0),
+        }

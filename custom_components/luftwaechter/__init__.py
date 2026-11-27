@@ -15,7 +15,7 @@ from .coordinator import LuftwaechterCoordinator
 
 PLATFORMS = ["sensor", "binary_sensor"]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
-_VERSION = "0.17.1"
+_VERSION = "0.18.0"
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
