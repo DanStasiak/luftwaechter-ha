@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.23.0
+- New: the **Lovelace card has a visual editor** (card picker → Edit), so no YAML is needed. New options: `compact` (one slim line), `symbols` (shapes next to the colours, readable without colours), `accent` (coloured edge), `rooms` and `title` for the house summary, and `tap_action: panel` (a tap opens the panel at that room). The card is announced to screen readers ("Office: good air") and works with the keyboard. It also fits the new sections dashboards (grid options). Everything is off by default; existing cards look the same.
+- New: action **`luftwaechter.test_reminder`** fires one sample window reminder (optional room and message), so the phone and speaker automation can be tested without opening a window.
+- New: the window-reminder blueprint can **speak only while someone is home** (person, group or binary sensor) and can make the **push open the Luftwächter panel** at the room of the window (both off by default).
+- New: **System information** shows the version, the number of rooms and whether the last update worked.
+- New: all services (snooze, skip, clear, refresh, test) have names and descriptions in English and German in Developer tools; every option has a description; equal start and end hours of the reminders are rejected with a clear message.
+- New: the browser tab title starts with the face of the house level (🙂 😐 😷).
+- New: **docs/BLUEPRINTS.md** lists every blueprint with all inputs and an import button; it is generated from the blueprint files and checked by the tests.
+- Repaired: the release workflow now refuses to publish when the version has no CHANGELOG section, no German lines, or differs between `manifest.json` and the code (before it published an empty stub).
+- Repaired: lint errors in the tests; CI now lints the whole repository and checks the card file too.
+- Improved: 13 new tests (translations en/de equal, every service and option described, versions agree, DE changelog lines, blueprint page up to date, front-end files parse, card options documented, test reminder, hours check, system health).
+- Improved: GitHub page with a card option table and picture, a richer bug-report form (versions, area, browser, checklist), a stale-issue bot and an optional pre-commit setup.
+- DE: Neu: Die **Lovelace-Karte hat einen grafischen Editor** (Kartenauswahl → Bearbeiten), YAML ist nicht mehr nötig. Neue Optionen: `compact` (eine schmale Zeile), `symbols` (Formen neben den Farben, auch ohne Farben lesbar), `accent` (farbiger Rand), `rooms` und `title` für die Haus-Übersicht sowie `tap_action: panel` (Antippen öffnet das Panel beim Raum). Screenreader lesen die Karte vor („Büro: gute Luft“), sie lässt sich mit der Tastatur bedienen und passt zu den neuen Bereiche-Dashboards. Alles ist standardmäßig aus; bestehende Karten sehen gleich aus.
+- DE: Neu: Aktion **`luftwaechter.test_reminder`** löst eine Beispiel-Fenstererinnerung aus (optional Raum und Text), damit Handy und Lautsprecher ohne offenes Fenster getestet werden können.
+- DE: Neu: Der Fenster-Blueprint kann **nur sprechen, solange jemand zu Hause ist** (Person, Gruppe oder Binärsensor) und die Meldung beim Antippen das **Luftwächter-Panel** beim Raum des Fensters öffnen lassen (beides standardmäßig aus).
+- DE: Neu: **Systeminformationen** zeigen Version, Raumanzahl und ob das letzte Update geklappt hat.
+- DE: Neu: Alle Aktionen haben Namen und Beschreibungen auf Deutsch und Englisch; jede Option hat eine Beschreibung; gleiche Start- und Endstunde der Erinnerungen wird mit einer klaren Meldung abgelehnt.
+- DE: Neu: Der Browser-Tab beginnt mit dem Gesicht des Hauses (🙂 😐 😷).
+- DE: Neu: **docs/BLUEPRINTS.md** listet jeden Blueprint mit allen Eingaben und Import-Knopf; die Seite wird aus den Blueprint-Dateien erzeugt und von den Tests geprüft.
+- DE: Repariert: Der Release-Ablauf veröffentlicht nicht mehr, wenn für die Version kein CHANGELOG-Abschnitt, keine deutschen Zeilen oder abweichende Versionen vorliegen (vorher entstand ein leerer Eintrag).
+- DE: Repariert: Lint-Fehler in den Tests; die CI prüft jetzt das ganze Repository und die Karten-Datei.
+- DE: Verbessert: 13 neue Tests; GitHub-Seite mit Optionstabelle und Bild für die Karte, ausführlicherem Fehlerformular, Bot für alte Meldungen und optionalem pre-commit.
+
 ## 0.22.0
 - New: the window-reminder and airing-timer blueprints get an optional **Voice on/off switch** (an input_boolean or switch). The voice is spoken only while it is on; the phone push is not affected.
 - Docs: install steps now lead with a Marketplace search for Luftwächter, with "Add from link" as the fallback (thanks to the HACS reviewer for the hint).

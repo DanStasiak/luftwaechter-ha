@@ -49,12 +49,18 @@
           "reminder_from": "Erste Stunde (0 bis 23), in der Erinnerungen kommen dürfen. Standard 8.",
           "reminder_to": "Ab dieser Stunde kommen keine Erinnerungen mehr. Standard 22.",
           "mute_entities": "Ist einer dieser Schalter oder Binärsensoren an, kommen keine Erinnerungen (zum Beispiel ein Ladefenster).",
-          "ignored_windows": "Fenster, für die nie erinnert wird."
+          "ignored_windows": "Fenster, für die nie erinnert wird.",
+          "weather": "Optional. Wird für Hinweise zu draußen (Regen, Kälte) und das Außenfeld im Panel genutzt.",
+          "co2_good": "CO₂ (ppm), unter dem die Luft als gut gilt. Standard 1000.",
+          "co2_fair": "CO₂ (ppm), unter dem die Luft als mittel gilt; darüber schlecht. Standard 1500. Muss höher als die Grenze für „gut“ sein.",
+          "pm_good": "Feinstaub (µg/m³), unter dem die Luft als gut gilt. Standard 20.",
+          "pm_fair": "Feinstaub (µg/m³), unter dem die Luft als mittel gilt; darüber schlecht. Standard 50. Muss höher als die Grenze für „gut“ sein."
         }
       }
     },
     "error": {
-      "limits_order": "Die Grenze für „gut“ muss kleiner sein als die für „mittel“."
+      "limits_order": "Die Grenze für „gut“ muss kleiner sein als die für „mittel“.",
+      "hours_equal": "„Aktiv ab“ und „Aktiv bis“ müssen verschiedene Stunden sein."
     }
   },
   "entity": {
@@ -75,12 +81,68 @@
     "refresh": {
       "name": "Aktualisieren",
       "description": "Alle Räume sofort neu berechnen, statt auf das nächste Update zu warten."
+    },
+    "snooze": {
+      "name": "Fenster-Erinnerungen pausieren",
+      "description": "Die Erinnerungen für ein oder mehrere Fenster für einige Minuten pausieren.",
+      "fields": {
+        "entity_id": {
+          "name": "Fenster",
+          "description": "Die Fenstersensoren, die pausiert werden."
+        },
+        "minutes": {
+          "name": "Minuten",
+          "description": "Wie lange pausiert wird. Standard 30."
+        }
+      }
+    },
+    "skip_until_closed": {
+      "name": "Überspringen bis geschlossen",
+      "description": "Keine Erinnerungen mehr für diese Fenster, bis sie einmal geschlossen wurden.",
+      "fields": {
+        "entity_id": {
+          "name": "Fenster",
+          "description": "Die Fenstersensoren, die übersprungen werden."
+        }
+      }
+    },
+    "clear_snooze": {
+      "name": "Pause aufheben",
+      "description": "Pause oder Überspringen entfernen, damit wieder erinnert wird.",
+      "fields": {
+        "entity_id": {
+          "name": "Fenster",
+          "description": "Die Fenstersensoren, die zurückgesetzt werden."
+        }
+      }
+    },
+    "test_reminder": {
+      "name": "Testerinnerung senden",
+      "description": "Löst eine Beispiel-Fenstererinnerung aus, damit du deine Handy- und Lautsprecher-Automatisierung prüfen kannst, ohne ein Fenster zu öffnen.",
+      "fields": {
+        "room": {
+          "name": "Raum",
+          "description": "Raumname im Test. Standard: Testraum."
+        },
+        "message": {
+          "name": "Nachricht",
+          "description": "Text des Tests. Standard: ein Beispielsatz."
+        }
+      }
     }
   },
   "issues": {
     "no_rooms": {
       "title": "Luftwächter findet keine Räume",
       "description": "Kein Bereich hat bisher einen CO₂-, Feinstaub-, Temperatur- oder Feuchte-Sensor. Weise deine Sensoren einem Bereich zu (Einstellungen → Bereiche, Beschriftungen & Zonen). Räume erscheinen von selbst, sobald ein Sensor Werte meldet."
+    }
+  },
+  "system_health": {
+    "info": {
+      "version": "Version",
+      "rooms": "Räume",
+      "rooms_good": "Räume mit guter Luft",
+      "last_update_ok": "Letztes Update erfolgreich"
     }
   }
 }

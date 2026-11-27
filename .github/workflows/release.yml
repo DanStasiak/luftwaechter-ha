@@ -17,6 +17,9 @@ jobs:
           v=$(python3 -c "import json;print(json.load(open('custom_components/luftwaechter/manifest.json'))['version'])")
           if gh release view "v$v" >/dev/null 2>&1; then echo "v$v exists"; exit 0; fi
           awk -v v="$v" '$0=="## " v {f=1; next} /^## / {f=0} f' CHANGELOG.md > notes.md
-          [ -s notes.md ] || echo "Release v$v" > notes.md
+          if [ ! -s notes.md ]; then echo "::error::CHANGELOG.md has no '## $v' section, so no release is published"; exit 1; fi
+          grep -q '^- DE: ' notes.md || { echo "::error::The '## $v' section of CHANGELOG.md has no '- DE:' lines"; exit 1; }
+          init=$(grep -oP '_VERSION = "\K[^"]+' custom_components/luftwaechter/__init__.py)
+          if [ "$init" != "$v" ]; then echo "::error::__init__.py _VERSION ($init) differs from manifest ($v)"; exit 1; fi
           (cd custom_components/luftwaechter && zip -qr "$GITHUB_WORKSPACE/luftwaechter.zip" .)
           gh release create "v$v" --target "$GITHUB_SHA" --title "v$v" --notes-file notes.md luftwaechter.zip

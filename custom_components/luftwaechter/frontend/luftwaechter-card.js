@@ -1,34 +1,64 @@
 /* Luftwächter Lovelace card: one room (face + one sentence + values) or a house summary.
-   Usage:  type: custom:luftwaechter-card   room: Office   (omit room for the house summary) */
+   Usage:  type: custom:luftwaechter-card
+           room: Office            # omit for the house summary
+           rooms: [Office, Bedroom]  # house summary: only these rooms
+           title: My air           # house summary title
+           values: false           # hide the readings of a room
+           compact: true           # one slim line instead of the big card
+           symbols: true           # shapes next to the colours (colour-blind friendly)
+           accent: true            # coloured edge on the left that follows the air level
+           tap_action: panel       # tap opens the Luftwächter panel (default: nothing)  */
 const LW_TXT = {
-  de: { none: "Luftwächter nicht gefunden", noRoom: "Raum nicht gefunden", house: "Luftwächter", good: "gut", fair: "mittel", poor: "schlecht", unknown: "unbekannt", all: "Alle Räume gut" },
-  en: { none: "Luftwächter not found", noRoom: "Room not found", house: "Luftwächter", good: "good", fair: "fair", poor: "poor", unknown: "unknown", all: "All rooms good" },
+  de: { none: "Luftwächter nicht gefunden", noRoom: "Raum nicht gefunden", house: "Luftwächter", good: "gut", fair: "mittel", poor: "schlecht", unknown: "unbekannt", all: "Alle Räume gut", air: "Luft", openPanel: "Luftwächter öffnen",
+    ed_room: "Raum (leer = ganzes Haus)", ed_title: "Titel (Haus)", ed_values: "Messwerte zeigen", ed_compact: "Kompakte Darstellung", ed_symbols: "Symbole zusätzlich zu Farben", ed_accent: "Farbiger Rand", ed_tap: "Antippen", ed_none: "Nichts", ed_panel: "Panel öffnen", ed_house: "Ganzes Haus" },
+  en: { none: "Luftwächter not found", noRoom: "Room not found", house: "Luftwächter", good: "good", fair: "fair", poor: "poor", unknown: "unknown", all: "All rooms good", air: "air", openPanel: "Open Luftwächter",
+    ed_room: "Room (empty = whole house)", ed_title: "Title (house)", ed_values: "Show readings", ed_compact: "Compact layout", ed_symbols: "Symbols in addition to colours", ed_accent: "Coloured edge", ed_tap: "Tap action", ed_none: "Nothing", ed_panel: "Open the panel", ed_house: "Whole house" },
 };
 const LW_FACE = { good: "🙂", fair: "😐", poor: "😷", unknown: "❔" };
+const LW_SYM = { good: "✓", fair: "!", poor: "✕", unknown: "?" };
 const LW_COL = { good: "#2e9e5b", fair: "#e8a317", poor: "#d9472b", unknown: "#7a8594" };
+const lwEsc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const lwTxt = (hass) => LW_TXT[((hass && hass.language) || "en").slice(0, 2)] || LW_TXT.en;
+const lwHouse = (hass) => {
+  const st = hass && hass.states;
+  if (!st) return null;
+  return Object.values(st).find((s) => s.entity_id.startsWith("sensor.") && s.attributes && Array.isArray(s.attributes.rooms) && s.attributes.summary) || null;
+};
 
 class LuftwaechterCard extends HTMLElement {
   constructor() { super(); this.attachShadow({ mode: "open" }); this._cfg = {}; this._hass = null; this._sig = ""; }
   setConfig(cfg) { this._cfg = cfg || {}; this._sig = ""; this._render(); }
   set hass(h) {
     this._hass = h;
-    const e = this._house();
+    const e = lwHouse(h);
     const sig = e ? h.language + "|" + e.last_updated + "|" + JSON.stringify(this._cfg) : "none";
     if (sig !== this._sig) { this._sig = sig; this._render(); }
   }
-  getCardSize() { return this._cfg.room ? 2 : 3; }
+  getCardSize() { return this._cfg.compact ? 1 : this._cfg.room ? 2 : 3; }
+  getGridOptions() { return { columns: 6, rows: this._cfg.compact ? 1 : "auto", min_columns: 3 }; }
   static getStubConfig() { return {}; }
-  _house() {
-    const st = this._hass && this._hass.states;
-    if (!st) return null;
-    return Object.values(st).find((s) => s.entity_id.startsWith("sensor.") && s.attributes && Array.isArray(s.attributes.rooms) && s.attributes.summary) || null;
+  static getConfigElement() { return document.createElement("luftwaechter-card-editor"); }
+  _wanted() {
+    const r = this._cfg.rooms;
+    const list = Array.isArray(r) ? r : typeof r === "string" ? r.split(",") : [];
+    return list.map((x) => String(x).trim().toLowerCase()).filter(Boolean);
   }
-  _t() { return LW_TXT[(this._hass && this._hass.language || "en").slice(0, 2)] || LW_TXT.en; }
-  _esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+  _mark(level) {
+    const col = LW_COL[level] || LW_COL.unknown;
+    return this._cfg.symbols
+      ? `<span class="sym" style="background:${col}" aria-hidden="true">${LW_SYM[level] || LW_SYM.unknown}</span>`
+      : `<span class="dot" style="background:${col}" aria-hidden="true"></span>`;
+  }
+  _go(key) {
+    const url = "/luftwaechter" + (key ? "#room=" + encodeURIComponent(key) : "");
+    history.pushState(null, "", url);
+    window.dispatchEvent(new CustomEvent("location-changed", { detail: { replace: false } }));
+  }
   _render() {
-    const t = this._t(); const house = this._house(); const e = this._esc.bind(this);
-    const css = `<style>ha-card{padding:14px 16px}.row{display:flex;align-items:center;gap:12px}.face{font-size:34px;line-height:1}h2{margin:0;font-size:16px;font-weight:600}p{margin:2px 0 0;color:var(--secondary-text-color);font-size:13px}.vals{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:13px}.v b{font-weight:600}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.list .item{display:flex;align-items:center;justify-content:space-between;padding:5px 0;font-size:14px;border-top:1px solid var(--divider-color,#8883)}.list .item:first-child{border-top:0}.muted{color:var(--secondary-text-color);font-size:13px}</style>`;
-    let body = "";
+    const t = lwTxt(this._hass); const house = lwHouse(this._hass); const e = lwEsc;
+    const tap = this._cfg.tap_action === "panel" || (this._cfg.tap_action && this._cfg.tap_action.action === "navigate");
+    const css = `<style>ha-card{padding:14px 16px;border-left:4px solid var(--lw-accent,transparent)}ha-card.tap{cursor:pointer}ha-card.tap:hover{filter:brightness(1.06)}ha-card.tap:focus-visible{outline:3px solid var(--primary-color,#03a9f4);outline-offset:2px}.row{display:flex;align-items:center;gap:12px}.face{font-size:34px;line-height:1}h2{margin:0;font-size:16px;font-weight:600}p{margin:2px 0 0;color:var(--secondary-text-color);font-size:13px}.vals{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:13px}.v b{font-weight:600}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}.sym{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;margin-right:6px;color:#fff;font-size:11px;font-weight:700;line-height:1;vertical-align:middle}.list .item{display:flex;align-items:center;justify-content:space-between;padding:5px 0;font-size:14px;border-top:1px solid var(--divider-color,#8883)}.list .item:first-child{border-top:0}.muted{color:var(--secondary-text-color);font-size:13px}.slim{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}.slim .nm{font-weight:600}.slim .hd{color:var(--secondary-text-color);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}ha-card.slimcard{padding:8px 14px}</style>`;
+    let body = ""; let accent = ""; let label = t.house; let cls = tap ? "tap" : "";
     if (!house) body = `<div class="muted">${e(t.none)}</div>`;
     else {
       const rooms = house.attributes.rooms || [];
@@ -37,19 +67,76 @@ class LuftwaechterCard extends HTMLElement {
         const r = rooms.find((x) => x.key.toLowerCase() === want || x.name.toLowerCase() === want);
         if (!r) body = `<div class="muted">${e(t.noRoom)}: ${e(this._cfg.room)}</div>`;
         else {
-          const col = LW_COL[r.level] || LW_COL.unknown;
-          const vals = (r.values || []).filter((v) => v.raw != null).map((v) => `<span class="v"><span class="dot" style="background:${LW_COL[["good", "fair", "poor"][v.level]] || LW_COL.unknown}"></span><b>${e(v.value)}</b> ${e(v.unit)}</span>`).join("");
-          body = `<div class="row"><div class="face" style="filter:drop-shadow(0 0 0 ${col})">${LW_FACE[r.level] || LW_FACE.unknown}</div><div><h2>${e(r.name)} · ${e(r.headline)}</h2><p>${e(r.detail)}</p></div></div>${this._cfg.values === false ? "" : `<div class="vals">${vals}</div>`}`;
+          accent = LW_COL[r.level] || LW_COL.unknown; label = `${r.name}: ${t[r.level] || r.level} ${t.air}`;
+          if (tap) this._key = r.key;
+          if (this._cfg.compact) { cls += " slimcard"; body = `<div class="slim"><span class="nm">${this._mark(r.level)}${e(r.name)}</span><span class="hd">${e(r.headline)}</span></div>`; }
+          else {
+            const vals = (r.values || []).filter((v) => v.raw != null).map((v) => `<span class="v">${this._mark(["good", "fair", "poor"][v.level])}<b>${e(v.value)}</b> ${e(v.unit)}</span>`).join("");
+            body = `<div class="row"><div class="face" aria-hidden="true">${LW_FACE[r.level] || LW_FACE.unknown}</div><div><h2>${e(r.name)} · ${e(r.headline)}</h2><p>${e(r.detail)}</p></div></div>${this._cfg.values === false ? "" : `<div class="vals">${vals}</div>`}`;
+          }
         }
       } else {
-        const good = rooms.filter((r) => r.level === "good").length;
-        const items = rooms.map((r) => `<div class="item"><span><span class="dot" style="background:${LW_COL[r.level] || LW_COL.unknown}"></span>${e(r.name)}</span><span class="muted">${e(r.headline)}</span></div>`).join("");
-        body = `<div class="row"><div class="face">${good === rooms.length && rooms.length ? "🙂" : "😐"}</div><div><h2>${e(this._cfg.title || t.house)}</h2><p>${good === rooms.length && rooms.length ? e(t.all) : e(good + " / " + rooms.length)}</p></div></div><div class="list" style="margin-top:8px">${items}</div>`;
+        const filt = this._wanted();
+        const shown = filt.length ? rooms.filter((r) => filt.includes(r.key.toLowerCase()) || filt.includes(r.name.toLowerCase())) : rooms;
+        const good = shown.filter((r) => r.level === "good").length;
+        const allGood = good === shown.length && shown.length > 0;
+        const title = this._cfg.title || t.house;
+        label = `${title}: ${good} / ${shown.length}`; this._key = "";
+        accent = allGood ? LW_COL.good : shown.length ? LW_COL.fair : "";
+        if (this._cfg.compact) { cls += " slimcard"; body = `<div class="slim"><span class="nm">${e(title)}</span><span class="hd">${allGood ? e(t.all) : e(good + " / " + shown.length)}</span></div>`; }
+        else {
+          const items = shown.map((r) => `<div class="item"><span>${this._mark(r.level)}${e(r.name)}</span><span class="muted">${e(r.headline)}</span></div>`).join("");
+          body = `<div class="row"><div class="face" aria-hidden="true">${allGood ? "🙂" : "😐"}</div><div><h2>${e(title)}</h2><p>${allGood ? e(t.all) : e(good + " / " + shown.length)}</p></div></div><div class="list" style="margin-top:8px">${items}</div>`;
+        }
       }
     }
-    this.shadowRoot.innerHTML = `${css}<ha-card>${body}</ha-card>`;
+    const attrs = tap ? ` role="button" tabindex="0" aria-label="${e(label)}. ${e(t.openPanel)}"` : ` role="group" aria-label="${e(label)}"`;
+    this.shadowRoot.innerHTML = `${css}<ha-card class="${cls.trim()}" style="--lw-accent:${this._cfg.accent && accent ? accent : "transparent"}"${attrs}>${body}</ha-card>`;
+    const card = this.shadowRoot.querySelector("ha-card");
+    if (tap && card) {
+      card.addEventListener("click", () => this._go(this._key));
+      card.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); this._go(this._key); } });
+    }
+  }
+}
+
+/* Visual editor (Edit card dialog): room picker and switches instead of YAML. */
+class LuftwaechterCardEditor extends HTMLElement {
+  constructor() { super(); this._cfg = {}; this._hass = null; }
+  setConfig(cfg) { this._cfg = cfg || {}; this._draw(); }
+  set hass(h) { this._hass = h; this._draw(); }
+  _schema() {
+    const t = lwTxt(this._hass); const house = lwHouse(this._hass);
+    const rooms = house ? (house.attributes.rooms || []).map((r) => ({ value: r.key, label: r.name })) : [];
+    return [
+      { name: "room", selector: { select: { options: [{ value: "", label: t.ed_house }, ...rooms], custom_value: true, mode: "dropdown" } } },
+      { name: "title", selector: { text: {} } },
+      { type: "grid", name: "", schema: [
+        { name: "values", selector: { boolean: {} } }, { name: "compact", selector: { boolean: {} } }, { name: "symbols", selector: { boolean: {} } }, { name: "accent", selector: { boolean: {} } } ] },
+      { name: "tap_action", selector: { select: { options: [{ value: "none", label: t.ed_none }, { value: "panel", label: t.ed_panel }], mode: "dropdown" } } },
+    ];
+  }
+  _draw() {
+    if (!this._hass) return;
+    let f = this.querySelector("ha-form");
+    if (!f) {
+      f = document.createElement("ha-form");
+      f.addEventListener("value-changed", (ev) => {
+        const v = { ...ev.detail.value }; v.type = "custom:luftwaechter-card";
+        if (!v.room) delete v.room; if (!v.title) delete v.title;
+        if (v.values !== false) delete v.values; if (!v.compact) delete v.compact; if (!v.symbols) delete v.symbols; if (!v.accent) delete v.accent; if (!v.tap_action || v.tap_action === "none") delete v.tap_action;
+        this._cfg = v; this.dispatchEvent(new CustomEvent("config-changed", { detail: { config: v }, bubbles: true, composed: true }));
+      });
+      this.appendChild(f);
+    }
+    const t = lwTxt(this._hass);
+    const L = { room: t.ed_room, title: t.ed_title, values: t.ed_values, compact: t.ed_compact, symbols: t.ed_symbols, accent: t.ed_accent, tap_action: t.ed_tap };
+    f.hass = this._hass; f.schema = this._schema(); f.computeLabel = (s) => L[s.name] || s.name;
+    const tap = typeof this._cfg.tap_action === "string" ? this._cfg.tap_action : "none";
+    f.data = { room: "", title: "", values: true, compact: false, symbols: false, accent: false, ...this._cfg, tap_action: tap };
   }
 }
 customElements.define("luftwaechter-card", LuftwaechterCard);
+customElements.define("luftwaechter-card-editor", LuftwaechterCardEditor);
 window.customCards = window.customCards || [];
 window.customCards.push({ type: "luftwaechter-card", name: "Luftwächter", description: "Air quality advice for one room or the whole house.", preview: false });

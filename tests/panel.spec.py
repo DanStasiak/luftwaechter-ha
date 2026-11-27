@@ -1,5 +1,9 @@
 """Render the panel against a mock hass object, click through the features, take screenshots."""
-import math, pathlib, sys, time
+import math
+import pathlib
+import sys
+import time
+
 from playwright.sync_api import sync_playwright
 
 root = pathlib.Path(__file__).parent.parent
@@ -39,8 +43,12 @@ with sync_playwright() as p:
     pg.evaluate("""([h, hist]) => { window.calls=[]; h.callService=(d,s,x)=>window.calls.push([d,s,x.entity_id]);
       h.callWS=async (m)=>{ window.ws=m; const r={}; m.entity_ids.forEach(i=>r[i]=hist[i]||[]); return r; };
       const el=document.createElement('luftwaechter-panel'); document.body.appendChild(el); el.hass=h; window.el=el; }""", [hass, HIST])
-    txt = lambda: pg.evaluate("el.shadowRoot.textContent")
-    clk = lambda sel: pg.evaluate(f"el.shadowRoot.querySelector({sel!r}).click()")
+    def txt():
+        return pg.evaluate("el.shadowRoot.textContent")
+
+    def clk(sel):
+        return pg.evaluate(f"el.shadowRoot.querySelector({sel!r}).click()")
+
     tiles = pg.evaluate("[...el.shadowRoot.querySelectorAll('.tile b')].map(x=>x.textContent)")
     assert tiles == ["Office", "Bedroom"], tiles            # worst first
     assert "Do now" in txt() and "1 of 2 rooms need attention" in txt().replace("2 of 2","1 of 2") or "of 2 rooms need attention" in txt()
@@ -186,7 +194,8 @@ with sync_playwright() as p:
     assert pg.evaluate("el.shadowRoot.querySelector('#alerts') !== null && el.shadowRoot.querySelector('#kiosk') !== null && el.shadowRoot.querySelector('#reset') !== null")
     pg.evaluate("() => { el._pins = ['x']; el._cycleLang(); el.shadowRoot.querySelector('#reset').click(); }")
     assert pg.evaluate("el._pins.length") == 0 and "Jetzt tun" not in txt() and pg.evaluate("el._lang()") == "en"
-    assert pg.evaluate("document.title").startswith("Luftwächter")
+    assert "Luftwächter" in pg.evaluate("document.title")
+    assert pg.evaluate("document.title")[0] in "🙂😐😷", "the tab title starts with the face of the house level"
     pg.evaluate("el._select(el._rooms()[0].key)"); r0 = pg.evaluate("el._sel")
     pg.evaluate("""() => { const w = el.shadowRoot.querySelector('.wrap'); const ev = (t, x) => w.dispatchEvent(new PointerEvent(t, { pointerType: 'touch', clientX: x, clientY: 200, bubbles: true })); ev('pointerdown', 300); ev('pointerup', 120); }""")
     assert pg.evaluate("el._sel") != r0
@@ -205,7 +214,7 @@ with sync_playwright() as p:
     pg.evaluate("() => { el._select(null); }")
     pg.evaluate("() => el._key({ key: '1', composedPath: () => [document.body], preventDefault() {} })")
     assert pg.evaluate("el._sel") is not None
-    assert pg.evaluate("document.title").startswith("Luftwächter · ") and "need attention" not in pg.evaluate("document.title") and "Alles gut" not in pg.evaluate("document.title")
+    assert "Luftwächter · " in pg.evaluate("document.title") and "need attention" not in pg.evaluate("document.title") and "Alles gut" not in pg.evaluate("document.title")
     pg.evaluate("() => el._key({ key: 'End', composedPath: () => [document.body], preventDefault() {} })")
     last = pg.evaluate("el._sel"); pg.evaluate("() => el._key({ key: 'Home', composedPath: () => [document.body], preventDefault() {} })")
     assert pg.evaluate("el._rooms().length") < 2 or last != pg.evaluate("el._sel")
@@ -233,7 +242,6 @@ with sync_playwright() as p:
     assert not errs, errs
     if docs:
         docs.mkdir(exist_ok=True)
-        import shutil
         for src, dst, maxh in (("overview", "overview", 9999), ("room_desktop", "room", 9999), ("help", "help", 9999), ("room_phone", "phone", 9999), ("overview_de", "overview_de", 9999), ("overview_light", "overview_light", 9999), ("timer", "timer", 300), ("menu", "menu", 9999)):
             from PIL import Image, ImageChops
             im = Image.open(out / f"{src}.png").convert("RGB")

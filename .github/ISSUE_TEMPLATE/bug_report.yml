@@ -2,22 +2,56 @@ name: Bug report
 description: Something does not work or looks wrong
 labels: [bug]
 body:
-  - type: input
-    id: versions
+  - type: markdown
     attributes:
-      label: Versions
-      description: Luftwächter version, Home Assistant version, browser or app, and how you installed it (Marketplace, HACS or manual)
+      value: |
+        Thanks for reporting! The more facts you add, the faster it can be fixed. Please check the [FAQ and troubleshooting](https://github.com/DanStasiak/luftwaechter-ha#faq) first.
+  - type: input
+    id: version
+    attributes:
+      label: Luftwächter version
+      description: Shown in Settings → Devices & services → Luftwächter, or in the Marketplace.
+      placeholder: "0.23.0"
     validations: { required: true }
+  - type: input
+    id: ha
+    attributes:
+      label: Home Assistant version
+      placeholder: "2026.11.3"
+    validations: { required: true }
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install it?
+      options: [Marketplace (HACS), HACS custom repository, Manual copy]
+    validations: { required: true }
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it happen?
+      options: [Sidebar panel, Lovelace card, Sensors and entities, Window reminders, Blueprints, Settings (options), Something else]
+    validations: { required: true }
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser or app (panel and card problems)
+      options: [Not relevant, Chrome or Edge, Firefox, Safari, Home Assistant Companion app (Android), Home Assistant Companion app (iOS), Wall tablet or kiosk, Other]
   - type: textarea
     id: what
     attributes:
       label: What happened, and what did you expect?
     validations: { required: true }
   - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce (optional)
+      placeholder: "1. Open the panel\n2. ..."
+  - type: textarea
     id: diag
     attributes:
       label: Diagnostics (optional)
-      description: Settings → Devices & services → Luftwächter → ⋮ → Download diagnostics, then paste the relevant part.
+      description: Settings → Devices & services → Luftwächter → ⋮ → Download diagnostics, then paste the relevant part. It contains no passwords.
+      render: json
   - type: textarea
     id: attrs
     attributes:
@@ -26,4 +60,13 @@ body:
   - type: textarea
     id: shot
     attributes:
-      label: Screenshot (optional)
+      label: Screenshot or log lines (optional)
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before sending
+      options:
+        - label: I looked at the FAQ and the existing issues
+          required: true
+        - label: I removed anything private (names, addresses, tokens)
+          required: true

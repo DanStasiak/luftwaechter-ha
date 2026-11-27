@@ -34,23 +34,24 @@ def test_blueprint_is_valid_and_uses_defined_inputs():
     assert doc["triggers"][0]["event_type"] == "luftwaechter_level_changed"
 
 
+def _inputs_used(x, used=None):
+    used = set() if used is None else used
+    if isinstance(x, dict):
+        if "__input__" in x:
+            used.add(x["__input__"])
+        for v in x.values():
+            _inputs_used(v, used)
+    elif isinstance(x, list):
+        for v in x:
+            _inputs_used(v, used)
+    return used
+
+
 def test_every_blueprint_is_valid_and_uses_defined_inputs():
     assert len(BPS) >= 9
     for path in BPS:
         doc = yaml.load(path.read_text(encoding="utf-8"), Loader=_L)
         bp = doc["blueprint"]
         assert bp["domain"] == "automation" and bp["source_url"].endswith(path.name), path
-        used = set()
-
-        def walk(x):
-            if isinstance(x, dict):
-                if "__input__" in x:
-                    used.add(x["__input__"])
-                for v in x.values():
-                    walk(v)
-            elif isinstance(x, list):
-                for v in x:
-                    walk(v)
-
-        walk(doc)
+        used = _inputs_used(doc)
         assert used == set(bp["input"]), (path.name, used, set(bp["input"]))

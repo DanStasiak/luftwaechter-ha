@@ -1,4 +1,7 @@
-import importlib.util, pathlib, sys
+import importlib.util
+import pathlib
+import sys
+
 p = pathlib.Path(__file__).parent.parent / "custom_components/luftwaechter/engine.py"
 spec = importlib.util.spec_from_file_location("engine", p)
 engine = importlib.util.module_from_spec(spec); sys.modules["engine"] = engine; spec.loader.exec_module(engine)
@@ -248,7 +251,9 @@ def test_reminder_due_after_first_wait_and_repeats():
 
 
 def test_reminder_gates():
-    f = lambda **k: engine.window_reminders(_wa(k.pop("age", 12)), NOW, k.pop("hour", 12), k.pop("cfg", None), k.pop("t", 3.0), k.pop("st", {}))[0]
+    def f(**k):
+        return engine.window_reminders(_wa(k.pop("age", 12)), NOW, k.pop("hour", 12), k.pop("cfg", None), k.pop("t", 3.0), k.pop("st", {}))[0]
+
     assert f(age=5)["reason"] == "early"
     assert f(t=15)["reason"] == "warm"
     assert f(hour=23)["reason"] == "hours" and f(hour=7)["reason"] == "hours"

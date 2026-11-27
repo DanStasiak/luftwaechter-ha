@@ -69,6 +69,8 @@ class LuftwaechterOptionsFlow(OptionsFlow):
         if user_input is not None:
             if user_input[CONF_CO2_GOOD] >= user_input[CONF_CO2_FAIR] or user_input[CONF_PM_GOOD] >= user_input[CONF_PM_FAIR]:
                 errors["base"] = "limits_order"
+            elif user_input[CONF_REM_FROM] == user_input[CONF_REM_TO]:
+                errors["base"] = "hours_equal"
             else:
                 return self.async_create_entry(data=user_input)
         o, d = self.config_entry.options, self.config_entry.data

@@ -49,12 +49,18 @@
           "reminder_from": "First hour (0 to 23) in which reminders may come. Default 8.",
           "reminder_to": "Reminders stop at this hour. Default 22.",
           "mute_entities": "If any of these switches or binary sensors is on, no reminders come (for example a charging window).",
-          "ignored_windows": "Windows that never trigger a reminder."
+          "ignored_windows": "Windows that never trigger a reminder.",
+          "weather": "Optional. Used for outside hints (rain, cold) and the outside box in the panel.",
+          "co2_good": "CO₂ (ppm) below which the air counts as good. Default 1000.",
+          "co2_fair": "CO₂ (ppm) below which the air counts as fair; above it, poor. Default 1500. Must be higher than the \"good\" limit.",
+          "pm_good": "Fine dust (µg/m³) below which the air counts as good. Default 20.",
+          "pm_fair": "Fine dust (µg/m³) below which the air counts as fair; above it, poor. Default 50. Must be higher than the \"good\" limit."
         }
       }
     },
     "error": {
-      "limits_order": "The \"good\" limit must be lower than the \"fair\" limit."
+      "limits_order": "The \"good\" limit must be lower than the \"fair\" limit.",
+      "hours_equal": "\"Active from\" and \"Active until\" must be different hours."
     }
   },
   "entity": {
@@ -75,12 +81,68 @@
     "refresh": {
       "name": "Refresh",
       "description": "Recalculate all rooms now instead of waiting for the next update."
+    },
+    "snooze": {
+      "name": "Snooze window reminders",
+      "description": "Pause the reminders for one or more windows for some minutes.",
+      "fields": {
+        "entity_id": {
+          "name": "Windows",
+          "description": "The window sensors to pause."
+        },
+        "minutes": {
+          "name": "Minutes",
+          "description": "How long to pause. Default 30."
+        }
+      }
+    },
+    "skip_until_closed": {
+      "name": "Skip until closed",
+      "description": "No more reminders for these windows until they have been closed once.",
+      "fields": {
+        "entity_id": {
+          "name": "Windows",
+          "description": "The window sensors to skip."
+        }
+      }
+    },
+    "clear_snooze": {
+      "name": "Clear snooze",
+      "description": "Remove a snooze or skip so reminders come again.",
+      "fields": {
+        "entity_id": {
+          "name": "Windows",
+          "description": "The window sensors to reset."
+        }
+      }
+    },
+    "test_reminder": {
+      "name": "Send a test reminder",
+      "description": "Fires one sample window reminder, so you can check your phone and speaker automation without opening a window.",
+      "fields": {
+        "room": {
+          "name": "Room",
+          "description": "Room name shown in the test. Default: Test room."
+        },
+        "message": {
+          "name": "Message",
+          "description": "Text of the test. Default: a sample sentence."
+        }
+      }
     }
   },
   "issues": {
     "no_rooms": {
       "title": "Luftwächter finds no rooms",
       "description": "No area has a CO₂, fine dust, temperature or humidity sensor yet. Assign your sensors to an area (Settings → Areas, labels & zones). Rooms appear here by themselves as soon as a sensor reports values."
+    }
+  },
+  "system_health": {
+    "info": {
+      "version": "Version",
+      "rooms": "Rooms",
+      "rooms_good": "Rooms with good air",
+      "last_update_ok": "Last update succeeded"
     }
   }
 }

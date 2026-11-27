@@ -90,6 +90,16 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         await self._save_reminders()
         await self.async_request_refresh()
 
+    def fire_test_reminder(self, room: str | None = None, message: str | None = None) -> None:
+        """Fire one sample reminder event so the phone/speaker automation can be tested without opening a window."""
+        de = self.lang == "de"
+        room = room or ("Testraum" if de else "Test room")
+        message = message or ("Das ist ein Test: Das Fenster ist seit 10 Minuten offen." if de else "This is a test: the window has been open for 10 minutes.")
+        self.hass.bus.async_fire(EVENT_REMINDER, {
+            "room": room, "room_key": "test", "window": "Test window", "entity_id": "binary_sensor.luftwaechter_test_window",
+            "minutes_open": 10, "outside_temp": None, "message": message, "test": True,
+        })
+
     async def async_clear_snooze(self, entity_ids: list[str]) -> None:
         for eid in entity_ids:
             self._rem["snooze"].pop(eid, None)

@@ -12,6 +12,9 @@
     },
     "clear_snooze": {
       "service": "mdi:bell-ring"
+    },
+    "test_reminder": {
+      "service": "mdi:bell-check"
     }
   }
 }

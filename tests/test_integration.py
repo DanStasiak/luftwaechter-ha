@@ -1,6 +1,6 @@
+from homeassistant.helpers import area_registry as ar
+from homeassistant.helpers import entity_registry as er
 from pytest_homeassistant_custom_component.common import MockConfigEntry
-
-from homeassistant.helpers import area_registry as ar, entity_registry as er
 
 DOMAIN = "luftwaechter"
 
@@ -252,3 +252,34 @@ async def test_window_reminder_event_sensor_and_snooze(hass, enable_custom_integ
     await coord.async_refresh()
     await hass.async_block_till_done()
     assert hass.states.get(sensor.entity_id).state == "on"
+
+
+async def test_test_reminder_service_fires_a_sample_event(hass, enable_custom_integrations):
+    from pytest_homeassistant_custom_component.common import async_capture_events
+
+    await _setup(hass, "700")
+    events = async_capture_events(hass, "luftwaechter_reminder")
+    await hass.services.async_call(DOMAIN, "test_reminder", {}, blocking=True)
+    await hass.async_block_till_done()
+    assert len(events) == 1 and events[0].data["test"] is True and events[0].data["room"] == "Test room"
+    await hass.services.async_call(DOMAIN, "test_reminder", {"room": "Kitchen", "message": "Hi"}, blocking=True)
+    await hass.async_block_till_done()
+    assert events[1].data["room"] == "Kitchen" and events[1].data["message"] == "Hi"
+
+
+async def test_options_flow_rejects_equal_active_hours(hass, enable_custom_integrations):
+    entry, _ = await _setup(hass, "700")
+    flow = await hass.config_entries.options.async_init(entry.entry_id)
+    bad = await hass.config_entries.options.async_configure(
+        flow["flow_id"], {"co2_good": 1000, "co2_fair": 1500, "pm_good": 20, "pm_fair": 50, "reminder_from": 8, "reminder_to": 8}
+    )
+    assert bad["errors"] == {"base": "hours_equal"}
+
+
+async def test_system_health_reports_version_and_rooms(hass, enable_custom_integrations):
+    from custom_components.luftwaechter import _VERSION
+    from custom_components.luftwaechter.system_health import system_info
+
+    await _setup(hass, "700")
+    info = await system_info(hass)
+    assert info["version"] == _VERSION and info["rooms"] == 1 and info["last_update_ok"] is True

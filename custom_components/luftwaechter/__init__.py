@@ -16,7 +16,7 @@ from .coordinator import LuftwaechterCoordinator
 
 PLATFORMS = ["sensor", "binary_sensor"]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
-_VERSION = "0.22.0"
+_VERSION = "0.23.0"
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
@@ -39,11 +39,16 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         for coord in _coords():
             await coord.async_clear_snooze(call.data["entity_id"])
 
+    async def _test(call: ServiceCall) -> None:
+        for coord in _coords():
+            coord.fire_test_reminder(call.data.get("room"), call.data.get("message"))
+
     ids = vol.Schema({vol.Required("entity_id"): cv.entity_ids})
     hass.services.async_register(DOMAIN, "refresh", _refresh)
     hass.services.async_register(DOMAIN, "snooze", _snooze, schema=ids.extend({vol.Optional("minutes", default=30): vol.All(vol.Coerce(float), vol.Range(min=1, max=1440))}))
     hass.services.async_register(DOMAIN, "skip_until_closed", _skip, schema=ids)
     hass.services.async_register(DOMAIN, "clear_snooze", _clear, schema=ids)
+    hass.services.async_register(DOMAIN, "test_reminder", _test, schema=vol.Schema({vol.Optional("room"): cv.string, vol.Optional("message"): cv.string}))
     return True
 
 

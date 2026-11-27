@@ -478,7 +478,7 @@ header{position:sticky;top:0;z-index:5;background:var(--primary-background-color
     const q = (s) => root.querySelector(s), qa = (s) => root.querySelectorAll(s);
     if (this._refocus) { this._refocus = false; q("#help")?.focus(); }
     qa(".tile").forEach((b) => b.addEventListener("click", () => this._select(b.dataset.room)));
-    try { const n = a.attention || 0, tot = a.total || rooms.length; document.title = (this._sel && rooms.find((r) => r.key === this._sel)) ? `Luftwächter · ${rooms.find((r) => r.key === this._sel).name}` : rooms.length ? `Luftwächter · ${n ? (this._lang() === "de" ? `${n} von ${tot} brauchen Aufmerksamkeit` : `${n} of ${tot} need attention`) : (this._lang() === "de" ? "Alles gut" : "All good")}` : "Luftwächter"; } catch (er) { /* ignore */ }
+    try { const n = a.attention || 0, tot = a.total || rooms.length; const face = ({ good: "🙂", fair: "😐", poor: "😷" })[e.state] || ""; document.title = (face ? face + " " : "") + ((this._sel && rooms.find((r) => r.key === this._sel)) ? `Luftwächter · ${rooms.find((r) => r.key === this._sel).name}` : rooms.length ? `Luftwächter · ${n ? (this._lang() === "de" ? `${n} von ${tot} brauchen Aufmerksamkeit` : `${n} of ${tot} need attention`) : (this._lang() === "de" ? "Alles gut" : "All good")}` : "Luftwächter"); } catch (er) { /* ignore */ }
     if (!this._live) { this._live = document.createElement("div"); this._live.setAttribute("aria-live", "polite"); this._live.setAttribute("role", "status"); this._live.style.cssText = "position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"; }
     root.appendChild(this._live);
     const lv = {}; rooms.forEach((r) => { lv[r.key] = r.level; });

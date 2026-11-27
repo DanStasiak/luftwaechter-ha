@@ -49,6 +49,22 @@ blueprint:
           domain:
             - input_boolean
             - switch
+    speak_presence:
+      name: Speak only while someone is home (optional)
+      description: Pick a person, a group or a binary sensor. The voice is only spoken while it is home or on, so the speaker stays quiet in an empty house. The phone push is not affected. Leave empty for always.
+      default: ""
+      selector:
+        entity:
+          domain:
+            - person
+            - group
+            - binary_sensor
+    open_panel:
+      name: Tapping the push opens the Luftwächter panel
+      description: When on, a tap on the phone notification opens the sidebar panel at the room of the window (companion app).
+      default: false
+      selector:
+        boolean:
     speak_text:
       name: Spoken text
       description: Use {{ message }}, {{ room }}, {{ window }} and {{ minutes }}.
@@ -73,9 +89,12 @@ variables:
   tts_entity: !input tts_entity
   speakers: !input speakers
   speak_switch: !input speak_switch
+  speak_presence: !input speak_presence
+  open_panel: !input open_panel
   snooze_minutes: !input snooze_minutes
   message: "{{ trigger.event.data.message | default('') }}"
   room: "{{ trigger.event.data.room | default('') }}"
+  room_key: "{{ trigger.event.data.room_key | default('') }}"
   window: "{{ trigger.event.data.window | default('') }}"
   minutes: "{{ trigger.event.data.minutes_open | default(0) }}"
   entity: "{{ trigger.event.data.entity_id | default('') }}"
@@ -98,6 +117,8 @@ actions:
                   message: "{{ message }}"
                   data:
                     tag: "luftwaechter_{{ entity }}"
+                    url: "{{ '/luftwaechter#room=' ~ room_key if open_panel and room_key | length > 0 else '' }}"
+                    clickAction: "{{ '/luftwaechter#room=' ~ room_key if open_panel and room_key | length > 0 else '' }}"
                     actions:
                       - action: "LW_SNOOZE|{{ entity }}"
                         title: "Snooze {{ snooze_minutes | int }} min"
@@ -105,7 +126,7 @@ actions:
                         title: "Skip until closed"
           - if:
               - condition: template
-                value_template: "{{ tts_entity | length > 0 and speakers | length > 0 and (speak_switch | length == 0 or is_state(speak_switch, 'on')) }}"
+                value_template: "{{ tts_entity | length > 0 and speakers | length > 0 and (speak_switch | length == 0 or is_state(speak_switch, 'on')) and (speak_presence | length == 0 or is_state(speak_presence, ['home', 'on'])) }}"
             then:
               - action: tts.speak
                 target:

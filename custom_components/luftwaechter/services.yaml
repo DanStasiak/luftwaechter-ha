@@ -33,3 +33,14 @@ clear_snooze:
         entity:
           domain: binary_sensor
           multiple: true
+
+test_reminder:
+  fields:
+    room:
+      required: false
+      selector:
+        text:
+    message:
+      required: false
+      selector:
+        text:

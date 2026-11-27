@@ -21,7 +21,7 @@ Companion to the [Luftwächter Windows widget](https://github.com/DanStasiak/air
 
 <p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/demo.gif" width="640" alt="Demo: overview, room view, ventilation timer, German interface"></p>
 
-**Contents:** [Quick start](#quick-start) · [Features](#features) · [Install](#install-marketplace) · [Update](#update) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Settings](#settings) · [Events](#events-for-automations) · [Blueprint](#blueprint) · [Examples](docs/AUTOMATION-EXAMPLES.md) · [Dashboards](docs/DASHBOARD.md) · [Upgrading](docs/UPGRADING.md) · [Architecture](docs/ARCHITECTURE.md) · [Windows widget](#windows-widget) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Roadmap](#roadmap) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
+**Contents:** [Quick start](#quick-start) · [Features](#features) · [Install](#install-marketplace) · [Update](#update) · [How it works](#how-it-works) · [Limits](#limits) · [Entities](#entities) · [Settings](#settings) · [Events](#events-for-automations) · [Blueprint](#blueprint) · [All blueprints](docs/BLUEPRINTS.md) · [Card](#lovelace-card) · [Examples](docs/AUTOMATION-EXAMPLES.md) · [Dashboards](docs/DASHBOARD.md) · [Upgrading](docs/UPGRADING.md) · [Architecture](docs/ARCHITECTURE.md) · [Windows widget](#windows-widget) · [Wall tablet tips](#wall-tablet-tips) · [FAQ](#faq) · [Roadmap](#roadmap) · [Troubleshooting](#troubleshooting) · [Privacy](#privacy)
 
 ## Quick start
 1. Install **Luftwächter** from the Marketplace and restart Home Assistant (see [Install](#install-marketplace)).
@@ -214,6 +214,8 @@ Two places, because Luftwächter only decides *when* and Home Assistant decides 
 - *Text to speech engine* and *Speakers*: **this is where you choose the speaker.** Pick your TTS engine (for example Piper) and one or more `media_player` speakers. If either is empty, nothing is spoken.
 - *Spoken text*: `{{ message }}` by default; you can also use `{{ room }}`, `{{ window }}` and `{{ minutes }}`.
 - *Snooze length*: what the **Snooze** button on the phone does.
+- *Speak only while someone is home (optional)* (new in 0.23.0): pick a person, a group or a binary sensor; the voice is spoken only while it is `home` or `on`, so an empty house stays quiet. The phone push is not affected.
+- *Tapping the push opens the Luftwächter panel* (new in 0.23.0, off by default): a tap on the phone notification opens the panel at the room of the window.
 
 **Sound on or off.** Pick a helper in the blueprint input *Voice on/off switch (optional)* (an `input_boolean` or `switch`, new in 0.22.0). The voice is spoken only while that switch is on; the phone push is not affected. Flip it from a dashboard, a button or the app. Without a switch the voice is always on. Other ways:
 - *Sound off, phone push on:* empty the *Speakers* input (or the TTS engine) and save.
@@ -230,23 +232,43 @@ With a rain sensor (Configure → *Rain sensor*, or a binary sensor named "... r
 
 ## Lovelace card
 
-The integration adds a small card to your dashboards automatically (no resource to add). Add it from the card picker (*Luftwächter*) or in YAML:
+The integration adds a small card to your dashboards automatically (no resource to add). Add it from the card picker (*Luftwächter*); it has a visual editor, so no YAML is needed. In YAML:
 
 ```yaml
 type: custom:luftwaechter-card
 room: Office        # room name or key; leave out for the whole-house summary
 ```
 
-Options: `title` (house summary), `values: false` (hide the numbers). It shows the face, the one-sentence advice and the readings, and follows your Home Assistant language (German or English).
+It shows the face, the one-sentence advice and the readings, and follows your Home Assistant language (German or English).
+
+<p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/card-options.png" width="640" alt="The card: a room, with symbols and accent, compact rows, tap action, house summary"></p>
+
+| Option | Default | What it does |
+| --- | --- | --- |
+| `room` | whole house | Room name or key. Leave out for the house summary. |
+| `rooms` | all | House summary only: a list of the rooms to show, for example `[Office, Bedroom]`. |
+| `title` | Luftwächter | Title of the house summary. |
+| `values` | `true` | `false` hides the readings of a room. |
+| `compact` | `false` | One slim line instead of the big card, handy for a row of rooms. |
+| `symbols` | `false` | Shapes (✓ ! ✕) next to the colours, so the level is readable without colours. |
+| `accent` | `false` | A coloured edge on the left that follows the air level. |
+| `tap_action` | nothing | `panel`: a tap opens the Luftwächter panel at that room. |
+
+The card announces itself to screen readers ("Office: good air") and can be used with the keyboard when `tap_action` is on.
 
 ## More blueprints
+
+Every blueprint with all its inputs is listed in [docs/BLUEPRINTS.md](docs/BLUEPRINTS.md), with an import button for each.
+
 
 - **Pause heating while a window is open (opt-in):** switches the thermostats you pick off after the window was open for a while and restores their previous mode and temperature from a snapshot once all picked windows are closed. Luftwächter itself never switches heating.
 - **Airing timer, "close the window now":** when a window opens, waits until it is closed, until the room's *close window* sensor turns on, or until your airing time is over, then says or sends "close the window now" if it is still open.
 
 ## Actions and diagnostics
 - `luftwaechter.refresh` recalculates all rooms immediately.
+- `luftwaechter.test_reminder` (new in 0.23.0) fires one sample window reminder (optional `room` and `message`), so you can check your phone and speaker automation without opening a window. In Developer tools → Actions, pick *Send a test reminder*.
 - `luftwaechter.snooze`, `luftwaechter.skip_until_closed` and `luftwaechter.clear_snooze` control window reminders (see above).
+- **System information** (Settings → System → Repairs → ⋮ → System information) shows the Luftwächter version, the number of rooms and whether the last update worked.
 - **Download diagnostics** (device page, three dots) gives a compact, anonymous report for bug reports: levels, readings, sources and device ids, no names of people or accounts.
 
 ## Wall tablet tips

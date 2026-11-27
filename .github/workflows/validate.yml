@@ -32,8 +32,10 @@ jobs:
         with:
           python-version: "3.13"
       - run: pip install ruff
-      - run: ruff check custom_components
+      - run: ruff check .
       - run: node --check custom_components/luftwaechter/frontend/luftwaechter-panel.js
+      - run: node --check custom_components/luftwaechter/frontend/luftwaechter-card.js
+      - run: python3 tools/gen_blueprint_docs.py --check
   tests:
     runs-on: ubuntu-latest
     steps:

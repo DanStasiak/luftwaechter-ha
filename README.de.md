@@ -11,6 +11,14 @@ Luftqualität pro Raum, Lüftungshinweise und Fensterempfehlungen für Home Assi
 
 <p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/overview_de.png" width="640" alt="Übersicht auf Deutsch"></p>
 
+## Neu in 0.23.0
+
+- **Die Karte hat einen grafischen Editor** und neue Optionen: `compact: true` (eine schmale Zeile), `symbols: true` (Formen ✓ ! ✕ zusätzlich zu den Farben), `accent: true` (farbiger Rand), `rooms: [Büro, Schlafzimmer]` (Haus-Übersicht nur für diese Räume), `title` und `tap_action: panel` (Antippen öffnet das Panel beim Raum). Sie wird von Screenreadern vorgelesen und lässt sich mit der Tastatur bedienen. Alle Optionen: siehe die englische [README](README.md#lovelace-card).
+- **Neue Aktion `luftwaechter.test_reminder`** löst eine Beispiel-Fenstererinnerung aus, damit du Handy und Lautsprecher prüfen kannst, ohne ein Fenster zu öffnen (Entwicklerwerkzeuge → Aktionen).
+- **Blueprint Fenster-Erinnerung:** *Nur sprechen, solange jemand zu Hause ist* (Person, Gruppe oder Binärsensor) und *Antippen der Meldung öffnet das Luftwächter-Panel* (standardmäßig aus).
+- **Systeminformationen** zeigen Version, Raumanzahl und ob das letzte Update geklappt hat (Einstellungen → System → Reparaturen → ⋮ → Systeminformationen). Die Einstellungen haben für jedes Feld eine Beschreibung, und gleiche Start- und Endstunde der Erinnerungen wird abgelehnt.
+- Der Browser-Tab zeigt das Gesicht des Hauses (🙂 😐 😷), und eine Übersicht aller Blueprints mit Import-Knopf steht in [docs/BLUEPRINTS.md](docs/BLUEPRINTS.md).
+
 ## Lovelace-Karte und weitere Blueprints (neu in 0.21.0)
 
 Die Karte `type: custom:luftwaechter-card` (optional `room: Büro`) zeigt Gesicht, Satz und Werte eines Raums oder eine Haus-Übersicht; sie wird automatisch hinzugefügt. Neue Blueprints: *Heizung pausieren, solange ein Fenster offen ist* (freiwillig, mit Wiederherstellung) und *Lüftungs-Timer „Fenster jetzt schließen“*.
