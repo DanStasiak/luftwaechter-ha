@@ -1,7 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.22.0
+- New: the window-reminder and airing-timer blueprints get an optional **Voice on/off switch** (an input_boolean or switch). The voice is spoken only while it is on; the phone push is not affected.
+- Docs: install steps now lead with a Marketplace search for Luftwächter, with "Add from link" as the fallback (thanks to the HACS reviewer for the hint).
 - Docs: new README section "Where to set up reminders, speaker, sound and rain sensor" (where the speaker is chosen, how to turn the voice on or off, how the rain sensor changes the advice).
+- DE: Neu: Die Blueprints Fenster-Erinnerung und Lüftungs-Timer haben einen optionalen **Ein/Aus-Schalter für die Stimme** (input_boolean oder switch). Gesprochen wird nur, solange er an ist; die Handy-Push-Nachricht bleibt unberührt.
+- DE: Doku: Die Installation beginnt jetzt mit der Marketplace-Suche nach Luftwächter, „Über Link hinzufügen“ ist der Ausweichweg.
 - DE: Doku: neuer Abschnitt „Wo man Erinnerungen, Lautsprecher, Ton und Regensensor einstellt“.
 
 ## 0.21.0

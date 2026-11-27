@@ -44,6 +44,15 @@ blueprint:
         entity:
           domain: media_player
           multiple: true
+    speak_switch:
+      name: Voice on/off switch (optional)
+      description: Pick an input_boolean or switch. The voice is only spoken while it is on; the phone push is not affected. Leave empty for always on.
+      default: ""
+      selector:
+        entity:
+          domain:
+            - input_boolean
+            - switch
     notify_service:
       name: Notify service (optional)
       description: For example notify.mobile_app_my_phone.
@@ -70,6 +79,7 @@ variables:
   minutes: !input minutes
   tts_entity: !input tts_entity
   speakers: !input speakers
+  speak_switch: !input speak_switch
   notify_service: !input notify_service
   text: !input text
 
@@ -87,7 +97,7 @@ actions:
     value_template: "{{ is_state(window, 'on') }}"
   - if:
       - condition: template
-        value_template: "{{ tts_entity | length > 0 and speakers | length > 0 }}"
+        value_template: "{{ tts_entity | length > 0 and speakers | length > 0 and (speak_switch | length == 0 or is_state(speak_switch, 'on')) }}"
     then:
       - action: tts.speak
         target:

@@ -40,6 +40,15 @@ blueprint:
         entity:
           domain: media_player
           multiple: true
+    speak_switch:
+      name: Voice on/off switch (optional)
+      description: Pick an input_boolean or switch. The voice is only spoken while it is on; the phone push is not affected. Leave empty for always on.
+      default: ""
+      selector:
+        entity:
+          domain:
+            - input_boolean
+            - switch
     speak_text:
       name: Spoken text
       description: Use {{ message }}, {{ room }}, {{ window }} and {{ minutes }}.
@@ -63,6 +72,7 @@ variables:
   notify_service: !input notify_service
   tts_entity: !input tts_entity
   speakers: !input speakers
+  speak_switch: !input speak_switch
   snooze_minutes: !input snooze_minutes
   message: "{{ trigger.event.data.message | default('') }}"
   room: "{{ trigger.event.data.room | default('') }}"
@@ -95,7 +105,7 @@ actions:
                         title: "Skip until closed"
           - if:
               - condition: template
-                value_template: "{{ tts_entity | length > 0 and speakers | length > 0 }}"
+                value_template: "{{ tts_entity | length > 0 and speakers | length > 0 and (speak_switch | length == 0 or is_state(speak_switch, 'on')) }}"
             then:
               - action: tts.speak
                 target:

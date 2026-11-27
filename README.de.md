@@ -34,7 +34,7 @@ Zwei Stellen: Luftwächter entscheidet nur, *wann*; Home Assistant entscheidet, 
 - *Spoken text*: standardmäßig `{{ message }}`; außerdem `{{ room }}`, `{{ window }}` und `{{ minutes }}`.
 - *Snooze length*: was der Knopf **Snooze** auf dem Handy bewirkt.
 
-**Ton an oder aus.** Einen eigenen Ton-Schalter gibt es bewusst nicht. Den Ton änderst du in dieser Automation:
+**Ton an oder aus.** Wähle im Blueprint bei *Voice on/off switch (optional)* einen Hilfsschalter (`input_boolean` oder `switch`, neu in 0.22.0). Gesprochen wird nur, solange dieser Schalter an ist; die Handy-Push-Nachricht bleibt unberührt. Du schaltest ihn per Dashboard, Taster oder App. Ohne Schalter ist die Stimme immer an. Weitere Wege:
 - *Ton aus, Handy-Push an:* das Feld *Speakers* (oder die TTS-Engine) leeren und speichern.
 - *Ton an:* Engine und Lautsprecher wieder wählen.
 - *Alles zeitweise aus:* die Automation ausschalten oder unter Konfigurieren *Erinnerungen stumm, solange an* mit einem eigenen Hilfsschalter nutzen. Ein Hilfsschalter ist der schnellste Weg, alle Erinnerungen ohne Bearbeiten zu pausieren.
@@ -65,8 +65,9 @@ Hilfe: [SUPPORT.md](SUPPORT.md).
 - **Jeder in seiner Sprache**: das Panel folgt der Sprache im Profil des jeweiligen Benutzers.
 
 ## Installation (Marketplace)
-Home Assistant 2026.11 und neuer hat den **Marketplace** eingebaut (Einstellungen → Marketplace); er hat HACS abgelöst. Auf älteren Versionen: HACS → ⋮ → **Benutzerdefinierte Repositories** (Typ *Integration*).
-1. **Einstellungen → Marketplace → Über Link hinzufügen**, dort `https://github.com/DanStasiak/luftwaechter-ha` einfügen. Beim ersten Mal bestätigst du den Risikohinweis; für eigene Projekte braucht es eine GitHub-Verbindung (Home Assistant zeigt einen Code, den du auf GitHub eingibst, ein Passwort wird nicht weitergegeben).
+Home Assistant 2026.11 und neuer hat den **Marketplace** eingebaut (Einstellungen → Marketplace); er hat HACS abgelöst. Auf älteren Versionen suchst du in HACS nach *Luftwächter*.
+1. **Einstellungen → Marketplace** öffnen, nach **Luftwächter** suchen und öffnen. Beim ersten Mal bestätigst du den Risikohinweis.
+   *Ausweichweg (zum Beispiel direkt nach einer neuen Version oder bei älteren Versionen):* **Einstellungen → Marketplace → Über Link hinzufügen** (HACS: ⋮ → **Benutzerdefinierte Repositories**, Typ *Integration*) und `https://github.com/DanStasiak/luftwaechter-ha` einfügen. Eigene Projekte brauchen eine GitHub-Verbindung (Home Assistant zeigt einen Code, den du auf GitHub eingibst, ein Passwort wird nicht weitergegeben).
 2. **Luftwächter** im Marketplace öffnen, **Herunterladen**, Home Assistant neu starten.
 3. Einstellungen → Geräte & Dienste → **Integration hinzufügen** → *Luftwächter*. Optional eine Wetter-Entität wählen.
 4. In der Seitenleiste **Luftwächter** öffnen. Sichtbar für alle Benutzer im Haushalt.

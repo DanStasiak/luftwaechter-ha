@@ -87,8 +87,9 @@ Questions? See [SUPPORT.md](SUPPORT.md).
 | <img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/room.png" width="420" alt="Room view"> | <img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/help.png" width="420" alt="Help dialog"> |
 
 ## Install (Marketplace)
-Home Assistant 2026.11 and newer have the **Marketplace** built in (Settings → Marketplace). It replaced HACS. On older versions use HACS → ⋮ → **Custom repositories** (type *Integration*) instead of "Add from link".
-1. Click the button above, or open **Settings → Marketplace → Add from link** and paste `https://github.com/DanStasiak/luftwaechter-ha`. On the first visit you accept the Marketplace risk notice; custom projects also need a GitHub connection (Home Assistant shows a code to enter on GitHub, no password is shared).
+Home Assistant 2026.11 and newer have the **Marketplace** built in (Settings → Marketplace). It replaced HACS. On older versions use HACS and search for *Luftwächter* there.
+1. Open **Settings → Marketplace**, search for **Luftwächter** and open it. On the first visit you accept the Marketplace risk notice.
+   *Fallback (for example right after a release, or on older versions):* open **Settings → Marketplace → Add from link** (HACS: ⋮ → **Custom repositories**, type *Integration*) and paste `https://github.com/DanStasiak/luftwaechter-ha`, or click the button above. Custom projects also need a GitHub connection (Home Assistant shows a code to enter on GitHub, no password is shared).
 2. Open **Luftwächter** in the Marketplace, click **Download**, then restart Home Assistant.
 3. Settings → Devices & services → **Add integration** → *Luftwächter*. Pick a weather entity (optional, used for outside hints).
 4. Open **Luftwächter** in the sidebar. It is visible to every household user.
@@ -214,7 +215,7 @@ Two places, because Luftwächter only decides *when* and Home Assistant decides 
 - *Spoken text*: `{{ message }}` by default; you can also use `{{ room }}`, `{{ window }}` and `{{ minutes }}`.
 - *Snooze length*: what the **Snooze** button on the phone does.
 
-**Sound on or off.** There is no separate sound switch, by design. To change the sound, open that automation and edit it:
+**Sound on or off.** Pick a helper in the blueprint input *Voice on/off switch (optional)* (an `input_boolean` or `switch`, new in 0.22.0). The voice is spoken only while that switch is on; the phone push is not affected. Flip it from a dashboard, a button or the app. Without a switch the voice is always on. Other ways:
 - *Sound off, phone push on:* empty the *Speakers* input (or the TTS engine) and save.
 - *Sound on:* pick the engine and the speakers again.
 - *Everything off for a while:* turn the automation off (its switch on the Automations page), or use *Mute reminders while on* under Configure with a helper switch of your own. A helper switch that you flip is the quickest way to pause all reminders without editing anything.
