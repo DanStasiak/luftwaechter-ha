@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.19.0
+- New: **rain sensor.** Luftwächter uses a binary sensor that is on while it rains: the one you pick under Configure → *Rain sensor*, or automatically a binary sensor whose name ends in rain or Regen. With rain, an open window with good air is advised to be closed, and a closed room that needs fresh air is told to wait until the rain stops (unless the air is already stale). Without a rain sensor everything works as before, using the weather entity.
+- Three more tests.
+- DE: Neu: **Regensensor.** Luftwächter nutzt einen Binärsensor, der bei Regen an ist: den unter Konfigurieren → *Regensensor* gewählten oder automatisch einen Binärsensor, dessen Name auf rain oder Regen endet. Bei Regen wird ein offenes Fenster mit guter Luft zum Schließen geraten, und ein geschlossener Raum, der frische Luft braucht, soll warten, bis der Regen aufhört (außer die Luft ist schon verbraucht). Ohne Regensensor bleibt alles wie bisher über die Wetter-Entität.
+
 ## 0.18.0
 - New: **smarter "close the window" advice.** A window that is open while the air is good again (CO₂ below your good limit) is now reported as "Please close the window" when it has been open 5 minutes or more and it is below 10 °C outside, or as soon as it rains. The advice shows how long the window has been open.
 - New binary sensor `binary_sensor.luftwachter_<room>_close_window` (on while the advice is "close the window") and the house sensor attributes `close` and `close_rooms`. Rooms with a "close" advice now count as needing attention.

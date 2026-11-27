@@ -209,3 +209,24 @@ def test_door_contact_counts_as_window_only_when_named_so():
     assert engine.is_window(ent("binary_sensor.x", "door", "on", dom="binary_sensor", name="Door Window Sensor 6"))
     assert not engine.is_window(ent("binary_sensor.front", "door", "on", dom="binary_sensor", name="Front door"))
     assert engine.is_window(ent("binary_sensor.y", "opening", "on", dom="binary_sensor", name="Balkon"))
+
+
+def test_rain_sensor_name_detection():
+    assert engine.is_rain_sensor("binary_sensor.solar_rain_sensor_2", "Solar Rain Sensor #2 Rain")
+    assert engine.is_rain_sensor("binary_sensor.regen", "Regen")
+    assert not engine.is_rain_sensor("binary_sensor.x_cleaning_reminder", "Solar Rain Sensor #2 Cleaning reminder")
+    assert not engine.is_rain_sensor("binary_sensor.garden_rain_confirmed", "Garden rain confirmed")
+
+
+def test_rain_sensor_makes_closed_stale_room_wait():
+    r = room(co2=1200, win="off", weather={"raining": True})
+    assert r["action"] == "wait" and "rain" in r["detail"].lower()
+    assert room(co2=1200, win="off", weather={"raining": False})["action"] == "open"
+    assert room(co2=1800, win="off", weather={"raining": True})["action"] == "open"
+
+
+def test_rain_sensor_closes_open_window_with_good_air():
+    a = area(co2=800, t=21, h=45)
+    a["entities"].append(ent("binary_sensor.w", "window", "on", dom="binary_sensor", changed=1))
+    r = engine.build_model([a], set(), {"raining": True}, "", "de", NOW)["rooms"][0]
+    assert r["action"] == "close" and "regnet" in r["detail"]

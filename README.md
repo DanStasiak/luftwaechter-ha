@@ -36,7 +36,7 @@ Questions? See [SUPPORT.md](SUPPORT.md).
 - **Screen-reader friendly:** level changes are announced politely, tiles have tooltips with the full advice, everything works by keyboard.
 - **Do-now overview**: which rooms need attention, worst first, with a coloured dot per reading on every tile.
 - **Room view**: status badge, "what stands out" with the limits, gauge bars, 24 h / 6 h / 7 day history charts with hover readout.
-- **Advice**: open, close or keep the window (a window left open after the air is good again is flagged once it is cold or raining); how long to ventilate; wait for storms; rain-soon hint from your weather forecast.
+- **Advice**: open, close or keep the window (a window left open after the air is good again is flagged once it is cold or raining; an optional rain sensor, picked in the options or found by its name, makes it wait for the rain to stop); how long to ventilate; wait for storms; rain-soon hint from your weather forecast.
 - **Help built in**: what each reading means, typical causes of bad values, what helps.
 - **Devices per room**: lights, heating, blinds (open / stop / close) with live state.
 - **Made for shared screens**: text size switch for wall tablets, remembers your last room, arrow keys, stale-data warning.

@@ -25,11 +25,13 @@
           "pm_good": "Feinstaub gut unter",
           "pm_fair": "Feinstaub mittel unter",
           "excluded_areas": "Diese Bereiche ausblenden",
+          "rain_sensor": "Regensensor",
           "mold_rh": "Schimmelgefahr ab Luftfeuchte von",
           "stale_minutes": "Warnen, wenn Daten älter sind als"
         },
         "data_description": {
           "excluded_areas": "Bereiche, die nicht im Panel erscheinen sollen (zum Beispiel Garage oder Keller).",
+          "rain_sensor": "Optional. Ein Binärsensor, der bei Regen an ist. Leer gelassen sucht Luftwächter einen Sensor mit „rain“ oder „Regen“ im Namen.",
           "mold_rh": "Relative Luftfeuchte (%), ab der ein Raum als Schimmelgefahr gilt. Standard 70.",
           "stale_minutes": "Minuten ohne Aktualisierung, bevor das Panel warnt."
         }

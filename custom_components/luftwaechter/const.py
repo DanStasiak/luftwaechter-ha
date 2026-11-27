@@ -12,6 +12,7 @@ CONF_PM_FAIR = "pm_fair"
 CONF_EXCLUDE = "excluded_areas"
 CONF_STALE = "stale_minutes"
 CONF_MOLD_RH = "mold_rh"
+CONF_RAIN = "rain_sensor"
 DEFAULT_MOLD_RH = 70
 DEFAULT_STALE = 10
 ISSUE_NO_ROOMS = "no_rooms"

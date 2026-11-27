@@ -23,6 +23,7 @@ from .const import (
     CONF_MOLD_RH,
     CONF_PM_FAIR,
     CONF_PM_GOOD,
+    CONF_RAIN,
     CONF_STALE,
     CONF_WEATHER,
     DEFAULT_STALE,
@@ -122,6 +123,19 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
             _LOGGER.debug("No hourly forecast for %s", eid)
         return weather, rain_at
 
+    def _rain_now(self) -> bool | None:
+        """State of the rain sensor: the one picked in the options, else a binary sensor named rain / Regen. None when there is none."""
+        eid = self.entry.options.get(CONF_RAIN)
+        st = self.hass.states.get(eid) if eid else None
+        if st is None:
+            for cand in self.hass.states.async_all("binary_sensor"):
+                if engine.is_rain_sensor(cand.entity_id, cand.name):
+                    st = cand
+                    break
+        if st is None or st.state not in ("on", "off"):
+            return None
+        return st.state == "on"
+
     def _limits(self) -> dict:
         o = self.entry.options
         return {
@@ -188,6 +202,9 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         excluded = set(self.entry.options.get(CONF_EXCLUDE) or [])
         areas = [a for a in areas if a["id"] not in excluded]
         weather, rain_at = await self._weather()
+        raining = self._rain_now()
+        if raining is not None:
+            weather = {**(weather or {}), "raining": raining}
         model = engine.build_model(areas, labelled, weather, rain_at, self.lang, dt_util.utcnow().timestamp(), self._limits())
         self._annotate(model)
         self._check_rooms(model)

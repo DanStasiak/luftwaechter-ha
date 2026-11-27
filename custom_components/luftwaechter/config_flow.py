@@ -15,6 +15,7 @@ from .const import (
     CONF_MOLD_RH,
     CONF_PM_FAIR,
     CONF_PM_GOOD,
+    CONF_RAIN,
     CONF_STALE,
     CONF_WEATHER,
     DEFAULT_STALE,
@@ -68,6 +69,9 @@ class LuftwaechterOptionsFlow(OptionsFlow):
             {
                 vol.Optional(CONF_WEATHER, description={"suggested_value": cur}): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="weather")
+                ),
+                vol.Optional(CONF_RAIN, description={"suggested_value": o.get(CONF_RAIN)}): selector.EntitySelector(
+                    selector.EntitySelectorConfig(domain="binary_sensor")
                 ),
                 vol.Optional(CONF_EXCLUDE, description={"suggested_value": o.get(CONF_EXCLUDE, [])}): selector.AreaSelector(
                     selector.AreaSelectorConfig(multiple=True)

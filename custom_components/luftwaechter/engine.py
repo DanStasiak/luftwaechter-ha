@@ -109,6 +109,7 @@ TEXTS: dict[str, dict[str, str]] = {
         "heating_off": " · aus",
         "close_cold": "Die Luft ist in Ordnung und draußen sind {t} °C. Zu lassen spart Heizenergie.",
         "close_rain": " Es regnet draußen.",
+        "wait_rain": "Es regnet. Lüften, sobald der Regen aufhört.",
         "open_for": " Fenster seit {m} min offen.",
         "open": "offen", "closed": "zu", "opening": "öffnet", "closing": "schließt",
         "dirs": "N,NO,O,SO,S,SW,W,NW",
@@ -153,6 +154,7 @@ TEXTS: dict[str, dict[str, str]] = {
         "heating_off": " · off",
         "close_cold": "The air is fine and it is {t} °C outside. Closing saves heating energy.",
         "close_rain": " It is raining outside.",
+        "wait_rain": "It is raining. Ventilate once the rain stops.",
         "open_for": " Window open for {m} min.",
         "open": "open", "closed": "closed", "opening": "opening", "closing": "closing",
         "dirs": "N,NE,E,SE,S,SW,W,NW",
@@ -411,6 +413,12 @@ def dew_point(t: float | None, h: float | None) -> float | None:
 COLD_OUTSIDE = 10  # deg C: below this an open window with good air should be closed
 CLOSE_AFTER_MIN = 5
 _WINDOW_NAME = re.compile(r"fenster|window")
+_RAIN_NAME = re.compile(r"(^|[\s_.])(rain|regen)$")
+
+
+def is_rain_sensor(entity_id: str, name: str | None) -> bool:
+    """A binary sensor whose name ends in rain / Regen (for example "Solar Rain Sensor #2 Rain")."""
+    return bool(_RAIN_NAME.search((name or "").strip().lower()) or _RAIN_NAME.search(entity_id.lower()))
 
 
 def is_window(e: dict) -> bool:
@@ -445,6 +453,8 @@ def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits
     ot = num(weather.get("temperature")) if weather else None
     cond = str(weather.get("condition") or "") if weather else ""
     bad_out = cond in BAD_OUTSIDE
+    sensor_rain = weather.get("raining") if weather else None
+    raining = bool(sensor_rain) if sensor_rain is not None else cond in RAIN_CONDITIONS
     need_vent = (
         (co2 is not None and co2 >= co2_good)
         or (hh is not None and hh > 60)
@@ -465,11 +475,11 @@ def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits
             if ot is not None and ot < 15:
                 detail += tx(lang, "cold_room")
         elif co2 is not None and co2 < co2_good and not (tt is not None and tt >= 25) and not (hh is not None and hh > 60) and (
-            (ot is not None and ot < COLD_OUTSIDE and open_min >= CLOSE_AFTER_MIN) or cond in RAIN_CONDITIONS
+            (ot is not None and ot < COLD_OUTSIDE and open_min >= CLOSE_AFTER_MIN) or raining
         ):
             action, head = "close", tx(lang, "close")
             detail = tx(lang, "close_cold", t=fmt(ot, 0, lang)) if ot is not None and ot < COLD_OUTSIDE else tx(lang, "fresh")
-            if cond in RAIN_CONDITIONS:
+            if raining:
                 detail += tx(lang, "close_rain")
         else:
             action, head, detail, vent_min = "keep_open", tx(lang, "keep_open"), tx(lang, "getting_better"), how_m
@@ -477,6 +487,8 @@ def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits
         if bad_out:
             cd = CONDITIONS[lang].get(cond) or tx(lang, "severe")
             action, head, detail = "wait", tx(lang, "wait"), tx(lang, "wait_d", c=cd)
+        elif raining and sensor_rain is not None and not (co2 is not None and co2 >= co2_fair):
+            action, head, detail = "wait", tx(lang, "wait"), tx(lang, "wait_rain")
         else:
             action = "open"
             head = tx(lang, "open_window") if has_window else tx(lang, "ventilate")
