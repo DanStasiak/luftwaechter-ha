@@ -1,0 +1,92 @@
+{
+  "_comment": "Shared advice test vectors: inputs and the expected action. The Home Assistant engine is tested against them by pytest; the Windows widget's built-in fallback logic follows the same table.",
+  "vectors": [
+    {
+      "name": "stale air, window closed, mild",
+      "co2": 1300,
+      "window": "off",
+      "outside": 10,
+      "condition": "sunny",
+      "expect": "open"
+    },
+    {
+      "name": "good air, window closed",
+      "co2": 600,
+      "window": "off",
+      "outside": 10,
+      "condition": "sunny",
+      "expect": "keep_closed"
+    },
+    {
+      "name": "air good again, open, cold, 12 min",
+      "co2": 850,
+      "window": "on",
+      "open_min": 12,
+      "outside": 2,
+      "condition": "cloudy",
+      "expect": "close"
+    },
+    {
+      "name": "air good again, open, cold, only 2 min",
+      "co2": 850,
+      "window": "on",
+      "open_min": 2,
+      "outside": 2,
+      "condition": "cloudy",
+      "expect": "keep_open"
+    },
+    {
+      "name": "air fresh, open",
+      "co2": 500,
+      "window": "on",
+      "open_min": 1,
+      "outside": 8,
+      "condition": "cloudy",
+      "expect": "close"
+    },
+    {
+      "name": "still stale, open, cold",
+      "co2": 1200,
+      "window": "on",
+      "open_min": 30,
+      "outside": 0,
+      "condition": "cloudy",
+      "expect": "keep_open"
+    },
+    {
+      "name": "stale air, storm outside",
+      "co2": 1300,
+      "window": "off",
+      "outside": 10,
+      "condition": "lightning",
+      "expect": "wait"
+    },
+    {
+      "name": "air good, open, raining (weather)",
+      "co2": 800,
+      "window": "on",
+      "open_min": 1,
+      "outside": 14,
+      "condition": "rainy",
+      "expect": "close"
+    },
+    {
+      "name": "stale air, closed, rain sensor on",
+      "co2": 1200,
+      "window": "off",
+      "outside": 10,
+      "condition": "sunny",
+      "raining": true,
+      "expect": "wait"
+    },
+    {
+      "name": "very stale air, closed, rain sensor on",
+      "co2": 1800,
+      "window": "off",
+      "outside": 10,
+      "condition": "sunny",
+      "raining": true,
+      "expect": "open"
+    }
+  ]
+}

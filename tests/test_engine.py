@@ -265,3 +265,22 @@ def test_reminder_gates():
 def test_closed_window_has_no_reminder_and_hours_wrap():
     assert engine.window_reminders(_wa(30, state="off"), NOW, 12, None, 3.0, {}) == []
     assert engine.in_hours(23, 22, 6) and engine.in_hours(3, 22, 6) and not engine.in_hours(12, 22, 6)
+
+
+def test_shared_advice_vectors():
+    import json
+    vec = json.loads((pathlib.Path(__file__).parent / "vectors/advice.json").read_text(encoding="utf-8"))["vectors"]
+    for v in vec:
+        a = {"id": "a1", "name": "Office", "entities": []}
+        if "co2" in v:
+            a["entities"].append(ent("sensor.co2", "carbon_dioxide", v["co2"]))
+        if "window" in v:
+            a["entities"].append(ent("sensor.pm", "pm25", 5))
+            a["entities"].append(ent("binary_sensor.w", "window", v["window"], dom="binary_sensor", changed=v.get("open_min", 0)))
+        w = None
+        if "outside" in v:
+            w = {"temperature": v["outside"], "condition": v.get("condition", "")}
+        if v.get("raining") is not None:
+            w = {**(w or {}), "raining": v["raining"]}
+        r = engine.build_model([a], set(), w, "", "en", NOW)["rooms"]
+        assert r and r[0]["action"] == v["expect"], (v["name"], r and r[0]["action"])
