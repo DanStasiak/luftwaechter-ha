@@ -253,6 +253,7 @@ It shows the face, the one-sentence advice and the readings, and follows your Ho
 | `symbols` | `false` | Shapes (✓ ! ✕) next to the colours, so the level is readable without colours. |
 | `accent` | `false` | A coloured edge on the left that follows the air level. |
 | `tap_action` | nothing | `panel`: a tap opens the Luftwächter panel at that room. |
+| `face_style` | `mascot` | `emoji`: use emoji faces instead of the Luftwächter mascot. |
 
 The card announces itself to screen readers ("Office: good air") and can be used with the keyboard when `tap_action` is on.
 
@@ -273,7 +274,7 @@ Every blueprint with all its inputs is listed in [docs/BLUEPRINTS.md](docs/BLUEP
 
 ## Wall tablet tips
 - **Kiosk mode** (key **K** or More → *Kiosk mode*): biggest text size, rooms rotate by themselves, the buttons fade out (still there when you touch them). Open `https://<your-ha>/luftwaechter#kiosk` to start in kiosk mode.
-- Keyboard: ← → switch room, **1–9** pick a room, **E** save CSV, **A** browser alerts, **B** colour-blind mode, **+ / −** text size, **Home / End** first / last room, **T** chart range, **L** language, Esc back, **/** search, **S** sort (worst, name, highest CO₂), **P** pin a room, **O** only problems, **V** list view, **M** menu, **R** rotate rooms, **F** full screen, **H** help.
+- Keyboard: ← → switch room, **1–9** pick a room, **E** save CSV, **A** browser alerts, **B** colour-blind mode, **G** mascot or emoji faces, **+ / −** text size, **Home / End** first / last room, **T** chart range, **L** language, Esc back, **/** search, **S** sort (worst, name, highest CO₂), **P** pin a room, **O** only problems, **V** list view, **M** menu, **R** rotate rooms, **F** full screen, **H** help.
 - **Rotate** (⟳ button or **R**) steps through the rooms every 12 seconds; a tap stops it. In full screen the panel asks the tablet to keep the screen on.
 - The header stays visible while you scroll.
 - Open the panel once, choose the **Aa** size, press the full-screen button.

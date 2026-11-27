@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.24.0
+- New: **the Luftwächter mascot** (a calm shield face with a leaf) replaces the emoji faces in the Lovelace card, the house summary and the panel. It has a face for good, fair, poor and no data, and a light-ring variant that is chosen automatically on dark themes.
+- DE: Neu: **das Luftwächter-Maskottchen** (ein ruhiges Schildgesicht mit Blatt) ersetzt die Emoji-Gesichter in der Lovelace-Karte, in der Haus-Zusammenfassung und im Panel. Es gibt ein Gesicht für gut, mittel, schlecht und keine Daten sowie eine Variante mit hellem Ring, die bei dunklen Themes automatisch gewählt wird.
+- New: the card option **`face_style: emoji`** (also in the visual editor) and the panel menu entry or key **G** switch back to the emoji faces; the choice in the panel is remembered per browser and reset by "Reset view".
+- DE: Neu: die Kartenoption **`face_style: emoji`** (auch im grafischen Editor) und der Panel-Menüpunkt oder die Taste **G** schalten auf die Emoji-Gesichter zurück; im Panel wird die Wahl pro Browser gemerkt und von "Ansicht zurücksetzen" zurückgesetzt.
+- Repaired: if a mascot image cannot be loaded (blocked path, offline), the emoji face is shown instead of an empty space.
+- DE: Repariert: lässt sich ein Maskottchen-Bild nicht laden (gesperrter Pfad, offline), erscheint das Emoji-Gesicht statt einer Lücke.
+- Tests: the panel test covers the mascot, the dark variant, the fallback and the G key; a quality test checks that all ten images exist.
+- DE: Tests: Der Panel-Test prüft Maskottchen, dunkle Variante, Ersatzanzeige und die Taste G; ein Qualitätstest prüft, dass alle zehn Bilder vorhanden sind.
+
 ## 0.23.0
 - New: the **Lovelace card has a visual editor** (card picker → Edit), so no YAML is needed. New options: `compact` (one slim line), `symbols` (shapes next to the colours, readable without colours), `accent` (coloured edge), `rooms` and `title` for the house summary, and `tap_action: panel` (a tap opens the panel at that room). The card is announced to screen readers ("Office: good air") and works with the keyboard. It also fits the new sections dashboards (grid options). Everything is off by default; existing cards look the same.
 - New: action **`luftwaechter.test_reminder`** fires one sample window reminder (optional room and message), so the phone and speaker automation can be tested without opening a window.

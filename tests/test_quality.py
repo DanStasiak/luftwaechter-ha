@@ -88,3 +88,11 @@ def test_card_documents_every_option_in_the_readme():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     for opt in re.findall(r"^\s+(\w+):\s+\S.*#", card.split("*/")[0], re.M):
         assert f"`{opt}`" in readme, f"card option {opt} is not in README.md"
+
+
+@pytest.mark.parametrize("level", ["good", "fair", "poor", "unknown", "neutral"])
+def test_mascot_images_exist_in_both_variants(level):
+    for name in (f"{level}.png", f"{level}-dark.png"):
+        f = CC / "frontend" / "mascot" / name
+        assert f.is_file() and f.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n", f"{name} is missing or not a PNG"
+        assert f.stat().st_size < 40_000, f"{name} is unexpectedly large"

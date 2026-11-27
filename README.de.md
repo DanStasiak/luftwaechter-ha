@@ -13,7 +13,7 @@ Luftqualität pro Raum, Lüftungshinweise und Fensterempfehlungen für Home Assi
 
 ## Neu in 0.23.0
 
-- **Die Karte hat einen grafischen Editor** und neue Optionen: `compact: true` (eine schmale Zeile), `symbols: true` (Formen ✓ ! ✕ zusätzlich zu den Farben), `accent: true` (farbiger Rand), `rooms: [Büro, Schlafzimmer]` (Haus-Übersicht nur für diese Räume), `title` und `tap_action: panel` (Antippen öffnet das Panel beim Raum). Sie wird von Screenreadern vorgelesen und lässt sich mit der Tastatur bedienen. Alle Optionen: siehe die englische [README](README.md#lovelace-card).
+- **Die Karte hat einen grafischen Editor** und neue Optionen: `compact: true` (eine schmale Zeile), `symbols: true` (Formen ✓ ! ✕ zusätzlich zu den Farben), `accent: true` (farbiger Rand), `face_style: emoji` (Emoji statt Maskottchen), `rooms: [Büro, Schlafzimmer]` (Haus-Übersicht nur für diese Räume), `title` und `tap_action: panel` (Antippen öffnet das Panel beim Raum). Sie wird von Screenreadern vorgelesen und lässt sich mit der Tastatur bedienen. Alle Optionen: siehe die englische [README](README.md#lovelace-card).
 - **Neue Aktion `luftwaechter.test_reminder`** löst eine Beispiel-Fenstererinnerung aus, damit du Handy und Lautsprecher prüfen kannst, ohne ein Fenster zu öffnen (Entwicklerwerkzeuge → Aktionen).
 - **Blueprint Fenster-Erinnerung:** *Nur sprechen, solange jemand zu Hause ist* (Person, Gruppe oder Binärsensor) und *Antippen der Meldung öffnet das Luftwächter-Panel* (standardmäßig aus).
 - **Systeminformationen** zeigen Version, Raumanzahl und ob das letzte Update geklappt hat (Einstellungen → System → Reparaturen → ⋮ → Systeminformationen). Die Einstellungen haben für jedes Feld eine Beschreibung, und gleiche Start- und Endstunde der Erinnerungen wird abgelehnt.
@@ -121,7 +121,7 @@ Zweiter Blueprint „Ans Lüften erinnern“: Lüften-Sensor eines Raums wählen
 **Kiosk-Modus** (Taste `K` oder Menü → „Kiosk-Modus“): größte Schrift, Räume wechseln automatisch, Knöpfe blenden aus. Direkt starten: `https://<dein-ha>/luftwaechter#kiosk`. Im Menü außerdem: Browser-Hinweise (wenn ein Raum schlecht wird), Sprache wählen, Ansicht zurücksetzen.
 
 ## Tastatur
-← → Raum wechseln · `1`–`9` Raum wählen · `Pos1` / `Ende` erster / letzter Raum · `E` Verlauf als CSV · `A` Browser-Hinweise · `B` Farbenblind-Modus · `+` / `−` Textgröße · `T` Zeitraum des Verlaufs · `L` Sprache · Esc zurück · `/` suchen · `S` sortieren (schlechtester, Name, CO₂) · `P` Raum anheften · `O` nur Probleme · `V` Listenansicht · `C` Hausübersicht kopieren · `K` Kiosk-Modus · `M` Menü · `R` durchschalten · `F` Vollbild · `H` oder `?` Hilfe. Am Handy wischt du im Raum nach links oder rechts, um den Raum zu wechseln.
+← → Raum wechseln · `1`–`9` Raum wählen · `Pos1` / `Ende` erster / letzter Raum · `E` Verlauf als CSV · `A` Browser-Hinweise · `B` Farbenblind-Modus · `G` Maskottchen oder Emoji · `+` / `−` Textgröße · `T` Zeitraum des Verlaufs · `L` Sprache · Esc zurück · `/` suchen · `S` sortieren (schlechtester, Name, CO₂) · `P` Raum anheften · `O` nur Probleme · `V` Listenansicht · `C` Hausübersicht kopieren · `K` Kiosk-Modus · `M` Menü · `R` durchschalten · `F` Vollbild · `H` oder `?` Hilfe. Am Handy wischt du im Raum nach links oder rechts, um den Raum zu wechseln.
 
 ## Fehlersuche
 - **Panel zeigt noch alte Texte nach dem Update**: Browser-Seite hart neu laden (Strg + F5).

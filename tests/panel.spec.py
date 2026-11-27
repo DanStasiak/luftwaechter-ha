@@ -196,6 +196,15 @@ with sync_playwright() as p:
     assert pg.evaluate("el._pins.length") == 0 and "Jetzt tun" not in txt() and pg.evaluate("el._lang()") == "en"
     assert "Luftwächter" in pg.evaluate("document.title")
     assert pg.evaluate("document.title")[0] in "🙂😐😷", "the tab title starts with the face of the house level"
+    # mascot faces: the markup points at the mascot image (halo variant on dark themes); without a server for it (as here) the emoji
+    # fallback shows; G switches to the emoji on purpose and back; the reset restores the default
+    assert 'src="/luftwaechter_static/mascot/poor.png"' in pg.evaluate("el._mascot('poor')") and "good.png" in pg.evaluate("el._mascot('good')")
+    assert 'mascot/unknown.png' in pg.evaluate("el._mascot('weird')")
+    pg.evaluate("el._hass.themes = { darkMode: true }"); assert "fair-dark.png" in pg.evaluate("el._mascot('fair')"); pg.evaluate("delete el._hass.themes")
+    assert pg.evaluate("el.shadowRoot.querySelector('.sumhead .mascot.emo')?.textContent") == "😷", "image failure falls back to the emoji"
+    pg.keyboard.press("g"); assert pg.evaluate("el._emoji") is True and "emo" in pg.evaluate("el._mascot('good')")
+    pg.keyboard.press("g"); assert pg.evaluate("el._emoji") is False
+    pg.evaluate("() => { el._emoji = true; el.shadowRoot.querySelector('#reset').click(); }"); assert pg.evaluate("el._emoji") is False
     pg.evaluate("el._select(el._rooms()[0].key)"); r0 = pg.evaluate("el._sel")
     pg.evaluate("""() => { const w = el.shadowRoot.querySelector('.wrap'); const ev = (t, x) => w.dispatchEvent(new PointerEvent(t, { pointerType: 'touch', clientX: x, clientY: 200, bubbles: true })); ev('pointerdown', 300); ev('pointerup', 120); }""")
     assert pg.evaluate("el._sel") != r0
