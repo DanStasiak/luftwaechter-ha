@@ -1,4 +1,5 @@
 <p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/custom_components/luftwaechter/brand/icon@2x.png" width="120" alt="Luftwächter"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/mascot-faces.png" width="360" alt="The Luftwächter mascot: good, fair, poor and no data"></p>
 
 # Luftwächter for Home Assistant
 
