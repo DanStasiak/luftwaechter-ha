@@ -15,8 +15,9 @@ from .coordinator import LuftwaechterCoordinator
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     coord: LuftwaechterCoordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([AttentionSensor(coord, entry), SensorProblemSensor(coord, entry), MoldRiskSensor(coord, entry)])
+    async_add_entities([AttentionSensor(coord, entry), SensorProblemSensor(coord, entry), MoldRiskSensor(coord, entry), WindowReminderHouseSensor(coord, entry)])
     known: set[str] = set()
+    known_win: set[str] = set()
 
     @callback
     def _add() -> None:
@@ -26,6 +27,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                 known.add(room["key"])
                 new.append(RoomVentilateSensor(coord, entry, room["key"]))
                 new.append(RoomCloseSensor(coord, entry, room["key"]))
+        for area in (coord.data or {}).get("window_areas", []):
+            if area["key"] not in known_win:
+                known_win.add(area["key"])
+                new.append(RoomWindowReminderSensor(coord, entry, area["key"], area["name"]))
         if new:
             async_add_entities(new)
 
@@ -164,4 +169,58 @@ class RoomCloseSensor(RoomVentilateSensor):
         return {
             "room": room.get("name", ""), "headline": room.get("headline", ""), "detail": room.get("detail", ""),
             "open_minutes": room.get("openMin", 0),
+        }
+
+
+class WindowReminderHouseSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySensorEntity):
+    """On while at least one open window is due a reminder (open too long, cold outside, active hours)."""
+
+    _attr_has_entity_name = False
+    _attr_name = "Luftwächter Window reminder"
+    _attr_icon = "mdi:window-open"
+
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coord)
+        self._attr_unique_id = f"{entry.entry_id}_window_reminder"
+        self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, entry.entry_id)}, name="Luftwächter", manufacturer="Dan Stasiak")
+
+    @property
+    def is_on(self) -> bool:
+        return bool((self.coordinator.data or {}).get("reminders_due", 0))
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        wins = [w for w in (self.coordinator.data or {}).get("windows", []) if w["eligible"]]
+        return {
+            "count": len(wins), "windows": [{"window": w["window"], "room": w["room"], "entity_id": w["entity_id"], "minutes_open": w["open_min"]} for w in wins],
+        }
+
+
+class RoomWindowReminderSensor(CoordinatorEntity[LuftwaechterCoordinator], BinarySensorEntity):
+    """On while a window in this area is open and due a reminder; attributes show why a reminder is held back."""
+
+    _attr_has_entity_name = False
+    _attr_icon = "mdi:window-open"
+
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry, key: str, name: str) -> None:
+        super().__init__(coord)
+        self._key = key
+        self._area_name = name
+        self._attr_unique_id = f"{entry.entry_id}_window_reminder_{key}"
+        self._attr_name = f"Luftwächter {name} window reminder"
+        self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, entry.entry_id)}, name="Luftwächter", manufacturer="Dan Stasiak")
+
+    def _wins(self) -> list[dict]:
+        return [w for w in (self.coordinator.data or {}).get("windows", []) if w["room_key"] == self._key]
+
+    @property
+    def is_on(self) -> bool:
+        return any(w["eligible"] for w in self._wins())
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        wins = self._wins()
+        return {
+            "room": self._area_name, "open_windows": len(wins),
+            "windows": [{"window": w["window"], "entity_id": w["entity_id"], "minutes_open": w["open_min"], "status": w["reason"]} for w in wins],
         }

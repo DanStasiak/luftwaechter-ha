@@ -12,10 +12,18 @@ from .const import (
     CONF_CO2_FAIR,
     CONF_CO2_GOOD,
     CONF_EXCLUDE,
+    CONF_IGNORE,
     CONF_MOLD_RH,
+    CONF_MUTE,
+    CONF_OUTSIDE_TEMP,
     CONF_PM_FAIR,
     CONF_PM_GOOD,
     CONF_RAIN,
+    CONF_REM_BELOW,
+    CONF_REM_FIRST,
+    CONF_REM_FROM,
+    CONF_REM_REPEAT,
+    CONF_REM_TO,
     CONF_STALE,
     CONF_WEATHER,
     DEFAULT_STALE,
@@ -72,6 +80,20 @@ class LuftwaechterOptionsFlow(OptionsFlow):
                 ),
                 vol.Optional(CONF_RAIN, description={"suggested_value": o.get(CONF_RAIN)}): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="binary_sensor")
+                ),
+                vol.Optional(CONF_OUTSIDE_TEMP, description={"suggested_value": o.get(CONF_OUTSIDE_TEMP)}): selector.EntitySelector(
+                    selector.EntitySelectorConfig(domain="sensor", device_class="temperature")
+                ),
+                vol.Required(CONF_REM_FIRST, default=o.get(CONF_REM_FIRST, 10)): _num(1, 240, "min"),
+                vol.Required(CONF_REM_REPEAT, default=o.get(CONF_REM_REPEAT, 5)): _num(1, 240, "min"),
+                vol.Required(CONF_REM_BELOW, default=o.get(CONF_REM_BELOW, 10)): _num(-30, 40, "°C"),
+                vol.Required(CONF_REM_FROM, default=o.get(CONF_REM_FROM, 8)): _num(0, 23, "h"),
+                vol.Required(CONF_REM_TO, default=o.get(CONF_REM_TO, 22)): _num(0, 23, "h"),
+                vol.Optional(CONF_MUTE, description={"suggested_value": o.get(CONF_MUTE, [])}): selector.EntitySelector(
+                    selector.EntitySelectorConfig(domain=["binary_sensor", "input_boolean", "switch"], multiple=True)
+                ),
+                vol.Optional(CONF_IGNORE, description={"suggested_value": o.get(CONF_IGNORE, [])}): selector.EntitySelector(
+                    selector.EntitySelectorConfig(domain="binary_sensor", multiple=True)
                 ),
                 vol.Optional(CONF_EXCLUDE, description={"suggested_value": o.get(CONF_EXCLUDE, [])}): selector.AreaSelector(
                     selector.AreaSelectorConfig(multiple=True)

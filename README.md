@@ -188,8 +188,20 @@ Prefer clicks to YAML? Import the blueprint and pick the level, an optional room
 
 [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FDanStasiak%2Fluftwaechter-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fluftwaechter%2Fventilate_reminder.yaml)
 
+## Window reminders
+
+Luftwächter can remind you when a window stays open too long, and it stays advice-only: it fires an event and exposes sensors; *you* choose what happens (the *window open too long* blueprint sends a phone push with **Snooze** and **Skip until closed** buttons and can speak on your speakers).
+
+- **When it fires:** the window has been open for the first wait (default 10 min), it is colder than your limit outside (default below 10 °C), and it is inside your active hours (default 08 to 22). It repeats every 5 minutes (default) until the window closes.
+- **Outside temperature:** pick a real outdoor sensor under Configure (*Outside temperature sensor*); without one the weather entity is used. The same value feeds the "close the window" advice.
+- **Snooze, skip, ignore, mute:** the actions `luftwaechter.snooze` (window, minutes), `luftwaechter.skip_until_closed` and `luftwaechter.clear_snooze` handle one window; *Never remind for these windows* ignores windows for good; *Mute reminders while on* pauses all reminders while a switch or binary sensor is on (for example a window you air while a device charges). Snoozes survive a Home Assistant restart.
+- **Entities:** `binary_sensor.luftwachter_window_reminder` (any window due) and `binary_sensor.luftwachter_<area>_window_reminder` (its attributes list every open window and why a reminder is held back, for example `snoozed`, `early`, `warm`, `hours`).
+- **Event:** `luftwaechter_reminder` with `room`, `window`, `entity_id`, `minutes_open`, `outside_temp` and `message`.
+- Window contacts are found by device class *window* or *opening*, or a *door* contact whose name says window or Fenster.
+
 ## Actions and diagnostics
 - `luftwaechter.refresh` recalculates all rooms immediately.
+- `luftwaechter.snooze`, `luftwaechter.skip_until_closed` and `luftwaechter.clear_snooze` control window reminders (see above).
 - **Download diagnostics** (device page, three dots) gives a compact, anonymous report for bug reports: levels, readings, sources and device ids, no names of people or accounts.
 
 ## Wall tablet tips

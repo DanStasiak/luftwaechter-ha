@@ -1,0 +1,124 @@
+blueprint:
+  name: Luftwächter - window open too long (phone and speakers)
+  description: >
+    Sends a push notification to your phone and optionally speaks on speakers when Luftwächter reminds you that a
+    window has been open too long (first wait, repeat, cold outside and active hours are set in the integration's
+    options). The phone notification has two buttons: "Snooze" and "Skip until closed". Replaces a hand-built
+    "window open too long" automation. Note: the standard Home Assistant companion app push is relayed through the
+    Google or Apple push service.
+  domain: automation
+  author: Dan Stasiak
+  source_url: https://github.com/DanStasiak/luftwaechter-ha/blob/main/blueprints/automation/luftwaechter/window_reminder.yaml
+  homeassistant:
+    min_version: 2025.10.0
+  input:
+    notify_service:
+      name: Phone notify service
+      description: The notify action of your phone, for example notify.mobile_app_my_phone. Leave empty to skip the push.
+      default: ""
+      selector:
+        text:
+    snooze_minutes:
+      name: Snooze length (minutes)
+      default: 15
+      selector:
+        number:
+          min: 1
+          max: 240
+          unit_of_measurement: min
+    tts_entity:
+      name: Text to speech engine
+      description: Optional. Pick a TTS engine and at least one speaker to also speak the reminder.
+      default: ""
+      selector:
+        entity:
+          domain: tts
+    speakers:
+      name: Speakers
+      default: []
+      selector:
+        entity:
+          domain: media_player
+          multiple: true
+    speak_text:
+      name: Spoken text
+      description: Use {{ message }}, {{ room }}, {{ window }} and {{ minutes }}.
+      default: "{{ message }}"
+      selector:
+        text:
+
+mode: queued
+max: 5
+max_exceeded: silent
+
+triggers:
+  - trigger: event
+    event_type: luftwaechter_reminder
+    id: remind
+  - trigger: event
+    event_type: mobile_app_notification_action
+    id: action
+
+variables:
+  notify_service: !input notify_service
+  tts_entity: !input tts_entity
+  speakers: !input speakers
+  snooze_minutes: !input snooze_minutes
+  message: "{{ trigger.event.data.message | default('') }}"
+  room: "{{ trigger.event.data.room | default('') }}"
+  window: "{{ trigger.event.data.window | default('') }}"
+  minutes: "{{ trigger.event.data.minutes_open | default(0) }}"
+  entity: "{{ trigger.event.data.entity_id | default('') }}"
+  speak_text: !input speak_text
+  act: "{{ trigger.event.data.action | default('') if trigger.id == 'action' else '' }}"
+
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: remind
+        sequence:
+          - if:
+              - condition: template
+                value_template: "{{ notify_service | length > 0 }}"
+            then:
+              - action: "{{ notify_service }}"
+                data:
+                  title: "{{ room }}"
+                  message: "{{ message }}"
+                  data:
+                    tag: "luftwaechter_{{ entity }}"
+                    actions:
+                      - action: "LW_SNOOZE|{{ entity }}"
+                        title: "Snooze {{ snooze_minutes | int }} min"
+                      - action: "LW_SKIP|{{ entity }}"
+                        title: "Skip until closed"
+          - if:
+              - condition: template
+                value_template: "{{ tts_entity | length > 0 and speakers | length > 0 }}"
+            then:
+              - action: tts.speak
+                target:
+                  entity_id: "{{ tts_entity }}"
+                data:
+                  media_player_entity_id: "{{ speakers }}"
+                  message: "{{ speak_text }}"
+      - conditions:
+          - condition: trigger
+            id: action
+          - condition: template
+            value_template: "{{ act.startswith('LW_SNOOZE|') }}"
+        sequence:
+          - action: luftwaechter.snooze
+            data:
+              entity_id: "{{ act.split('|')[1] }}"
+              minutes: "{{ snooze_minutes | int }}"
+      - conditions:
+          - condition: trigger
+            id: action
+          - condition: template
+            value_template: "{{ act.startswith('LW_SKIP|') }}"
+        sequence:
+          - action: luftwaechter.skip_until_closed
+            data:
+              entity_id: "{{ act.split('|')[1] }}"

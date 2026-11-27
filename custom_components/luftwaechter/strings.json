@@ -27,13 +27,29 @@
           "excluded_areas": "Hide these areas",
           "rain_sensor": "Rain sensor",
           "mold_rh": "Mold risk from humidity of",
-          "stale_minutes": "Warn when data is older than"
+          "stale_minutes": "Warn when data is older than",
+          "outside_temp_sensor": "Outside temperature sensor",
+          "reminder_first": "Remind after (first wait)",
+          "reminder_repeat": "Repeat every",
+          "reminder_below": "Remind only below",
+          "reminder_from": "Active from (hour)",
+          "reminder_to": "Active until (hour)",
+          "mute_entities": "Mute reminders while on",
+          "ignored_windows": "Never remind for these windows"
         },
         "data_description": {
           "excluded_areas": "Areas that should not appear in the panel (for example a garage or a cellar).",
           "rain_sensor": "Optional. A binary sensor that is on while it rains. Left empty, Luftwächter looks for one named rain or Regen.",
           "mold_rh": "Relative humidity (%) from which a room counts as mold risk. Default 70.",
-          "stale_minutes": "Minutes without an update before the panel shows a warning."
+          "stale_minutes": "Minutes without an update before the panel shows a warning.",
+          "outside_temp_sensor": "Optional. A real outdoor temperature sensor. Left empty, the weather entity is used.",
+          "reminder_first": "Minutes a window must be open before the first reminder. Default 10.",
+          "reminder_repeat": "Minutes between repeated reminders while the window stays open. Default 5.",
+          "reminder_below": "Only remind when it is colder than this outside. Default 10.",
+          "reminder_from": "First hour (0 to 23) in which reminders may come. Default 8.",
+          "reminder_to": "Reminders stop at this hour. Default 22.",
+          "mute_entities": "If any of these switches or binary sensors is on, no reminders come (for example a charging window).",
+          "ignored_windows": "Windows that never trigger a reminder."
         }
       }
     },

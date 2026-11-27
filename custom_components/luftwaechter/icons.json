@@ -3,6 +3,15 @@
   "services": {
     "refresh": {
       "service": "mdi:refresh"
+    },
+    "snooze": {
+      "service": "mdi:bell-sleep"
+    },
+    "skip_until_closed": {
+      "service": "mdi:bell-off"
+    },
+    "clear_snooze": {
+      "service": "mdi:bell-ring"
     }
   }
 }

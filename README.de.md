@@ -11,6 +11,10 @@ Luftqualität pro Raum, Lüftungshinweise und Fensterempfehlungen für Home Assi
 
 <p align="center"><img src="https://raw.githubusercontent.com/DanStasiak/luftwaechter-ha/main/docs/overview_de.png" width="640" alt="Übersicht auf Deutsch"></p>
 
+## Fenster-Erinnerungen (neu in 0.20.0)
+
+Bleibt ein Fenster zu lange offen (erste Wartezeit 10 min, draußen unter 10 °C, aktiv 8 bis 22 Uhr), löst Luftwächter das Ereignis `luftwaechter_reminder` aus und wiederholt es alle 5 Minuten. Es bleibt beim Ratgeber: Der Blueprint *Fenster zu lange offen* schickt eine Handy-Meldung mit den Tasten *Schlummern* und *Bis zum Schließen überspringen* und kann auf Lautsprechern sprechen. Aktionen: `luftwaechter.snooze`, `luftwaechter.skip_until_closed`, `luftwaechter.clear_snooze`. Optionen unter Konfigurieren: Außentemperatur-Sensor, Wartezeiten, aktive Stunden, Fenster ignorieren, Erinnerungen stumm schalten. Sensoren: `binary_sensor.luftwachter_window_reminder` und je Bereich `..._window_reminder`.
+
 ## Schnellstart
 1. **Luftwächter** im Marketplace installieren, Home Assistant neu starten.
 2. Einstellungen → Geräte & Dienste → Integration hinzufügen → **Luftwächter**.

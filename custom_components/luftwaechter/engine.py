@@ -109,6 +109,8 @@ TEXTS: dict[str, dict[str, str]] = {
         "heating_off": " · aus",
         "close_cold": "Die Luft ist in Ordnung und draußen sind {t} °C. Zu lassen spart Heizenergie.",
         "close_rain": " Es regnet draußen.",
+        "rem_msg": "{w} ({r}) ist seit {m} min offen.",
+        "rem_cold": " Draußen sind {t} °C.",
         "wait_rain": "Es regnet. Lüften, sobald der Regen aufhört.",
         "open_for": " Fenster seit {m} min offen.",
         "open": "offen", "closed": "zu", "opening": "öffnet", "closing": "schließt",
@@ -154,6 +156,8 @@ TEXTS: dict[str, dict[str, str]] = {
         "heating_off": " · off",
         "close_cold": "The air is fine and it is {t} °C outside. Closing saves heating energy.",
         "close_rain": " It is raining outside.",
+        "rem_msg": "{w} ({r}) has been open for {m} min.",
+        "rem_cold": " It is {t} °C outside.",
         "wait_rain": "It is raining. Ventilate once the rain stops.",
         "open_for": " Window open for {m} min.",
         "open": "open", "closed": "closed", "opening": "opening", "closing": "closing",
@@ -429,6 +433,67 @@ def is_window(e: dict) -> bool:
     if dc in ("window", "opening"):
         return True
     return dc == "door" and bool(_WINDOW_NAME.search(f"{e.get('entity_id', '')} {e.get('name', '')}".lower()))
+
+
+REMINDER_DEFAULTS = {"first": 10, "repeat": 5, "below": 10.0, "from": 8, "to": 22}
+
+
+def in_hours(hour: int, start: int, end: int) -> bool:
+    """True when hour is inside [start, end); a window like 22 to 6 wraps over midnight."""
+    if start == end:
+        return True
+    return start <= hour < end if start < end else (hour >= start or hour < end)
+
+
+def window_reminders(areas: list[dict], now: float, hour: int, cfg: dict | None, outside_t: float | None,
+                     state: dict | None, lang: str = "en") -> list[dict]:
+    """Every open window with whether a reminder is due now.
+
+    cfg: first (min), repeat (min), below (deg C), from / to (hours), ignore (entity ids), muted (bool).
+    state: snooze {entity_id: until_ts}, skip {entity_id: opened_at_ts}, last_fired {entity_id: ts}.
+    A window is eligible when it has been open for `first` minutes, it is cold enough outside, inside the active
+    hours, not ignored, not snoozed or skipped, and no mute entity is on. `fire` is set when eligible and the
+    repeat interval has passed since the last reminder.
+    """
+    c = {**REMINDER_DEFAULTS, **(cfg or {})}
+    st = state or {}
+    snooze, skip, fired = st.get("snooze", {}), st.get("skip", {}), st.get("last_fired", {})
+    out: list[dict] = []
+    for area in areas:
+        for e in area["entities"]:
+            if not is_window(e) or e["state"] != "on":
+                continue
+            eid = e["entity_id"]
+            opened = e.get("last_changed") or 0
+            open_min = int(max(0, (now - opened) / 60)) if opened else 0
+            reason = ""
+            if eid in (c.get("ignore") or ()):
+                reason = "ignored"
+            elif c.get("muted"):
+                reason = "muted"
+            elif snooze.get(eid, 0) > now:
+                reason = "snoozed"
+            elif eid in skip and skip[eid] == opened:
+                reason = "skipped"
+            elif not in_hours(hour, int(c["from"]), int(c["to"])):
+                reason = "hours"
+            elif outside_t is not None and outside_t >= float(c["below"]):
+                reason = "warm"
+            elif open_min < int(c["first"]):
+                reason = "early"
+            eligible = not reason
+            last = fired.get(eid)
+            fire = eligible and (last is None or now - last >= int(c["repeat"]) * 60)
+            name = short_name(e["name"], area["name"]) or e["name"]
+            msg = tx(lang, "rem_msg", w=name, r=area["name"], m=open_min)
+            if outside_t is not None:
+                msg += tx(lang, "rem_cold", t=fmt(outside_t, 0, lang))
+            out.append({
+                "entity_id": eid, "window": name, "room": area["name"], "room_key": area["id"],
+                "open_min": open_min, "opened": opened, "eligible": eligible, "reason": reason or "due",
+                "fire": fire, "message": msg,
+            })
+    return out
 
 
 def advice(room: RoomEval, weather: dict | None, rain_at: str, lang: str, limits: dict | None = None, now: float = 0.0) -> dict:

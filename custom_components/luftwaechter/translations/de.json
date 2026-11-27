@@ -27,13 +27,29 @@
           "excluded_areas": "Diese Bereiche ausblenden",
           "rain_sensor": "Regensensor",
           "mold_rh": "Schimmelgefahr ab Luftfeuchte von",
-          "stale_minutes": "Warnen, wenn Daten älter sind als"
+          "stale_minutes": "Warnen, wenn Daten älter sind als",
+          "outside_temp_sensor": "Außentemperatur-Sensor",
+          "reminder_first": "Erinnern nach (erste Wartezeit)",
+          "reminder_repeat": "Wiederholen alle",
+          "reminder_below": "Nur erinnern unter",
+          "reminder_from": "Aktiv ab (Stunde)",
+          "reminder_to": "Aktiv bis (Stunde)",
+          "mute_entities": "Erinnerungen stumm, solange an",
+          "ignored_windows": "Für diese Fenster nie erinnern"
         },
         "data_description": {
           "excluded_areas": "Bereiche, die nicht im Panel erscheinen sollen (zum Beispiel Garage oder Keller).",
           "rain_sensor": "Optional. Ein Binärsensor, der bei Regen an ist. Leer gelassen sucht Luftwächter einen Sensor mit „rain“ oder „Regen“ im Namen.",
           "mold_rh": "Relative Luftfeuchte (%), ab der ein Raum als Schimmelgefahr gilt. Standard 70.",
-          "stale_minutes": "Minuten ohne Aktualisierung, bevor das Panel warnt."
+          "stale_minutes": "Minuten ohne Aktualisierung, bevor das Panel warnt.",
+          "outside_temp_sensor": "Optional. Ein echter Außentemperatur-Sensor. Leer gelassen wird die Wetter-Entität genutzt.",
+          "reminder_first": "Minuten, die ein Fenster offen sein muss, bevor die erste Erinnerung kommt. Standard 10.",
+          "reminder_repeat": "Minuten zwischen wiederholten Erinnerungen, solange das Fenster offen bleibt. Standard 5.",
+          "reminder_below": "Nur erinnern, wenn es draußen kälter ist als dieser Wert. Standard 10.",
+          "reminder_from": "Erste Stunde (0 bis 23), in der Erinnerungen kommen dürfen. Standard 8.",
+          "reminder_to": "Ab dieser Stunde kommen keine Erinnerungen mehr. Standard 22.",
+          "mute_entities": "Ist einer dieser Schalter oder Binärsensoren an, kommen keine Erinnerungen (zum Beispiel ein Ladefenster).",
+          "ignored_windows": "Fenster, für die nie erinnert wird."
         }
       }
     },

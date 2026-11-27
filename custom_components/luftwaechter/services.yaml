@@ -1,1 +1,35 @@
 refresh:
+
+snooze:
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: binary_sensor
+          multiple: true
+    minutes:
+      default: 30
+      selector:
+        number:
+          min: 1
+          max: 1440
+          unit_of_measurement: min
+
+skip_until_closed:
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: binary_sensor
+          multiple: true
+
+clear_snooze:
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: binary_sensor
+          multiple: true

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.20.0
+- New: **window reminders.** A window open for the first wait (10 min), while it is colder than your limit outside (10 °C) and inside your active hours (08 to 22), fires the event `luftwaechter_reminder` and repeats every 5 minutes (all adjustable under Configure). New sensors `binary_sensor.luftwachter_window_reminder` and `binary_sensor.luftwachter_<area>_window_reminder`.
+- New: **snooze, skip and mute.** Actions `luftwaechter.snooze`, `luftwaechter.skip_until_closed` and `luftwaechter.clear_snooze`; options *Never remind for these windows* and *Mute reminders while on*. Snoozes survive restarts.
+- New: **outside temperature sensor** option; it feeds the close-window advice and the reminders (the weather entity stays the fallback).
+- New blueprint **window open too long (phone and speakers)** with *Snooze* and *Skip until closed* buttons on the phone notification.
+- Four more tests.
+- DE: Neu: **Fenster-Erinnerungen.** Ein Fenster, das die erste Wartezeit (10 min) offen ist, während es draußen kälter als Ihre Grenze ist (10 °C) und innerhalb Ihrer aktiven Zeit (8 bis 22 Uhr), löst das Ereignis `luftwaechter_reminder` aus und wiederholt es alle 5 Minuten (alles unter Konfigurieren einstellbar). Neue Sensoren `binary_sensor.luftwachter_window_reminder` und `binary_sensor.luftwachter_<bereich>_window_reminder`.
+- DE: Neu: **Schlummern, Überspringen und Stummschalten.** Aktionen `luftwaechter.snooze`, `luftwaechter.skip_until_closed` und `luftwaechter.clear_snooze`; Optionen *Für diese Fenster nie erinnern* und *Erinnerungen stumm, solange an*. Schlummern übersteht Neustarts.
+- DE: Neu: Option **Außentemperatur-Sensor**; sie speist den Rat „Fenster schließen“ und die Erinnerungen (die Wetter-Entität bleibt Ersatz).
+- DE: Neuer Blueprint **Fenster zu lange offen (Handy und Lautsprecher)** mit den Tasten *Schlummern* und *Bis zum Schließen überspringen* in der Handy-Meldung.
+
 ## 0.19.0
 - New: **rain sensor.** Luftwächter uses a binary sensor that is on while it rains: the one you pick under Configure → *Rain sensor*, or automatically a binary sensor whose name ends in rain or Regen. With rain, an open window with good air is advised to be closed, and a closed room that needs fresh air is told to wait until the rain stops (unless the air is already stale). Without a rain sensor everything works as before, using the weather entity.
 - Three more tests.

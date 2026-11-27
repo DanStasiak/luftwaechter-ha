@@ -230,3 +230,38 @@ def test_rain_sensor_closes_open_window_with_good_air():
     a["entities"].append(ent("binary_sensor.w", "window", "on", dom="binary_sensor", changed=1))
     r = engine.build_model([a], set(), {"raining": True}, "", "de", NOW)["rooms"][0]
     assert r["action"] == "close" and "regnet" in r["detail"]
+
+
+def _wa(opened_min_ago, name="Office window", state="on"):
+    return [{"id": "a1", "name": "Office", "entities": [
+        {"entity_id": "binary_sensor.ow", "domain": "binary_sensor", "name": name, "state": state,
+         "device_class": "window", "last_reported": NOW, "last_changed": NOW - opened_min_ago * 60}]}]
+
+
+def test_reminder_due_after_first_wait_and_repeats():
+    w = engine.window_reminders(_wa(12), NOW, 12, None, 3.0, {})[0]
+    assert w["eligible"] and w["fire"] and w["open_min"] == 12 and "12 min" in w["message"] and "3 °C" in w["message"]
+    again = engine.window_reminders(_wa(12), NOW, 12, None, 3.0, {"last_fired": {"binary_sensor.ow": NOW - 120}})[0]
+    assert again["eligible"] and not again["fire"]
+    later = engine.window_reminders(_wa(17), NOW, 12, None, 3.0, {"last_fired": {"binary_sensor.ow": NOW - 301}})[0]
+    assert later["fire"]
+
+
+def test_reminder_gates():
+    f = lambda **k: engine.window_reminders(_wa(k.pop("age", 12)), NOW, k.pop("hour", 12), k.pop("cfg", None), k.pop("t", 3.0), k.pop("st", {}))[0]
+    assert f(age=5)["reason"] == "early"
+    assert f(t=15)["reason"] == "warm"
+    assert f(hour=23)["reason"] == "hours" and f(hour=7)["reason"] == "hours"
+    assert f(cfg={"muted": True})["reason"] == "muted"
+    assert f(cfg={"ignore": ["binary_sensor.ow"]})["reason"] == "ignored"
+    assert f(st={"snooze": {"binary_sensor.ow": NOW + 60}})["reason"] == "snoozed"
+    assert f(st={"snooze": {"binary_sensor.ow": NOW - 60}})["eligible"]
+    opened = NOW - 12 * 60
+    assert f(st={"skip": {"binary_sensor.ow": opened}})["reason"] == "skipped"
+    assert f(st={"skip": {"binary_sensor.ow": opened - 999}})["eligible"]
+    assert f(t=None)["eligible"]
+
+
+def test_closed_window_has_no_reminder_and_hours_wrap():
+    assert engine.window_reminders(_wa(30, state="off"), NOW, 12, None, 3.0, {}) == []
+    assert engine.in_hours(23, 22, 6) and engine.in_hours(3, 22, 6) and not engine.in_hours(12, 22, 6)

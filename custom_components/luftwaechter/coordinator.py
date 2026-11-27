@@ -12,6 +12,7 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers import label_registry as lr
+from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
@@ -20,19 +21,29 @@ from .const import (
     CONF_CO2_FAIR,
     CONF_CO2_GOOD,
     CONF_EXCLUDE,
+    CONF_IGNORE,
     CONF_MOLD_RH,
+    CONF_MUTE,
+    CONF_OUTSIDE_TEMP,
     CONF_PM_FAIR,
     CONF_PM_GOOD,
     CONF_RAIN,
+    CONF_REM_BELOW,
+    CONF_REM_FIRST,
+    CONF_REM_FROM,
+    CONF_REM_REPEAT,
+    CONF_REM_TO,
     CONF_STALE,
     CONF_WEATHER,
     DEFAULT_STALE,
     DOMAIN,
     EMPTY_BEFORE_ISSUE,
     EVENT_LEVEL_CHANGED,
+    EVENT_REMINDER,
     ISSUE_NO_ROOMS,
     LABEL,
     SCAN_SECONDS,
+    STORE_KEY,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -50,6 +61,67 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         self._levels: dict[str, str] | None = None
         self._since: dict[str, tuple[str, float]] = {}
         self._empty = 0
+        self._store: Store = Store(hass, 1, f"{STORE_KEY}.{entry.entry_id}")
+        self._rem: dict[str, dict] = {"snooze": {}, "skip": {}}
+        self._fired: dict[str, float] = {}
+
+    async def async_load_reminders(self) -> None:
+        data = await self._store.async_load() or {}
+        self._rem = {"snooze": dict(data.get("snooze", {})), "skip": dict(data.get("skip", {}))}
+
+    async def _save_reminders(self) -> None:
+        now = dt_util.utcnow().timestamp()
+        self._rem["snooze"] = {k: v for k, v in self._rem["snooze"].items() if v > now}
+        await self._store.async_save(self._rem)
+
+    async def async_snooze(self, entity_ids: list[str], minutes: float) -> None:
+        until = dt_util.utcnow().timestamp() + float(minutes) * 60
+        for eid in entity_ids:
+            self._rem["snooze"][eid] = until
+            self._fired.pop(eid, None)
+        await self._save_reminders()
+        await self.async_request_refresh()
+
+    async def async_skip_until_closed(self, entity_ids: list[str]) -> None:
+        for eid in entity_ids:
+            st = self.hass.states.get(eid)
+            if st is not None and st.state == "on":
+                self._rem["skip"][eid] = st.last_changed.timestamp()
+        await self._save_reminders()
+        await self.async_request_refresh()
+
+    async def async_clear_snooze(self, entity_ids: list[str]) -> None:
+        for eid in entity_ids:
+            self._rem["snooze"].pop(eid, None)
+            self._rem["skip"].pop(eid, None)
+        await self._save_reminders()
+        await self.async_request_refresh()
+
+    def _reminders(self, areas: list[dict], outside_t: float | None, now: float) -> list[dict]:
+        o = self.entry.options
+        muted = any((s := self.hass.states.get(e)) is not None and s.state == "on" for e in (o.get(CONF_MUTE) or []))
+        cfg = {
+            "first": o.get(CONF_REM_FIRST, 10), "repeat": o.get(CONF_REM_REPEAT, 5), "below": o.get(CONF_REM_BELOW, 10),
+            "from": o.get(CONF_REM_FROM, 8), "to": o.get(CONF_REM_TO, 22),
+            "ignore": set(o.get(CONF_IGNORE) or []), "muted": muted,
+        }
+        hour = dt_util.as_local(dt_util.utc_from_timestamp(now)).hour
+        wins = engine.window_reminders(
+            areas, now, hour, cfg, outside_t, {**self._rem, "last_fired": self._fired}, self.lang if self.lang in engine.TEXTS else "en"
+        )
+        open_ids = {w["entity_id"] for w in wins}
+        for eid in [k for k in self._fired if k not in open_ids]:
+            self._fired.pop(eid, None)
+        for eid in [k for k in self._rem["skip"] if k not in open_ids]:
+            self._rem["skip"].pop(eid, None)
+        for w in wins:
+            if w["fire"]:
+                self._fired[w["entity_id"]] = now
+                self.hass.bus.async_fire(EVENT_REMINDER, {
+                    "room": w["room"], "room_key": w["room_key"], "window": w["window"], "entity_id": w["entity_id"],
+                    "minutes_open": w["open_min"], "outside_temp": outside_t, "message": w["message"],
+                })
+        return wins
 
     @property
     def weather_entity(self) -> str | None:
@@ -122,6 +194,14 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         except Exception:  # forecast is optional
             _LOGGER.debug("No hourly forecast for %s", eid)
         return weather, rain_at
+
+    def _outside_temp(self) -> float | None:
+        eid = self.entry.options.get(CONF_OUTSIDE_TEMP)
+        st = self.hass.states.get(eid) if eid else None
+        if st is None:
+            return None
+        v = engine.num(st.state)
+        return v if v is not None and -60 < v < 60 else None
 
     def _rain_now(self) -> bool | None:
         """State of the rain sensor: the one picked in the options, else a binary sensor named rain / Regen. None when there is none."""
@@ -202,10 +282,22 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         excluded = set(self.entry.options.get(CONF_EXCLUDE) or [])
         areas = [a for a in areas if a["id"] not in excluded]
         weather, rain_at = await self._weather()
+        outside_sensor = self._outside_temp()
+        if outside_sensor is not None:
+            weather = {**(weather or {}), "temperature": outside_sensor}
         raining = self._rain_now()
         if raining is not None:
             weather = {**(weather or {}), "raining": raining}
         model = engine.build_model(areas, labelled, weather, rain_at, self.lang, dt_util.utcnow().timestamp(), self._limits())
+        outside_t = engine.num((weather or {}).get("temperature"))
+        wins = self._reminders(areas, outside_t, dt_util.utcnow().timestamp())
+        model["windows"] = wins
+        model["reminders_due"] = sum(1 for w in wins if w["eligible"])
+        model["window_areas"] = [
+            {"key": a["id"], "name": a["name"]} for a in areas if any(engine.is_window(e) for e in a["entities"])
+        ]
+        for r in model["rooms"]:
+            r["windowReminder"] = any(w["eligible"] and w["room_key"] == r["key"] for w in wins)
         self._annotate(model)
         self._check_rooms(model)
         model["stale_min"] = int(self.entry.options.get(CONF_STALE, DEFAULT_STALE) or DEFAULT_STALE)

@@ -218,3 +218,37 @@ async def test_worst_room_sensor(hass, enable_custom_integrations):
     await _setup(hass, co2="1900")
     s = hass.states.get("sensor.luftwachter_worst_room")
     assert s is not None and s.state == "Office" and s.attributes["level"] == "poor"
+
+
+async def test_window_reminder_event_sensor_and_snooze(hass, enable_custom_integrations):
+    from pytest_homeassistant_custom_component.common import async_capture_events
+
+    opts = {"reminder_first": 0, "reminder_from": 0, "reminder_to": 0, "reminder_below": 100}
+    entry, _ = await _setup(hass, "700", opts)
+    areas, ents = ar.async_get(hass), er.async_get(hass)
+    office = areas.async_get_area_by_name("Office")
+    w = ents.async_get_or_create("binary_sensor", "test", "win", original_device_class="window")
+    ents.async_update_entity(w.entity_id, area_id=office.id)
+    hass.states.async_set(w.entity_id, "off", {"device_class": "window"})
+    coord = hass.data[DOMAIN][entry.entry_id]
+    events = async_capture_events(hass, "luftwaechter_reminder")
+    await coord.async_refresh()
+    await hass.async_block_till_done()
+    assert events == []
+    hass.states.async_set(w.entity_id, "on", {"device_class": "window"})
+    await coord.async_refresh()
+    await hass.async_block_till_done()
+    assert len(events) == 1 and events[0].data["entity_id"] == w.entity_id and events[0].data["room"] == "Office"
+    await coord.async_refresh()
+    await hass.async_block_till_done()
+    assert len(events) == 1  # repeat interval not over yet
+    assert hass.states.get("binary_sensor.luftwachter_window_reminder").state == "on"
+    await hass.services.async_call(DOMAIN, "snooze", {"entity_id": [w.entity_id], "minutes": 15}, blocking=True)
+    await coord.async_refresh()
+    await hass.async_block_till_done()
+    sensor = [s for s in hass.states.async_all("binary_sensor") if s.entity_id.endswith("office_window_reminder")][0]
+    assert sensor.state == "off" and sensor.attributes["windows"][0]["status"] == "snoozed"
+    await hass.services.async_call(DOMAIN, "clear_snooze", {"entity_id": [w.entity_id]}, blocking=True)
+    await coord.async_refresh()
+    await hass.async_block_till_done()
+    assert hass.states.get(sensor.entity_id).state == "on"
