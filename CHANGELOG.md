@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+- Docs: new README section "Where to set up reminders, speaker, sound and rain sensor" (where the speaker is chosen, how to turn the voice on or off, how the rain sensor changes the advice).
+- DE: Doku: neuer Abschnitt „Wo man Erinnerungen, Lautsprecher, Ton und Regensensor einstellt“.
+
 ## 0.21.0
 - New: **Lovelace card** `custom:luftwaechter-card` (one room or the whole house). It is added to the dashboards automatically; it follows the Home Assistant language.
 - New blueprint **pause heating while a window is open (opt-in)**: snapshot, switch off, restore. Luftwächter itself still never switches anything.

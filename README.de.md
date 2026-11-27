@@ -19,6 +19,34 @@ Die Karte `type: custom:luftwaechter-card` (optional `room: Büro`) zeigt Gesich
 
 Bleibt ein Fenster zu lange offen (erste Wartezeit 10 min, draußen unter 10 °C, aktiv 8 bis 22 Uhr), löst Luftwächter das Ereignis `luftwaechter_reminder` aus und wiederholt es alle 5 Minuten. Es bleibt beim Ratgeber: Der Blueprint *Fenster zu lange offen* schickt eine Handy-Meldung mit den Tasten *Schlummern* und *Bis zum Schließen überspringen* und kann auf Lautsprechern sprechen. Aktionen: `luftwaechter.snooze`, `luftwaechter.skip_until_closed`, `luftwaechter.clear_snooze`. Optionen unter Konfigurieren: Außentemperatur-Sensor, Wartezeiten, aktive Stunden, Fenster ignorieren, Erinnerungen stumm schalten. Sensoren: `binary_sensor.luftwachter_window_reminder` und je Bereich `..._window_reminder`.
 
+## Wo man Erinnerungen, Lautsprecher, Ton und Regensensor einstellt
+
+Zwei Stellen: Luftwächter entscheidet nur, *wann*; Home Assistant entscheidet, *wie* es zugestellt wird.
+
+**1. Wann und was zählt: Einstellungen → Geräte & Dienste → Luftwächter → Konfigurieren.**
+- *Regensensor*: ein Binärsensor, der bei Regen an ist. Leer gelassen sucht Luftwächter einen, dessen Name auf „rain“ oder „Regen“ endet.
+- *Außentemperatur-Sensor*: ein echter Außensensor; leer wird die Wetter-Entität genommen.
+- *Erinnern nach (erste Wartezeit)*, *Wiederholen alle*, *Nur erinnern unter*, *Aktiv ab / bis (Stunde)*, *Erinnerungen stumm, solange an*, *Für diese Fenster nie erinnern*: die Regeln der Fenster-Erinnerungen.
+
+**2. Wohin es geht (Handy und Lautsprecher): die Automation aus dem Blueprint.** Blueprint *Luftwächter - window open too long (phone and speakers)* importieren (Ordner blueprints), dann **Einstellungen → Automatisierungen & Szenen → Automatisierung erstellen → Blueprint verwenden**. Die Eingaben:
+- *Phone notify service*: zum Beispiel `notify.mobile_app_mein_handy`. Leer = keine Push-Nachricht.
+- *Text to speech engine* und *Speakers*: **hier wählst du den Lautsprecher.** TTS-Engine (zum Beispiel Piper) und einen oder mehrere `media_player` wählen. Ist eines von beiden leer, wird nichts gesprochen.
+- *Spoken text*: standardmäßig `{{ message }}`; außerdem `{{ room }}`, `{{ window }}` und `{{ minutes }}`.
+- *Snooze length*: was der Knopf **Snooze** auf dem Handy bewirkt.
+
+**Ton an oder aus.** Einen eigenen Ton-Schalter gibt es bewusst nicht. Den Ton änderst du in dieser Automation:
+- *Ton aus, Handy-Push an:* das Feld *Speakers* (oder die TTS-Engine) leeren und speichern.
+- *Ton an:* Engine und Lautsprecher wieder wählen.
+- *Alles zeitweise aus:* die Automation ausschalten oder unter Konfigurieren *Erinnerungen stumm, solange an* mit einem eigenen Hilfsschalter nutzen. Ein Hilfsschalter ist der schnellste Weg, alle Erinnerungen ohne Bearbeiten zu pausieren.
+
+Aus demselben Blueprint kannst du mehrere Automationen machen, zum Beispiel eine nur fürs Handy und eine, die nur in der Küche spricht.
+
+### Regensensor
+Mit Regensensor (Konfigurieren → *Regensensor* oder ein Binärsensor namens „... rain“/„... Regen“) richtet sich der Rat nach dem echten Wetter am Haus statt nur nach der Vorhersage:
+- Ein offenes Fenster bei Regen bekommt den Rat „Fenster schließen“ (und `binary_sensor.luftwachter_<raum>_close_window` geht an).
+- Ein Raum mit verbrauchter Luft, der sonst lüften soll, wird angewiesen, **zu warten, bis der Regen aufhört**, außer sein CO₂ liegt schon über der Grenze *mittel*; dann zählt die Luft mehr als der Regen.
+- Erinnerungen und Schließen-Rat nutzen dieselben Regen- und Außentemperatur-Werte, damit Handy, Lautsprecher, Panel, Lovelace-Karte und Windows-Widget übereinstimmen.
+
 ## Schnellstart
 1. **Luftwächter** im Marketplace installieren, Home Assistant neu starten.
 2. Einstellungen → Geräte & Dienste → Integration hinzufügen → **Luftwächter**.

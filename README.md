@@ -199,6 +199,34 @@ Luftwächter can remind you when a window stays open too long, and it stays advi
 - **Event:** `luftwaechter_reminder` with `room`, `window`, `entity_id`, `minutes_open`, `outside_temp` and `message`.
 - Window contacts are found by device class *window* or *opening*, or a *door* contact whose name says window or Fenster.
 
+## Where to set up reminders, speaker, sound and rain sensor
+
+Two places, because Luftwächter only decides *when* and Home Assistant decides *how*:
+
+**1. When and what counts: Settings → Devices & services → Luftwächter → Configure.**
+- *Rain sensor*: pick a binary sensor that is on while it rains. Left empty, Luftwächter looks for one whose name ends in "rain" or "Regen".
+- *Outside temperature sensor*: a real outdoor sensor; left empty, the weather entity is used.
+- *Remind after*, *Repeat every*, *Remind only below*, *Active from / until*, *Mute reminders while on*, *Never remind for these windows*: the reminder rules described above.
+
+**2. Where it is delivered (phone and speaker): the automation made from the blueprint.** Import the blueprint *Luftwächter - window open too long (phone and speakers)* (blueprints folder), then **Settings → Automations & scenes → Create automation → Use blueprint**. Its inputs:
+- *Phone notify service*: for example `notify.mobile_app_my_phone`. Empty = no push.
+- *Text to speech engine* and *Speakers*: **this is where you choose the speaker.** Pick your TTS engine (for example Piper) and one or more `media_player` speakers. If either is empty, nothing is spoken.
+- *Spoken text*: `{{ message }}` by default; you can also use `{{ room }}`, `{{ window }}` and `{{ minutes }}`.
+- *Snooze length*: what the **Snooze** button on the phone does.
+
+**Sound on or off.** There is no separate sound switch, by design. To change the sound, open that automation and edit it:
+- *Sound off, phone push on:* empty the *Speakers* input (or the TTS engine) and save.
+- *Sound on:* pick the engine and the speakers again.
+- *Everything off for a while:* turn the automation off (its switch on the Automations page), or use *Mute reminders while on* under Configure with a helper switch of your own. A helper switch that you flip is the quickest way to pause all reminders without editing anything.
+
+You can create several automations from the same blueprint, for example one that only pushes to the phone and one that only speaks in the kitchen.
+
+### Rain sensor
+With a rain sensor (Configure → *Rain sensor*, or a binary sensor named "... rain"/"... Regen"), the advice follows the real weather at your house instead of the forecast alone:
+- A window that is open while it rains gets the advice "close the window" (and `binary_sensor.luftwachter_<room>_close_window` turns on).
+- A room with stale air that would normally be told to ventilate is told to **wait until the rain stops**, unless its CO₂ is already above the *fair* limit; then the air matters more than the rain.
+- Reminders and the close-window advice use the same rain and outside-temperature values, so the phone, the speaker, the panel, the Lovelace card and the Windows widget agree.
+
 ## Lovelace card
 
 The integration adds a small card to your dashboards automatically (no resource to add). Add it from the card picker (*Luftwächter*) or in YAML:
