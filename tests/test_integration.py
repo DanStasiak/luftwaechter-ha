@@ -283,3 +283,41 @@ async def test_system_health_reports_version_and_rooms(hass, enable_custom_integ
     await _setup(hass, "700")
     info = await system_info(hass)
     assert info["version"] == _VERSION and info["rooms"] == 1 and info["last_update_ok"] is True
+
+
+async def test_air_score_sensor_counts_time(hass, enable_custom_integrations):
+    from custom_components.luftwaechter import coordinator as coord_mod
+
+    entry, _eid = await _setup(hass, co2="500")
+    coord = hass.data[DOMAIN][entry.entry_id]
+    s = hass.states.get("sensor.luftwachter_air_score_today")
+    assert s is not None and s.state == "unknown"  # nothing counted yet, no made-up number
+    now = coord_mod.dt_util.utcnow().timestamp()
+    coord._score_ts = now - 150
+    await coord.async_refresh()
+    coord._score_ts = coord_mod.dt_util.utcnow().timestamp() - 170
+    await coord.async_refresh()
+    coord._score_ts = coord_mod.dt_util.utcnow().timestamp() - 170
+    for _ in range(4):
+        await coord.async_refresh()
+        coord._score_ts = coord_mod.dt_util.utcnow().timestamp() - 170
+    await hass.async_block_till_done()
+    s = hass.states.get("sensor.luftwachter_air_score_today")
+    assert s.state == "100" and s.attributes["rooms"]["Office"]["today"] == 100
+    hass.states.async_set(_eid, "2000", {"device_class": "carbon_dioxide"})
+    for _ in range(6):
+        coord._score_ts = coord_mod.dt_util.utcnow().timestamp() - 170
+        await coord.async_refresh()
+    await hass.async_block_till_done()
+    assert int(hass.states.get("sensor.luftwachter_air_score_today").state) < 100
+
+
+async def test_air_score_ignores_long_gaps(hass, enable_custom_integrations):
+    from custom_components.luftwaechter import coordinator as coord_mod
+
+    entry, _eid = await _setup(hass, co2="500")
+    coord = hass.data[DOMAIN][entry.entry_id]
+    coord._score_ts = coord_mod.dt_util.utcnow().timestamp() - 86400  # HA was off for a day
+    await coord.async_refresh()
+    secs = sum(sum(d.values()) for days in coord._score.values() for d in days.values())
+    assert secs <= 200  # at most three scan intervals are counted

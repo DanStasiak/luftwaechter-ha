@@ -33,7 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         if new:
             async_add_entities(new)
 
-    async_add_entities([HouseSensor(coord, entry), GoodRoomsSensor(coord, entry), WorstRoomSensor(coord, entry), VentilateRoomsSensor(coord, entry), AverageCo2Sensor(coord, entry), AverageTemperatureSensor(coord, entry), AverageHumiditySensor(coord, entry)])
+    async_add_entities([HouseSensor(coord, entry), GoodRoomsSensor(coord, entry), AirScoreSensor(coord, entry), WorstRoomSensor(coord, entry), VentilateRoomsSensor(coord, entry), AverageCo2Sensor(coord, entry), AverageTemperatureSensor(coord, entry), AverageHumiditySensor(coord, entry)])
     _add()
     entry.async_on_unload(coord.async_add_listener(_add))
 
@@ -60,7 +60,7 @@ class HouseSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     @property
     def extra_state_attributes(self) -> dict:
         d = self.coordinator.data or {}
-        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated", "attention", "attention_rooms", "worst_room", "stale_min", "good", "total", "silent_rooms", "ventilate", "ventilate_rooms", "co2_avg", "temp_avg", "rh_avg", "mold_rh", "mold", "mold_rooms")}
+        return {k: d.get(k) for k in ("rooms", "summary", "outside", "lang", "alt", "colors", "limits", "updated", "attention", "attention_rooms", "worst_room", "stale_min", "good", "total", "silent_rooms", "ventilate", "ventilate_rooms", "co2_avg", "temp_avg", "rh_avg", "mold_rh", "mold", "mold_rooms", "score_today", "score_week")}
 
 
 class GoodRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
@@ -88,6 +88,34 @@ class GoodRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
     def extra_state_attributes(self) -> dict:
         d = self.coordinator.data or {}
         return {"good": d.get("good", 0), "total": d.get("total", 0)}
+
+
+class AirScoreSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):
+    """Share of today's time the house had good air (all rooms together); the last 7 days and each room are attributes."""
+
+    _attr_has_entity_name = False
+    _attr_name = "Luftwächter Air score today"
+    _attr_icon = "mdi:leaf-circle-outline"
+    _attr_native_unit_of_measurement = PERCENTAGE
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_suggested_display_precision = 0
+
+    def __init__(self, coord: LuftwaechterCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coord)
+        self._attr_unique_id = f"{entry.entry_id}_air_score"
+        self._attr_device_info = _device(entry)
+
+    @property
+    def native_value(self) -> int | None:
+        return (self.coordinator.data or {}).get("score_today")
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        d = self.coordinator.data or {}
+        return {
+            "week": d.get("score_week"),
+            "rooms": {r["name"]: r.get("score", {}) for r in d.get("rooms", [])},
+        }
 
 
 class VentilateRoomsSensor(CoordinatorEntity[LuftwaechterCoordinator], SensorEntity):

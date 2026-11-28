@@ -20,7 +20,7 @@ def room(k, n, lv, act, head, det, co2, pm=6, pml=0, co2l=1):
                     {"entity": "cover.big", "name": "Shutter Big", "domain": "cover", "group": "Blinds", "type": "cover"}]}
 attrs = {"rooms": [room("b", "Bedroom", "good", "keep_closed", "All good", "The window can stay closed.", 640, co2l=0),
                    room("o", "Office", "poor", "keep_closed", "Keep the window closed", "High fine dust in the room. Do not ventilate continuously.", 1200, pm=131, pml=2)],
-         "summary": [], "lang": "en", "colors": [], "updated": int(time.time()) - 120,
+         "summary": [], "lang": "en", "colors": [], "score_today": 87, "score_week": 91, "updated": int(time.time()) - 120,
          "outside": {"temp": "0", "cond": "sunny", "icon": "☀️", "wind": "7", "windDir": "SE", "hum": "–", "tip": "It is cold: better open fully for a short time."}}
 calls = []
 st = {"sensor.luftwaechter_house": {"entity_id": "sensor.luftwaechter_house", "state": "poor", "last_updated": "t1", "attributes": attrs},
@@ -182,6 +182,8 @@ with sync_playwright() as p:
     # help: shortcut table and the ? key; tab title; swipe between rooms; C copies the house summary
     pg.keyboard.press("?"); assert pg.evaluate("el._help") is True and "Keyboard shortcuts" in txt() and pg.evaluate("el.shadowRoot.querySelectorAll('.keys kbd').length") >= 10
     pg.keyboard.press("Escape"); assert pg.evaluate("el._help") is False
+    assert pg.evaluate("el.shadowRoot.querySelector('.sum .score').textContent").strip() == "🌿 Today: good air 87 % of the time · 7 days: 91 %"
+    assert pg.evaluate("el._scoreText({today: null, week: 50}, UI.en)") == "" and "Heute" in pg.evaluate("el._scoreText({today: 90, week: null}, UI.de)")
     assert "rooms have good air" in pg.evaluate("el.shadowRoot.querySelector('.goodof').textContent") and "·" in pg.evaluate("el.shadowRoot.querySelector('.tile').title")
     assert pg.evaluate("el.shadowRoot.querySelector('[aria-live=polite]') !== null") and pg.evaluate("el.shadowRoot.querySelector('#print') !== null")
     pg.evaluate("() => { window.__printed = 0; window.print = () => { window.__printed++; }; el.shadowRoot.querySelector('#print').click(); }"); assert pg.evaluate("window.__printed") == 1

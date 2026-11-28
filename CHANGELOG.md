@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.25.0
+- New: the **air score.** The house summary and every room view now say "Today: good air 87 % of the time · 7 days: 91 %". It counts how long each room spends in good, fair and poor air, keeps its count across restarts and does not count gaps when Home Assistant was off. The new sensor `sensor.luftwachter_air_score_today` (attributes `week` and `rooms`) is ready for dashboards and automations. Nothing is shown until 10 minutes are counted, so there is never an invented number.
+- DE: Neu: der **Luftwert.** Die Haus-Zusammenfassung und jede Raumansicht sagen jetzt „Heute: 87 % der Zeit gute Luft · 7 Tage: 91 %“. Er zählt, wie lange jeder Raum in guter, mittlerer und schlechter Luft ist, behält die Zählung über Neustarts und zählt keine Lücken, in denen Home Assistant aus war. Der neue Sensor `sensor.luftwachter_air_score_today` (Attribute `week` und `rooms`) ist für Dashboards und Automationen bereit. Bis 10 Minuten gezählt sind, wird nichts angezeigt, es gibt also nie eine erfundene Zahl.
+- Tests: five new tests (counting, minimum time, gaps, days, rooms, panel text in English and German).
+- DE: Tests: fünf neue Tests (Zählen, Mindestzeit, Lücken, Tage, Räume, Panel-Text auf Deutsch und Englisch).
+
 ## 0.24.0
 - New: **the Luftwächter mascot** (a calm shield face with a leaf) replaces the emoji faces in the Lovelace card, the house summary and the panel. It has a face for good, fair, poor and no data, and a light-ring variant that is chosen automatically on dark themes.
 - DE: Neu: **das Luftwächter-Maskottchen** (ein ruhiges Schildgesicht mit Blatt) ersetzt die Emoji-Gesichter in der Lovelace-Karte, in der Haus-Zusammenfassung und im Panel. Es gibt ein Gesicht für gut, mittel, schlecht und keine Daten sowie eine Variante mit hellem Ring, die bei dunklen Themes automatisch gewählt wird.

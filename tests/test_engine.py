@@ -289,3 +289,31 @@ def test_shared_advice_vectors():
             w = {**(w or {}), "raining": v["raining"]}
         r = engine.build_model([a], set(), w, "", "en", NOW)["rooms"]
         assert r and r[0]["action"] == v["expect"], (v["name"], r and r[0]["action"])
+
+
+def test_air_score_counts_time_per_day():
+    days = {}
+    engine.score_add(days, "2026-11-28", "good", 900)
+    engine.score_add(days, "2026-11-28", "poor", 300)
+    engine.score_add(days, "2026-11-28", "unknown", 5000)  # unknown levels are not counted
+    engine.score_add(days, "2026-11-28", "fair", -10)  # negative spans are not counted
+    assert days["2026-11-28"] == {"good": 900.0, "fair": 0.0, "poor": 300.0}
+    assert engine.score_pct([days], ["2026-11-28"]) == 75
+
+
+def test_air_score_needs_enough_time_and_sums_rooms_and_days():
+    a, b = {}, {}
+    engine.score_add(a, "d1", "good", 300)
+    assert engine.score_pct([a], ["d1"]) is None  # under 10 minutes counted
+    engine.score_add(a, "d2", "good", 600)
+    engine.score_add(b, "d1", "poor", 900)
+    assert engine.score_pct([a], ["d1", "d2"]) == 100
+    assert engine.score_pct([a, b], ["d1", "d2"]) == 50  # 900 good of 1800
+
+
+def test_air_score_prune_keeps_only_listed_days():
+    days = {}
+    for d in ("a", "b", "c"):
+        engine.score_add(days, d, "good", 60)
+    engine.score_prune(days, ["b", "c"])
+    assert sorted(days) == ["b", "c"]

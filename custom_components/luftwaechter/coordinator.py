@@ -64,15 +64,57 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         self._store: Store = Store(hass, 1, f"{STORE_KEY}.{entry.entry_id}")
         self._rem: dict[str, dict] = {"snooze": {}, "skip": {}}
         self._fired: dict[str, float] = {}
+        self._score: dict[str, dict[str, dict[str, float]]] = {}
+        self._score_ts: float | None = None
+        self._score_saved = 0.0
 
     async def async_load_reminders(self) -> None:
         data = await self._store.async_load() or {}
         self._rem = {"snooze": dict(data.get("snooze", {})), "skip": dict(data.get("skip", {}))}
+        score = data.get("score")
+        if isinstance(score, dict):
+            for room, days in score.items():
+                if isinstance(days, dict):
+                    self._score[str(room)] = {
+                        str(d): {k: float(v.get(k, 0.0)) for k in ("good", "fair", "poor")}
+                        for d, v in days.items() if isinstance(v, dict)
+                    }
 
     async def _save_reminders(self) -> None:
         now = dt_util.utcnow().timestamp()
         self._rem["snooze"] = {k: v for k, v in self._rem["snooze"].items() if v > now}
-        await self._store.async_save(self._rem)
+        await self._store.async_save({**self._rem, "score": self._score})
+
+    def _track_score(self, model: dict, now: float) -> None:
+        """Count how long each room spent in good, fair and poor air today and over the last 7 days (kept across restarts)."""
+        local = dt_util.as_local(dt_util.utc_from_timestamp(now)).date()
+        today = local.isoformat()
+        keys = [(local - timedelta(days=i)).isoformat() for i in range(engine.SCORE_DAYS)]
+        span = 0.0
+        if self._score_ts is not None:
+            span = min(max(now - self._score_ts, 0.0), SCAN_SECONDS * 3)  # a gap (restart, outage) is not counted
+        self._score_ts = now
+        for r in model["rooms"]:
+            days = self._score.setdefault(r["key"], {})
+            engine.score_add(days, today, r["level"], span)
+            engine.score_prune(days, keys)
+        week_keys = [k for k in keys]
+        rooms_days = [self._score.get(r["key"], {}) for r in model["rooms"]]
+        house = {"today": engine.score_pct(rooms_days, [today]), "week": engine.score_pct(rooms_days, week_keys)}
+        per_room = {
+            r["key"]: {
+                "today": engine.score_pct([self._score.get(r["key"], {})], [today]),
+                "week": engine.score_pct([self._score.get(r["key"], {})], week_keys),
+            }
+            for r in model["rooms"]
+        }
+        model["score_today"], model["score_week"] = house["today"], house["week"]
+        for rooms in [model["rooms"]] + [a["rooms"] for a in model.get("alt", {}).values()]:
+            for r in rooms:
+                r["score"] = per_room.get(r["key"], {"today": None, "week": None})
+        if now - self._score_saved >= 300:
+            self._score_saved = now
+            self.hass.async_create_task(self._save_reminders())
 
     async def async_snooze(self, entity_ids: list[str], minutes: float) -> None:
         until = dt_util.utcnow().timestamp() + float(minutes) * 60
@@ -309,6 +351,7 @@ class LuftwaechterCoordinator(DataUpdateCoordinator[dict]):
         for r in model["rooms"]:
             r["windowReminder"] = any(w["eligible"] and w["room_key"] == r["key"] for w in wins)
         self._annotate(model)
+        self._track_score(model, dt_util.utcnow().timestamp())
         self._check_rooms(model)
         model["stale_min"] = int(self.entry.options.get(CONF_STALE, DEFAULT_STALE) or DEFAULT_STALE)
         return model

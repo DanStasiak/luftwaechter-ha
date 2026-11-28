@@ -173,6 +173,39 @@ def tx(lang: str, key: str, **kw: Any) -> str:
     return s.format(**kw) if kw else s
 
 
+SCORE_DAYS = 7
+SCORE_MIN_SECONDS = 600  # a score is shown once at least 10 minutes of readings are counted
+
+
+def score_add(days: dict, day: str, level: str, seconds: float) -> None:
+    """Add seconds spent at a level (good / fair / poor) to one day; unknown levels and non-positive spans are ignored."""
+    if level not in ("good", "fair", "poor") or not seconds or seconds <= 0:
+        return
+    d = days.setdefault(day, {"good": 0.0, "fair": 0.0, "poor": 0.0})
+    d[level] = float(d.get(level, 0.0)) + float(seconds)
+
+
+def score_prune(days: dict, keep: list[str]) -> None:
+    """Drop every day that is not in `keep` (the last SCORE_DAYS calendar days)."""
+    for k in [k for k in days if k not in keep]:
+        del days[k]
+
+
+def score_pct(days_list: list[dict], day_keys: list[str], min_seconds: float = SCORE_MIN_SECONDS) -> int | None:
+    """Share of counted time spent in good air over the given days, summed over one or more rooms. None until enough is counted."""
+    good = total = 0.0
+    for days in days_list:
+        for k in day_keys:
+            d = days.get(k)
+            if not d:
+                continue
+            good += float(d.get("good", 0.0))
+            total += float(d.get("good", 0.0)) + float(d.get("fair", 0.0)) + float(d.get("poor", 0.0))
+    if total < min_seconds:
+        return None
+    return round(100 * good / total)
+
+
 def num(value: Any) -> float | None:
     if value is None:
         return None

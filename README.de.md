@@ -98,6 +98,7 @@ Weise CO₂-, Feinstaub-, Temperatur- oder Feuchte-Sensoren einem **Bereich** zu
 | `sensor.luftwachter_house` | schlechtester Wert | rooms, outside, limits, attention, attention_rooms, worst_room |
 | `sensor.luftwachter_worst_room` | Name des Raums mit der schlechtesten Luft | level, attention |
 | `sensor.luftwachter_good_rooms` | Anteil der Räume mit guter Luft, % | good, total |
+| `sensor.luftwachter_air_score_today` | Anteil der heutigen Zeit mit guter Luft im Haus, % (leer, bis 10 Minuten gezählt sind) | week (letzte 7 Tage), rooms (je Raum: heute, Woche) |
 | `sensor.luftwachter_average_co2` | durchschnittlicher CO₂-Wert aller Räume, ppm | |
 | `sensor.luftwachter_average_temperature` | durchschnittliche Temperatur aller Räume, °C | |
 | `sensor.luftwachter_average_humidity` | durchschnittliche Luftfeuchte aller Räume, % | |

@@ -55,6 +55,7 @@ Questions? See [SUPPORT.md](SUPPORT.md).
 - **Mold warning**: at 70 % humidity or more (you can change the limit under Configure) a room gets a tip, and the room view shows the dew point.
 - **Search and list view**: find a room by name (press `/`) and switch the overview to a compact list (press `V`).
 - **Tidy header, clear menu**: everything secondary sits in a labelled **More** menu (press `M`).
+- **Air score**: "Today: good air 87 % of the time · 7 days: 91 %" in the house summary and in every room view, also as `sensor.luftwachter_air_score_today` for dashboards and automations. It counts the time each room spends in good, fair and poor air, keeps counting across restarts and does not count gaps (HA off or restarting).
 - **Sparklines and time in level**: the last hour on every tile, and "Poor for 1 h 35 min" in the room view.
 - **Color-blind mode** with symbols next to the colours, and **Refresh now** from the panel.
 - **Automation blueprint**: one click to get a "room became poor" notification, no YAML needed.
@@ -140,6 +141,7 @@ The room level is the worst of the four.
 | `sensor.luftwachter_house` | worst level | rooms, outside, limits, updated, attention, attention_rooms, worst_room, silent_rooms, ventilate, ventilate_rooms, co2_avg, temp_avg, rh_avg, mold_rh, mold, mold_rooms |
 | `sensor.luftwachter_worst_room` | name of the room with the worst air | level, attention |
 | `sensor.luftwachter_good_rooms` | share of rooms with good air, % | good, total |
+| `sensor.luftwachter_air_score_today` | share of today's time the house had good air, % (empty until 10 minutes are counted) | week (last 7 days), rooms (per room: today, week) |
 | `binary_sensor.luftwachter_<room>_ventilate` | on while the advice for the room is "open the window" | room, headline, level |
 | `binary_sensor.luftwachter_<room>_close_window` | on while the advice is "close the window" (air fine again and cold or raining outside) | room, headline, detail, open_minutes |
 | `sensor.luftwachter_average_co2` | average CO₂ of all rooms, ppm | |
